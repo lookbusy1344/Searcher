@@ -1,18 +1,39 @@
 # Searcher
 
-C# / .NET 7 project to recursively search a folder, looking for files containing a given string.
+Recursively search for files containing text. C#, .NET 7 and WinForms
 
 ## Parameters
 
 ```
-Searcher.exe [-f <folder>] [-p <patterns>] -s <text to find> [-z]
+Mandatory parameters:
+  --search <text>, -s <text>          Text to find
+
+Optional parameters:
+  --folder <x>, -f <x>                Folder to search (default '.')
+  --pattern <x, ...>, -p <x, ...>     File patterns to match eg '*.txt,*.docx' (default '*')
+
+  --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
+  --one-thread, -o                    Don't search files in parallel
+  --case-sensitive, -c                Text is matched in a case-sensitive way
+
 ```
 
-For example:
+## Examples
 
 ```
-Searcher.exe -f . -p *.txt,*.log -s "Hardware"
-Searcher.exe -f "C:\docs" -p *.docx -s "Hardware" -z
+Search current folder for txt and Word files containing 'hello world':
+  Searcher.exe --folder . --pattern *.txt,*.docx --search "hello world"
+  
+Search just zip files for anything containing 'hello':
+  Searcher.exe -f . -p *.zip -s hello
+
+Search txt files (including those in zips) for anything containing 'hello':
+  Searcher.exe -z -f . -p *.txt -s hello
+Or..
+  Searcher.exe -f . -p *.txt,*.zip -s hello
+
+Search txt files (excluding those in zips) for anything containing 'hello':
+  Searcher.exe -f . -p *.txt -s hello
 
 ```
 
