@@ -63,7 +63,7 @@ public partial class MainForm : Form
 		{
 			var fname = Path.GetFileName(item);
 			var l = new ListViewItem(new string[] { fname, item });
-			itemsList.Items.Add(l);
+			_ = itemsList.Items.Add(l);
 
 			// resize the columns as needed
 			++count;
@@ -155,11 +155,11 @@ public partial class MainForm : Form
 			});
 
 			// search the files in parallel
-			Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts!.Token }, file =>
+			_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts!.Token }, file =>
 			{
 				// Search the file for the search string
 				if (SearchFile.FileContainsStringWrapper(file, config.Search, innerpatterns, config.GetStringComparison(), cts!.Token))
-					writer.TryWrite(file);      // put the file path in the channel, to be displayed on the main UI thread
+					_ = writer.TryWrite(file);      // put the file path in the channel, to be displayed on the main UI thread
 
 				// when the task completes, update completed counter. This needs to be thread-safe
 				var tempcount = Interlocked.Increment(ref count);
@@ -187,10 +187,7 @@ public partial class MainForm : Form
 		writer.Complete();
 
 		// Update the UI bar to 100%
-		Invoke(() =>
-		{
-			scanProgress.Value = filescount;
-		});
+		_ = Invoke(() => scanProgress.Value = filescount);
 
 		// return a string to be displayed on the UI
 		if (cts!.Token.IsCancellationRequested)
@@ -225,7 +222,7 @@ public partial class MainForm : Form
 		catch (Exception ex)
 		{
 			// Handle the exception
-			MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			_ = MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 	}
 
@@ -258,10 +255,12 @@ public partial class MainForm : Form
 		itemsList.Sort();
 	}
 
+#pragma warning disable IDE0022 // Use expression body for methods
 	private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 	{
 		this.cts?.Cancel();
 	}
+#pragma warning restore IDE0022 // Use expression body for methods
 }
 
 /// <summary>
@@ -286,11 +285,8 @@ public class ListViewItemComparer : IComparer
 
 	public int Compare(object? x, object? y)
 	{
-		var xitem = x as ListViewItem;
-		var yitem = y as ListViewItem;
-
 		// deal with nulls
-		if (xitem == null || yitem == null) return 0;
+		if (x is not ListViewItem xitem || y is not ListViewItem yitem) return 0;
 		if (xitem == null) return -1;
 		if (yitem == null) return 1;
 

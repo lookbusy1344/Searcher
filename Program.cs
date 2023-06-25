@@ -9,7 +9,7 @@ internal static class Program
 	///  The main entry point for the application.
 	/// </summary>
 	[STAThread]
-	static void Main(string[] args)
+	public static void Main(string[] args)
 	{
 		// To customize application configuration such as set high DPI settings or default font,
 		// see https://aka.ms/applicationconfiguration.
@@ -35,7 +35,7 @@ internal static class Program
 
 			var info = GitVersion.VersionInfo.Get();
 
-			MainForm.AttachConsole(MainForm.ATTACH_PARENT_PROCESS);
+			_ = MainForm.AttachConsole(MainForm.ATTACH_PARENT_PROCESS);
 			Console.WriteLine();
 			Console.WriteLine();
 			Console.WriteLine($"Searcher {info.GetVersionHash(20)}");

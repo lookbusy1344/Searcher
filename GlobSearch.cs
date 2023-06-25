@@ -59,7 +59,7 @@ internal class GlobSearch
 			count += currentbuffer.Count;
 			progress?.Invoke(count);
 
-			Parallel.ForEach(currentbuffer, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cancellationtoken }, (folder) =>
+			_ = Parallel.ForEach(currentbuffer, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cancellationtoken }, (folder) =>
 			{
 				if (cancellationtoken.IsCancellationRequested) throw new Exception("Cancelled");
 
@@ -113,7 +113,7 @@ internal class GlobSearch
 		var searchoptions = new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true };
 		var results = new ConcurrentBag<string[]>();
 
-		Parallel.ForEach(outerpatterns, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = token }, pattern =>
+		_ = Parallel.ForEach(outerpatterns, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = token }, pattern =>
 		{
 			if (string.IsNullOrEmpty(pattern)) return;
 

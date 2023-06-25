@@ -21,7 +21,7 @@ internal class Utils
 			var fileBytes = new byte[magicNumberZip.Length];
 
 			using var file = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-			file.Read(fileBytes, 0, fileBytes.Length);
+			_ = file.Read(fileBytes, 0, fileBytes.Length);
 
 			return fileBytes.SequenceEqual(magicNumberZip);
 		}
@@ -40,15 +40,15 @@ internal class Utils
 		var extension = Path.GetExtension(path).ToLower();
 
 		if (textFileTypes.Contains(extension))
-			Process.Start("notepad.exe", path);
+			_ = Process.Start("notepad.exe", path);
 		else if (wordFileTypes.Contains(extension))
-			Process.Start(pathToWord, path);
+			_ = Process.Start(pathToWord, path);
 		else if (extension == ".zip")
-			Process.Start("explorer.exe", path);
+			_ = Process.Start("explorer.exe", path);
 		else
 		{
 			// Open file using default program
-			Process.Start(path);
+			_ =	Process.Start(path);
 		}
 	}
 

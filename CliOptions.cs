@@ -17,6 +17,8 @@ public class CliOptions
 		OneThread = false;
 	}
 
+	private DirectoryInfo? folder;
+
 	/// <summary>
 	/// Get the string comparison to use for the search
 	/// </summary>
@@ -73,6 +75,4 @@ public class CliOptions
 	/// </summary>
 	[Option('z', "inside-zips", Required = false, HelpText = "Always search inside zips", Default = false)]
 	public bool InsideZips { get; set; }
-
-	private DirectoryInfo? folder;
 }
