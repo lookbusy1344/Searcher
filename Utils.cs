@@ -9,7 +9,8 @@ internal class Utils
 	private static readonly byte[] magicNumberZip = new byte[] { 0x50, 0x4B, 0x03, 0x04 };
 	private static readonly string[] textFileTypes = new string[] { ".txt", ".log", ".md", ".cs", ".rs", ".js", ".html" };
 	private static readonly string[] wordFileTypes = new string[] { ".docx", ".doc", ".rtf" };
-	private static readonly string pathToWord = GetWordPath();
+	private static readonly Lazy<string> pathToWord = new(GetWordPath);
+	private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acrobat.exe") ?? GetProgramPath("AcroRd32.exe") ?? string.Empty);
 
 	/// <summary>
 	/// Check the magic number of a file to see if it is a zip archive
@@ -44,7 +45,7 @@ internal class Utils
 		if (textFileTypes.Contains(extension))
 			_ = Process.Start("notepad.exe", path);
 		else if (wordFileTypes.Contains(extension))
-			_ = Process.Start(pathToWord, path);
+			_ = Process.Start(pathToWord.Value, path);
 		else if (extension == ".zip")
 			_ = Process.Start("explorer.exe", path);
 		else if (extension == ".pdf")
@@ -61,13 +62,10 @@ internal class Utils
 	/// </summary>
 	private static void StartAcrobat(string path)
 	{
-		var acrobatPath = GetProgramPath("Acrobat.exe");    // 64 bit
-		acrobatPath ??= GetProgramPath("AcroRd32.exe");         // 32 bit, shame on you Adobe
-
-		if (acrobatPath == null)
-			_ = Process.Start(path);    // fallback
+		if (string.IsNullOrEmpty(AcrobatPath.Value))
+			_ = Process.Start(path);                            // fallback
 		else
-			_ = Process.Start(acrobatPath, path);  // the quotes are needed if the path has spaces
+			_ = Process.Start(AcrobatPath.Value, path);
 	}
 
 	/// <summary>
