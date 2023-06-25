@@ -4,8 +4,8 @@ namespace Searcher;
 
 public class CliOptions
 {
-	private readonly static DirectoryInfo CurrentDir = new(".");
-	public readonly static string[] DefaultPattern = new string[] { "*" };
+	private static readonly DirectoryInfo CurrentDir = new(".");
+	public static readonly string[] DefaultPattern = new string[] { "*" };
 	public const StringComparison FilenameComparison = StringComparison.OrdinalIgnoreCase;
 
 	/// <summary>
