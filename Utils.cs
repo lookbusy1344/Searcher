@@ -39,17 +39,35 @@ internal class Utils
 	{
 		var extension = Path.GetExtension(path).ToLower();
 
+		path = $"\"{path}\"";   // the quotes are needed if the path has spaces, in some cases
+
 		if (textFileTypes.Contains(extension))
 			_ = Process.Start("notepad.exe", path);
 		else if (wordFileTypes.Contains(extension))
 			_ = Process.Start(pathToWord, path);
 		else if (extension == ".zip")
 			_ = Process.Start("explorer.exe", path);
+		else if (extension == ".pdf")
+			StartAcrobat(path);
 		else
 		{
 			// Open file using default program
-			_ =	Process.Start(path);
+			_ = Process.Start(path);
 		}
+	}
+
+	/// <summary>
+	/// On my system Acrobat doesnt start automatically, so I need this
+	/// </summary>
+	private static void StartAcrobat(string path)
+	{
+		var acrobatPath = GetProgramPath("Acrobat.exe");    // 64 bit
+		acrobatPath ??= GetProgramPath("AcroRd32.exe");         // 32 bit, shame on you Adobe
+
+		if (acrobatPath == null)
+			_ = Process.Start(path);    // fallback
+		else
+			_ = Process.Start(acrobatPath, path);  // the quotes are needed if the path has spaces
 	}
 
 	/// <summary>
@@ -63,6 +81,30 @@ internal class Utils
 			return "C:\\Program Files\\Microsoft Office\\root\\Office16\\winword.exe";
 		else
 			return Path.Combine(winwordPath, "Winword.exe");
+	}
+
+	/// <summary>
+	/// Look in the registry to see if we can locate the path to the program
+	/// </summary>
+	public static string? GetProgramPath(string program)
+	{
+		var keyName = $"HKEY_CLASSES_ROOT\\Applications\\{program}\\shell\\Open\\command";
+		var appPath = (string?)Registry.GetValue(keyName, null, null);
+
+		if (appPath == null) return null;
+
+		// may be something like
+		// "C:\Program Files\Adobe\Acrobat DC\Acrobat\Acrobat.exe" "%1"
+		// so we need to remove the quotes and the "%1"
+
+		appPath = appPath.Replace("\"", "")
+			.Replace("%1", "")
+			.Trim();
+
+		if (!File.Exists(appPath))
+			return null;
+		else
+			return appPath;
 	}
 
 	/// <summary>
