@@ -83,7 +83,8 @@ public partial class MainForm : Form
 		this.cts = null;
 		cancelButton.Enabled = false;
 
-		ResizeColumns();
+		if (count > 0)
+			ResizeColumns();
 		timerProgress.Start();
 	}
 
