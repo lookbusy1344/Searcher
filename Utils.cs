@@ -13,6 +13,24 @@ internal class Utils
 	private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acrobat.exe") ?? GetProgramPath("AcroRd32.exe") ?? string.Empty);
 
 	/// <summary>
+	/// Calculate a reasonable update rate, from 1 to 201 items
+	/// </summary>
+	public static int CalculateModulo(int count)
+	{
+		int modulo;
+		if (count < 100)
+			return 1;               // small number of files, so update progress bar every check
+		else
+			modulo = count / 100;   // 100 or more files, so update progress bar every 1% of files
+
+		// keep the updates between 1 and 201 items
+		if (modulo < 1) return 1;
+		if (modulo > 201) return 201;
+
+		return modulo;
+	}
+
+	/// <summary>
 	/// Check the magic number of a file to see if it is a zip archive
 	/// </summary>
 	public static bool IsZipArchive(string filePath)

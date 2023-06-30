@@ -137,16 +137,7 @@ public partial class MainForm : Form
 
 			// Work out a reasonable update frequency for the progress bar
 			filescount = files.Length;
-			if (filescount < 100)
-			{
-				modulo = 5; // small number of files, so update progress bar every 5 checks
-			}
-			else
-			{
-				// 100 or more files, so update progress bar every 1% of files
-				modulo = filescount / 100;
-				if (modulo < 5) modulo = 5;
-			}
+			modulo = Utils.CalculateModulo(filescount);
 
 			// Show how many files need to be searched, now we know
 			Invoke(() =>
@@ -166,12 +157,12 @@ public partial class MainForm : Form
 				var tempcount = Interlocked.Increment(ref count);
 
 				// update progress bar when needed
-				if (tempcount % modulo == 0 && !cts!.Token.IsCancellationRequested)
+				if ((modulo == 1 || tempcount % modulo == 0) && !cts!.Token.IsCancellationRequested)
 				{
 					Invoke(() =>
 					{
 						if (cts!.Token.IsCancellationRequested) return;
-						if (tempcount >= scanProgress.Value) return;    // dont go backwards
+						if (tempcount < scanProgress.Value) return;    // dont go backwards
 
 						progressLabel.Text = $"Searching {filescount - tempcount} files...";
 						scanProgress.Value = tempcount;
