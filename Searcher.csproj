@@ -34,6 +34,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NoWarn />
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="TestSearcher\**" />
+    <EmbeddedResource Remove="TestSearcher\**" />
+    <None Remove="TestSearcher\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
