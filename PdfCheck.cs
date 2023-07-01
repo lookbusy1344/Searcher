@@ -6,6 +6,18 @@ namespace Searcher;
 
 internal partial class PdfCheck
 {
+	public static bool CheckPdfForContentNoExcept(string path, string content, StringComparison strcomp)
+	{
+		try
+		{
+			return CheckPdfForContent(path, content, strcomp);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	/// <summary>
 	/// Search inside a PDF file for a string
 	/// </summary>

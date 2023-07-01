@@ -14,7 +14,7 @@ internal class SearchFile
 		if (path.EndsWith(".docx", CliOptions.FilenameComparison))
 			return DocxContainsString(path, text, comparer);
 		if (path.EndsWith(".pdf", CliOptions.FilenameComparison))
-			return PdfCheck.CheckPdfForContent(path, text, comparer);
+			return PdfCheck.CheckPdfForContentNoExcept(path, text, comparer);
 		if (path.EndsWith(".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path))
 			return ZipContainsString(path, text, innerpatterns, comparer, token);
 
