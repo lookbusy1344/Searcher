@@ -30,6 +30,17 @@ public class CliOptions
 	public int DegreeOfParallelism() => OneThread ? 1 : Environment.ProcessorCount;
 
 	/// <summary>
+	/// Get a string representation of the patterns
+	/// </summary>
+	public string GetPatterns()
+	{
+		if (Pattern == null || Pattern.Count == 0)
+			return "*";
+		else
+			return string.Join(',', Pattern);
+	}
+
+	/// <summary>
 	/// Folder to search. If its NULL it will return current directory
 	/// </summary>
 	[Option('f', "folder", Required = false, HelpText = "Folder to search", Default = null)]
