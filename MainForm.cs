@@ -70,7 +70,10 @@ public partial class MainForm : Form
 				if (config.HideErrors) continue;
 
 				// an error occurred, show it in the list
-				_ = itemsList.Items.Add(new ListViewItem(new string[] { "ERROR", item.Path }));
+				_ = itemsList.Items.Add(new ListViewItem(new string[] { "ERROR", item.Path })
+				{
+					ForeColor = Color.Red
+				});
 			}
 			else
 			{
