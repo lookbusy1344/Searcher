@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Channels;
 
 namespace Searcher;
@@ -12,6 +13,7 @@ public partial class MainForm : Form
 	public CliOptions? cliOptions;
 	private readonly System.Windows.Forms.Timer timerProgress;
 	private readonly Monotonic monotonic = new();
+	private string resultstext = string.Empty;
 
 	// this is here to allow the console output to work in a WinForms app
 	[LibraryImport("kernel32.dll")]
@@ -55,6 +57,7 @@ public partial class MainForm : Form
 		  TaskCreationOptions.LongRunning,
 		  TaskScheduler.Default);
 
+		var resultstext = new StringBuilder(200);
 		var count = 0;
 		var errors = 0;
 		var longestfname = 30;
@@ -80,6 +83,8 @@ public partial class MainForm : Form
 				// found a match, add it to the list
 				var l = new ListViewItem(new string[] { fname, item.Path });
 				_ = itemsList.Items.Add(l);
+
+				_ = resultstext.AppendLine(item.Path);
 			}
 
 			// resize the columns as needed
@@ -98,7 +103,10 @@ public partial class MainForm : Form
 		var result = await task;
 		progressLabel.Text = result;
 		this.cts = null;
-		cancelButton.Enabled = false;
+
+		cancelButton.Text = "Copy";
+		cancelButton.Enabled = true;
+		this.resultstext = resultstext.ToString();
 
 		if (count > 0)
 			ResizeColumns();
@@ -216,7 +224,15 @@ public partial class MainForm : Form
 
 	private void CancelButton_Click(object sender, EventArgs e)
 	{
-		if (this.cts == null) return;
+		if (this.cts == null)
+		{
+			// we've finished, so this is a copy button
+			Clipboard.SetText(this.resultstext);
+			progressLabel.Text = "Results copied to clipboard";
+			return;
+		}
+
+		// cancel the search
 		this.cts.Cancel();
 		progressLabel.Text = "Cancelled";
 		cancelButton.Enabled = false;
