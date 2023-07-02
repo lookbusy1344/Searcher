@@ -4,6 +4,11 @@ using System.Diagnostics;
 
 namespace Searcher;
 
+/// <summary>
+/// Result of a search
+/// </summary>
+public enum SearchResult { Found, NotFound, Error }
+
 internal class Utils
 {
 	private static readonly byte[] magicNumberZip = new byte[] { 0x50, 0x4B, 0x03, 0x04 };

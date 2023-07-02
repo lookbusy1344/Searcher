@@ -12,76 +12,92 @@ internal class SearchFile
 	public static bool FileContainsStringWrapper(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
 	{
 		if (path.EndsWith(".docx", CliOptions.FilenameComparison))
-			return DocxContainsString(path, text, comparer);
+			return DocxContainsString(path, text, comparer) == SearchResult.Found;
 		if (path.EndsWith(".pdf", CliOptions.FilenameComparison))
-			return PdfCheck.CheckPdfForContent(path, text, comparer);
+			return PdfCheck.CheckPdfForContent(path, text, comparer) == SearchResult.Found;
 		if (path.EndsWith(".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path))
-			return ZipContainsString(path, text, innerpatterns, comparer, token);
+			return ZipContainsString(path, text, innerpatterns, comparer, token) == SearchResult.Found;
 
-		return FileContainsString(path, text, comparer);
+		return FileContainsString(path, text, comparer) == SearchResult.Found;
 	}
 
 	/// <summary>
 	/// General function to check if a file contains a given string
 	/// </summary>
-	private static bool FileContainsString(string path, string text, StringComparison comparer)
+	private static SearchResult FileContainsString(string path, string text, StringComparison comparer)
 	{
-		if (string.IsNullOrEmpty(text)) return false;
+		if (string.IsNullOrEmpty(text)) return SearchResult.NotFound;
 
-		using var file = new StreamReader(path);
-		while (!file.EndOfStream)
+		try
 		{
-			var line = file.ReadLine();
-			if (line == null) continue;
-			if (line.Contains(text, comparer)) return true;
-		}
+			using var file = new StreamReader(path);
+			while (!file.EndOfStream)
+			{
+				var line = file.ReadLine();
+				if (line == null) continue;
+				if (line.Contains(text, comparer)) return SearchResult.Found;
+			}
 
-		return false;
+			return SearchResult.NotFound;
+		}
+		catch
+		{
+			return SearchResult.Error;
+		}
 	}
 
 	/// <summary>
 	/// Function to check if a docx contains a given string
 	/// </summary>
-	private static bool DocxContainsString(string path, string text, StringComparison comparer)
+	private static SearchResult DocxContainsString(string path, string text, StringComparison comparer)
 	{
-		if (string.IsNullOrEmpty(text)) return false;
+		if (string.IsNullOrEmpty(text)) return SearchResult.NotFound;
 		if (!path.EndsWith(".docx", CliOptions.FilenameComparison)) throw new Exception("Not a docx file");
 
-		using var archive = ZipFile.OpenRead(path);
-		var documentEntry = archive.GetEntry("word/document.xml");
-		if (documentEntry == null) return false;
-
-		using var stream = documentEntry.Open();
-		using var reader = XmlReader.Create(stream);
-
-		while (reader.Read())
+		try
 		{
-			if (reader.NodeType == XmlNodeType.Text && reader.Value.Contains(text, comparer))
-				return true;
+			using var archive = ZipFile.OpenRead(path);
+			var documentEntry = archive.GetEntry("word/document.xml");
+			if (documentEntry == null) return SearchResult.NotFound;
+
+			using var stream = documentEntry.Open();
+			using var reader = XmlReader.Create(stream);
+
+			while (reader.Read())
+			{
+				if (reader.NodeType == XmlNodeType.Text && reader.Value.Contains(text, comparer))
+					return SearchResult.Found;
+			}
+		}
+		catch
+		{
+			return SearchResult.Error;
 		}
 
-		return false;
+		return SearchResult.NotFound;
 	}
 
 	/// <summary>
 	/// Wrapper around zip search to handle nested zips
 	/// </summary>
-	private static bool ZipContainsString(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
+	private static SearchResult ZipContainsString(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
 	{
-		if (string.IsNullOrEmpty(text)) return false;
+		if (string.IsNullOrEmpty(text)) return SearchResult.NotFound;
 		try
 		{
 			// this is an actual zip file, so open it as archive and then use the recursive function
 
 			using var archive = ZipFile.OpenRead(path);
-			return RecursiveArchiveCheck(archive, text, innerpatterns, comparer, token);
+			return RecursiveArchiveCheck(archive, text, innerpatterns, comparer, token) ? SearchResult.Found : SearchResult.NotFound;
 		}
-		catch (Exception)
+		catch (OperationCanceledException)
 		{
-			// some error in the zip file, or a cancellation
+			return SearchResult.NotFound;
 		}
-
-		return false;
+		catch
+		{
+			return SearchResult.Error;
+		}
 	}
 
 	/// <summary>

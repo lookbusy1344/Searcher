@@ -9,30 +9,35 @@ internal partial class PdfCheck
 	/// <summary>
 	/// Search inside a PDF file for a string
 	/// </summary>
-	public static bool CheckPdfForContent(string path, string content, StringComparison strcomp)
+	public static SearchResult CheckPdfForContent(string path, string content, StringComparison strcomp)
 	{
 		var containsspace = content.Contains(' ', strcomp);
 
-		using var pdfReader = new PdfReader(path);
-		using var pdfDoc = new PdfDocument(pdfReader);
-		// var strategy = new LocationTextExtractionStrategy();
-		// var strategy = new SimpleTextExtractionStrategy();
-
-		var pages = pdfDoc.GetNumberOfPages();
-		for (var i = 1; i <= pages; ++i)
+		try
 		{
-			// get the page text
-			var page = pdfDoc.GetPage(i);
-			var text = PdfTextExtractor.GetTextFromPage(page); //, strategy);
+			using var pdfReader = new PdfReader(path);
+			using var pdfDoc = new PdfDocument(pdfReader);
 
-			// if we are searching for a string with spaces, replace all whitespace with a single space
-			if (containsspace)
-				text = AnyNumberWhitespace().Replace(text, " ");
+			var pages = pdfDoc.GetNumberOfPages();
+			for (var i = 1; i <= pages; ++i)
+			{
+				// get the page text
+				var page = pdfDoc.GetPage(i);
+				var text = PdfTextExtractor.GetTextFromPage(page);
 
-			// does the page text contain our search string?
-			if (text.Contains(content, strcomp)) return true;
+				// if we are searching for a string with spaces, replace all whitespace with a single space
+				if (containsspace)
+					text = AnyNumberWhitespace().Replace(text, " ");
+
+				// does the page text contain our search string?
+				if (text.Contains(content, strcomp)) return SearchResult.Found;
+			}
+			return SearchResult.NotFound;
 		}
-		return false;
+		catch
+		{
+			return SearchResult.Error;
+		}
 	}
 
 	/// <summary>
