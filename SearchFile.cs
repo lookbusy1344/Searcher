@@ -7,7 +7,7 @@ namespace Searcher;
 internal class SearchFile
 {
 	/// <summary>
-	/// Wrapper to pick the correct search function
+	/// Wrapper to pick the correct search function. Special cases for docx, pdf and zip files
 	/// </summary>
 	public static SearchResult FileContainsStringWrapper(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
 	{

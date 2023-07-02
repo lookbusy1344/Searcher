@@ -2,7 +2,7 @@
 
 namespace Searcher;
 
-public class CliOptions
+internal class CliOptions
 {
 	private static readonly DirectoryInfo CurrentDir = new(".");
 	public static readonly string[] DefaultPattern = new string[] { "*" };

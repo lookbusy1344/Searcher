@@ -6,11 +6,11 @@ using System.Threading.Channels;
 
 namespace Searcher;
 
-public partial class MainForm : Form
+internal partial class MainForm : Form
 {
 	private CancellationTokenSource? cts;
 	private bool loaded;
-	public CliOptions? cliOptions;
+	internal CliOptions? cliOptions;
 	private readonly System.Windows.Forms.Timer timerProgress;
 	private readonly Monotonic monotonic = new();
 
