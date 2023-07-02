@@ -46,7 +46,7 @@ public partial class MainForm : Form
 		timerProgress.Stop();
 
 		// Create a new unbounded channel
-		var channel = Channel.CreateUnbounded<string>();
+		var channel = Channel.CreateUnbounded<SingleResult>();
 		this.cts = new CancellationTokenSource();
 
 		var task = Task.Factory.StartNew(
@@ -61,9 +61,15 @@ public partial class MainForm : Form
 		// Consume the items from the channel as they arrive
 		await foreach (var item in channel.Reader.ReadAllAsync())
 		{
-			var fname = Path.GetFileName(item);
-			var l = new ListViewItem(new string[] { fname, item });
-			_ = itemsList.Items.Add(l);
+			var fname = Path.GetFileName(item.Path);
+
+			if (item.Result == SearchResult.Error)
+				_ = itemsList.Items.Add(new ListViewItem(new string[] { "ERROR", item.Path }));
+			else
+			{
+				var l = new ListViewItem(new string[] { fname, item.Path });
+				_ = itemsList.Items.Add(l);
+			}
 
 			// resize the columns as needed
 			++count;
@@ -103,7 +109,7 @@ public partial class MainForm : Form
 	/// </summary>
 	/// <param name="writer"></param>
 	/// <returns></returns>
-	private string LongRunningTask(ChannelWriter<string> writer, CliOptions config)
+	private string LongRunningTask(ChannelWriter<SingleResult> writer, CliOptions config)
 	{
 		var parallelthreads = config.DegreeOfParallelism();
 		var count = 0;
@@ -150,8 +156,9 @@ public partial class MainForm : Form
 			_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts!.Token }, file =>
 			{
 				// Search the file for the search string
-				if (SearchFile.FileContainsStringWrapper(file, config.Search, innerpatterns, config.GetStringComparison(), cts!.Token))
-					_ = writer.TryWrite(file);      // put the file path in the channel, to be displayed on the main UI thread
+				var found = SearchFile.FileContainsStringWrapper(file, config.Search, innerpatterns, config.GetStringComparison(), cts!.Token);
+				if (found is SearchResult.Found or SearchResult.Error)
+					_ = writer.TryWrite(new SingleResult { Path = file, Result = found });      // put the file path in the channel, to be displayed on the main UI thread
 
 				// when the task completes, update completed counter. This needs to be thread-safe
 				var tempcount = Interlocked.Increment(ref count);

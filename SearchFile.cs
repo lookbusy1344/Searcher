@@ -9,16 +9,16 @@ internal class SearchFile
 	/// <summary>
 	/// Wrapper to pick the correct search function
 	/// </summary>
-	public static bool FileContainsStringWrapper(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
+	public static SearchResult FileContainsStringWrapper(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
 	{
 		if (path.EndsWith(".docx", CliOptions.FilenameComparison))
-			return DocxContainsString(path, text, comparer) == SearchResult.Found;
+			return DocxContainsString(path, text, comparer);
 		if (path.EndsWith(".pdf", CliOptions.FilenameComparison))
-			return PdfCheck.CheckPdfForContent(path, text, comparer) == SearchResult.Found;
+			return PdfCheck.CheckPdfForContent(path, text, comparer);
 		if (path.EndsWith(".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path))
-			return ZipContainsString(path, text, innerpatterns, comparer, token) == SearchResult.Found;
+			return ZipContainsString(path, text, innerpatterns, comparer, token);
 
-		return FileContainsString(path, text, comparer) == SearchResult.Found;
+		return FileContainsString(path, text, comparer);
 	}
 
 	/// <summary>
@@ -92,6 +92,7 @@ internal class SearchFile
 		}
 		catch (OperationCanceledException)
 		{
+			// this is thrown when the user cancels the search
 			return SearchResult.NotFound;
 		}
 		catch

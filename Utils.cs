@@ -9,6 +9,11 @@ namespace Searcher;
 /// </summary>
 public enum SearchResult { Found, NotFound, Error }
 
+/// <summary>
+/// A single search result
+/// </summary>
+public readonly record struct SingleResult(string Path, SearchResult Result);
+
 internal class Utils
 {
 	private static readonly byte[] magicNumberZip = new byte[] { 0x50, 0x4B, 0x03, 0x04 };
