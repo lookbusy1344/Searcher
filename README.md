@@ -15,6 +15,7 @@ Optional parameters:
   --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
   --one-thread, -o                    Don't search files in parallel
   --case-sensitive, -c                Text is matched in a case-sensitive way
+  --hide-errors, -h                   Hide errors in output list
 
 ```
 

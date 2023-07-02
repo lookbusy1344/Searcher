@@ -86,4 +86,10 @@ public class CliOptions
 	/// </summary>
 	[Option('z', "inside-zips", Required = false, HelpText = "Always search inside zips", Default = false)]
 	public bool InsideZips { get; set; }
+
+	/// <summary>
+	/// Hide errors in output list
+	/// </summary>
+	[Option('h', "hide-errors", Required = false, HelpText = "Hide errors in output list", Default = false)]
+	public bool HideErrors { get; set; }
 }

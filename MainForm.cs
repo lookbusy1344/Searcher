@@ -56,6 +56,7 @@ public partial class MainForm : Form
 		  TaskScheduler.Default);
 
 		var count = 0;
+		var errors = 0;
 		var longestfname = 30;
 
 		// Consume the items from the channel as they arrive
@@ -64,9 +65,16 @@ public partial class MainForm : Form
 			var fname = Path.GetFileName(item.Path);
 
 			if (item.Result == SearchResult.Error)
+			{
+				++errors;
+				if (config.HideErrors) continue;
+
+				// an error occurred, show it in the list
 				_ = itemsList.Items.Add(new ListViewItem(new string[] { "ERROR", item.Path }));
+			}
 			else
 			{
+				// found a match, add it to the list
 				var l = new ListViewItem(new string[] { fname, item.Path });
 				_ = itemsList.Items.Add(l);
 			}
@@ -92,6 +100,9 @@ public partial class MainForm : Form
 		if (count > 0)
 			ResizeColumns();
 		timerProgress.Start();
+
+		if (errors > 0)
+			MessageBox.Show($"There were {errors} errors", "Errors", MessageBoxButtons.OK, MessageBoxIcon.Error);
 	}
 
 	/// <summary>

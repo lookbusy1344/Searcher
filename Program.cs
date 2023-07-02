@@ -51,6 +51,7 @@ internal static class Program
 			Console.WriteLine("  --inside-zips, -z                   Always search inside zip files. Implies -p *.zip");
 			Console.WriteLine("  --one-thread, -o                    Don't search files in parallel");
 			Console.WriteLine("  --case-sensitive, -c                Text is matched in a case-sensitive way");
+			Console.WriteLine("  --hide-errors, -h                   Hide errors from the output list");
 			Console.WriteLine();
 			Console.WriteLine("Examples. Search current folder for txt and Word files containing 'hello world':");
 			Console.WriteLine("  Searcher.exe --folder . --pattern *.txt,*.docx --search \"hello world\"");
