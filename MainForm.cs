@@ -205,8 +205,18 @@ public partial class MainForm : Form
 			loaded = true;
 
 			var info = GitVersion.VersionInfo.Get();
-			this.Text = $"File Search {info.GetVersionHash(12)}";
-			if (cliOptions == null) return;
+			if (cliOptions == null || cliOptions.Folder == null)
+			{
+				this.Text = $"File Search {info.GetVersionHash(12)}";
+				return;
+			}
+
+			var patterns = cliOptions.GetPatterns();
+			var path = cliOptions.Folder.FullName;
+			if (path.Length > 20)
+				path = $"{path[0..5]}...{path[^14..]}";
+
+			this.Text = $"Searching for: '{cliOptions.Search}' -f '{path}' -p {patterns} (commit: {info.GetHash(8)})";
 
 			// this is a async void method, so we need to catch any exceptions
 			await MainAsync(cliOptions);
