@@ -102,7 +102,12 @@ public partial class MainForm : Form
 		timerProgress.Start();
 
 		if (errors > 0)
-			MessageBox.Show($"There were {errors} errors", "Errors", MessageBoxButtons.OK, MessageBoxIcon.Error);
+		{
+			if (config.HideErrors)
+				_ = MessageBox.Show($"There were {errors} errors. Remove the -h / --hide-errors switch to see details", "Errors", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else
+				_ = MessageBox.Show($"There were {errors} errors, indicated in the output list", "Errors", MessageBoxButtons.OK, MessageBoxIcon.Error);
+		}
 	}
 
 	/// <summary>

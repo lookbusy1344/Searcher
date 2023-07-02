@@ -7,7 +7,7 @@
 </Target>
   
   <PropertyGroup>
-	<Version>1.6.0.0</Version> 
+	<Version>1.6.1.0</Version> 
 	<InformationalVersion>$(SourceRevisionId)</InformationalVersion> 
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
@@ -17,6 +17,7 @@
     <Platforms>AnyCPU;x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <Description>Recursively search for files containing text</Description>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

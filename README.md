@@ -38,7 +38,7 @@ Search txt files (excluding those in zips) for anything containing 'hello':
 
 ```
 
-Searcher can look inside zips (use the -z option), and docx files.
+Searcher can look inside zips (use the -z option), docx and pdf files.
 
 ## Building
 
@@ -46,4 +46,10 @@ Requires Visual Studio 2022, or .NET 7 SDK.
 
 ```
 dotnet publish -c Release
+```
+
+Or to make a single-file bundle with necessary nuget packages:
+
+```
+publish.cmd
 ```
