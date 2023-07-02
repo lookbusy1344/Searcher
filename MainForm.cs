@@ -13,7 +13,6 @@ public partial class MainForm : Form
 	public CliOptions? cliOptions;
 	private readonly System.Windows.Forms.Timer timerProgress;
 	private readonly Monotonic monotonic = new();
-	private string resultstext = string.Empty;
 
 	// this is here to allow the console output to work in a WinForms app
 	[LibraryImport("kernel32.dll")]
@@ -57,7 +56,6 @@ public partial class MainForm : Form
 		  TaskCreationOptions.LongRunning,
 		  TaskScheduler.Default);
 
-		var resultstext = new StringBuilder(200);
 		var count = 0;
 		var errors = 0;
 		var longestfname = 30;
@@ -75,16 +73,15 @@ public partial class MainForm : Form
 				// an error occurred, show it in the list
 				_ = itemsList.Items.Add(new ListViewItem(new string[] { "ERROR", item.Path })
 				{
-					ForeColor = Color.Red
+					ForeColor = Color.Red,
+					Tag = SearchResult.Error
 				});
 			}
 			else
 			{
 				// found a match, add it to the list
-				var l = new ListViewItem(new string[] { fname, item.Path });
+				var l = new ListViewItem(new string[] { fname, item.Path }) { Tag = SearchResult.Found };
 				_ = itemsList.Items.Add(l);
-
-				_ = resultstext.AppendLine(item.Path);
 			}
 
 			// resize the columns as needed
@@ -106,7 +103,6 @@ public partial class MainForm : Form
 
 		cancelButton.Text = "Copy";
 		cancelButton.Enabled = true;
-		this.resultstext = resultstext.ToString();
 
 		if (count > 0)
 			ResizeColumns();
@@ -227,7 +223,8 @@ public partial class MainForm : Form
 		if (this.cts == null)
 		{
 			// we've finished, so this is a copy button
-			Clipboard.SetText(this.resultstext);
+			var results = GetFoundFilenames();
+			Clipboard.SetText(results);
 			progressLabel.Text = "Results copied to clipboard";
 			return;
 		}
@@ -237,6 +234,22 @@ public partial class MainForm : Form
 		progressLabel.Text = "Cancelled";
 		cancelButton.Enabled = false;
 		scanProgress.Value = 0;
+	}
+
+	/// <summary>
+	/// Turn the listview items into a string, one per line
+	/// </summary>
+	private string GetFoundFilenames()
+	{
+		if (itemsList.Items.Count == 0) return string.Empty;
+
+		var sb = new StringBuilder(itemsList.Items.Count * 80);
+		foreach (ListViewItem item in itemsList.Items)
+		{
+			if (item.Tag is SearchResult result && result == SearchResult.Found)
+				_ = sb.AppendLine(item.SubItems[1].Text);
+		}
+		return sb.ToString();
 	}
 
 	private async void MainForm_Load(object sender, EventArgs e)
