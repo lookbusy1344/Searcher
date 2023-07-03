@@ -129,7 +129,7 @@ public partial class MainForm : Form
 	/// <summary>
 	/// Test harness for running without a GUI
 	/// </summary>
-	public async Task<IList<SingleResult>> TestHarness(CliOptions config)
+	public async Task<IList<SingleResult>> TestHarness(CliOptions config, bool fullpath)
 	{
 		var channel = Channel.CreateUnbounded<SingleResult>();
 		this.cts = new CancellationTokenSource();
@@ -145,12 +145,17 @@ public partial class MainForm : Form
 
 		// collect the results using an async loop
 		await foreach (var item in channel.Reader.ReadAllAsync())
-			results.Add(item);
+		{
+			if (fullpath)
+				results.Add(item);
+			else
+				results.Add(item with { Path = Path.GetFileName(item.Path) });
+		}
 
 		var finalmsg = await task;
 
 		// because the checking is parallel, we need to sort to get deterministic results
-		results.Sort((a, b) => string.Compare(a.Path, b.Path, StringComparison.OrdinalIgnoreCase));
+		//results.Sort((a, b) => string.Compare(a.Path, b.Path, StringComparison.OrdinalIgnoreCase));
 
 		return results;
 	}
