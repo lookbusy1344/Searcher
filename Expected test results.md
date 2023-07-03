@@ -36,6 +36,18 @@ Expected: 'Romeo and Juliet.docx'. The zip containing the txt file is not return
 ### searcher.exe -s "it is the east" -p \*.docx,\*.txt -z
 Expected: the docx, the txt, and 'Macbeth and Romeo txt.zip'
 
+## Case-sensitive
+
+### searcher.exe -s "Having some BUSINESS" -p *.txt
+Expected: Romeo and Juliet.txt, case is wrong but default search is CI
+
+### searcher.exe -s "Having some BUSINESS" -p *.txt -c
+Expected: none, case-sensitive search
+
+### searcher.exe -s "Having some business" -p *.docx -c
+Expected: Romeo and Juliet.docx, now we have the right case
+
+
 ## No match
 
 ### searcher.exe -s "summer"

@@ -19,6 +19,23 @@ public class SearchTests
 		Assert.True(result.Length == 0);
 	}
 
+	[Fact(DisplayName = "Search: Wrong glob - terrors of the earth", Timeout = SearchTimeout)]
+	[Trait("Category", "Globs")]
+	public void SearchNoMatchingGlob()
+	{
+		// searcher.exe -s "terrors of the earth" -p *.log,*.x
+		// no results, using explicit globs that don't exist
+
+		var options = new CliOptions
+		{
+			Search = "terrors of the earth",
+			Pattern = new string[] { "*.log", "*.x" }
+		};
+		var found = SearchCaller(options);
+
+		Assert.True(found.Length == 0);
+	}
+
 	[Fact(DisplayName = "Search: Basic search TXT, PDF, ZIP - Terrors of the Earth", Timeout = SearchTimeout)]
 	[Trait("Category", "Search")]
 	public void TerrorsOfTheEarth()
@@ -90,7 +107,7 @@ public class SearchTests
 	}
 
 	[Fact(DisplayName = "Search: Explicit globs - terrors of the earth", Timeout = SearchTimeout)]
-	[Trait("Category", "Search")]
+	[Trait("Category", "Globs")]
 	public void TerrorsOfTheEarthGlobs()
 	{
 		// searcher.exe -s "terrors of the earth" -p *.pdf,*.txt
@@ -108,7 +125,7 @@ public class SearchTests
 	}
 
 	[Fact(DisplayName = "Search: Single glob and zip", Timeout = SearchTimeout)]
-	[Trait("Category", "Search")]
+	[Trait("Category", "Zip")]
 	public void SingleGlobNoZip()
 	{
 		// searcher.exe -s "it is the east" -p *.docx -z
@@ -127,7 +144,7 @@ public class SearchTests
 	}
 
 	[Fact(DisplayName = "Search: Two globs including zip match", Timeout = SearchTimeout)]
-	[Trait("Category", "Search")]
+	[Trait("Category", "Zip")]
 	public void GlobsAndZip()
 	{
 		// searcher.exe -s "it is the east" -p *.docx,*.txt -z
@@ -139,6 +156,63 @@ public class SearchTests
 			Search = "it is the east",
 			Pattern = new string[] { "*.docx", "*.txt" },
 			InsideZips = true
+		};
+		var found = SearchCaller(options);
+
+		Assert.True(CompareNames(expected, found));
+	}
+
+	[Fact(DisplayName = "Search: Wrong case, but case-insensitive", Timeout = SearchTimeout)]
+	[Trait("Category", "Case")]
+	public void CaseInsensitiveBasic()
+	{
+		// searcher.exe -s "Having some BUSINESS" -p *.txt
+		// 1 result, the wrong case doesnt matter without -c
+
+		var expected = new string[] { "Romeo and Juliet.txt" };
+		var options = new CliOptions
+		{
+			Search = "Having some BUSINESS",
+			Pattern = new string[] { "*.txt" },
+			CaseSensitive = false
+		};
+		var found = SearchCaller(options);
+
+		Assert.True(CompareNames(expected, found));
+	}
+
+	[Fact(DisplayName = "Search: Wrong case, case-sensitive", Timeout = SearchTimeout)]
+	[Trait("Category", "Case")]
+	public void CaseSensitive()
+	{
+		// searcher.exe -s "Having some BUSINESS" -p *.txt -c
+		// no result, the wrong case
+
+		//var expected = new string[] { };
+		var options = new CliOptions
+		{
+			Search = "Having some BUSINESS",
+			Pattern = new string[] { "*.txt" },
+			CaseSensitive = true
+		};
+		var found = SearchCaller(options);
+
+		Assert.True(found.Length == 0);
+	}
+
+	[Fact(DisplayName = "Search: Correct case, case-sensitive", Timeout = SearchTimeout)]
+	[Trait("Category", "Case")]
+	public void CaseSensitiveMatch()
+	{
+		// searcher.exe -s "Having some business" -p *.docx -c
+		// 1 result, we are using the correct case in this CS search
+
+		var expected = new string[] { "Romeo and Juliet.docx" };
+		var options = new CliOptions
+		{
+			Search = "Having some business",
+			Pattern = new string[] { "*.docx" },
+			CaseSensitive = true
 		};
 		var found = SearchCaller(options);
 
