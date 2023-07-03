@@ -1,5 +1,7 @@
 # Test commands and expected results
 
+These are all automated in the TestSearcher project (xUnit). They run against the sample files in the TestDocs folder.
+
 ## General tests for pdf, docx and txt
 
 ### searcher.exe -s "terrors of the earth"
@@ -39,7 +41,7 @@ Expected: the docx, the txt, and 'Macbeth and Romeo txt.zip'
 ## Case-sensitive
 
 ### searcher.exe -s "Having some BUSINESS" -p *.txt
-Expected: Romeo and Juliet.txt, case is wrong but default search is CI
+Expected: Romeo and Juliet.txt, the case is wrong but default search is insensitive
 
 ### searcher.exe -s "Having some BUSINESS" -p *.txt -c
 Expected: none, case-sensitive search
@@ -51,4 +53,7 @@ Expected: Romeo and Juliet.docx, now we have the right case
 ## No match
 
 ### searcher.exe -s "summer"
-Expected: none
+Expected: none, this text does not exist
+
+### searcher.exe -s "terrors of the earth" -p \*.log,\*.x
+Expected: none, although the text exists, the globs are wrong
