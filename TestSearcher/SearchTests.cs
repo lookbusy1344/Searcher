@@ -16,17 +16,78 @@ public class SearchTests
 		Assert.True(result.Length == 0);
 	}
 
-	[Fact(DisplayName = "Search: 3 King Lear", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "Search: Terrors of the Earth", Timeout = SearchTimeout)]
 	[Trait("Category", "Search")]
-	public void KingLear()
+	public void TerrorsOfTheEarth()
 	{
 		var expected = new string[] { "King Lear.docx", "King Lear.txt", "King Lear.pdf" };
 		var options = new CliOptions { Search = "terrors of the earth" };
 		var found = SearchCaller(options);
 
-		Assert.True(found.Length == 3);
-		Assert.True(expected.SequenceEqual(found));
+		Assert.True(CompareNames(expected, found));
 	}
+
+	[Fact(DisplayName = "Search: It is the east", Timeout = SearchTimeout)]
+	[Trait("Category", "Search")]
+	public void ItIsTheEast()
+	{
+		var expected = new string[] { "Macbeth and Romeo txt.zip", "Romeo and Juliet.docx", "Romeo and Juliet.txt", "Romeo and Juliet.pdf" };
+		var options = new CliOptions { Search = "it is the east" };
+		var found = SearchCaller(options);
+
+		Assert.True(CompareNames(expected, found));
+	}
+
+	[Fact(DisplayName = "Search: Poor player That struts", Timeout = SearchTimeout)]
+	[Trait("Category", "Search")]
+	public void PoorPlayerThatStruts()
+	{
+		var expected = new string[] { "Macbeth.txt", "Macbeth.docx", "Macbeth and Romeo txt.zip", "Macbeth.pdf" };
+		var options = new CliOptions { Search = "poor player That struts" };
+		var found = SearchCaller(options);
+
+		Assert.True(CompareNames(expected, found));
+	}
+
+	[Fact(DisplayName = "Search: Nested zip test - Brown fox", Timeout = SearchTimeout)]
+	[Trait("Category", "Search")]
+	public void BrownFoxNestedZip()
+	{
+		var expected = new string[] { "Nested zip brown fox.zip" };
+		var options = new CliOptions { Search = "brown fox" };
+		var found = SearchCaller(options);
+
+		Assert.True(CompareNames(expected, found));
+	}
+
+	[Fact(DisplayName = "Search: This day Henry V", Timeout = SearchTimeout)]
+	[Trait("Category", "Search")]
+	public void ThisDayHenryV()
+	{
+		var expected = new string[] { "Henry V.txt" };
+		var options = new CliOptions { Search = "this day" };
+		var found = SearchCaller(options);
+
+		Assert.True(CompareNames(expected, found));
+	}
+
+	[Fact(DisplayName = "Search: Explicit globs - terrors of the earth", Timeout = SearchTimeout)]
+	[Trait("Category", "Search")]
+	public void TerrorsOfTheEarthGlobs()
+	{
+		var expected = new string[] { "King Lear.txt", "King Lear.pdf" };
+		var options = new CliOptions
+		{
+			Search = "terrors of the earth",
+			Pattern = new string[] { "*.pdf", "*.txt" }
+		};
+		var found = SearchCaller(options);
+
+		Assert.True(CompareNames(expected, found));
+	}
+
+
+
 
 	/// <summary>
 	/// Helper to set up the instance, run the test, and return the results
@@ -38,7 +99,7 @@ public class SearchTests
 		options.Pattern ??= new List<string>() { "*" };
 
 		var searcher = new MainForm();
-		var task = searcher.TestHarness(options, false);
+		var task = searcher.TestHarness(options);
 
 		task.Wait();
 
@@ -47,11 +108,19 @@ public class SearchTests
 		if (task.IsCompletedSuccessfully == false) throw new Exception("Task was not completed successfully");
 		if (task.Result == null) throw new Exception("Task result was null");
 
-		return GetFoundFiles(task.Result);
+		return task.Result.Where(r => r.Result == SearchResult.Found)
+			.Select(r => Path.GetFileName(r.Path))
+			.ToArray();
 	}
 
 	/// <summary>
-	/// Filter out the Errors, and just return the filenames
+	/// Compare the lengths, and sort and compare the arrays
 	/// </summary>
-	private static string[] GetFoundFiles(IEnumerable<SingleResult> results) => results.Where(r => r.Result == SearchResult.Found).Select(r => r.Path).ToArray();
+	private static bool CompareNames(string[] a, string[] b)
+	{
+		if (a.Length != b.Length) return false;
+
+		return a.OrderBy(s => s)
+			.SequenceEqual(b.OrderBy(s => s));
+	}
 }

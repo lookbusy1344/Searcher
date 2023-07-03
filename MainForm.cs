@@ -129,7 +129,7 @@ public partial class MainForm : Form
 	/// <summary>
 	/// Test harness for running without a GUI
 	/// </summary>
-	public async Task<IList<SingleResult>> TestHarness(CliOptions config, bool fullpath)
+	public async Task<IList<SingleResult>> TestHarness(CliOptions config)
 	{
 		var channel = Channel.CreateUnbounded<SingleResult>();
 		this.cts = new CancellationTokenSource();
@@ -145,12 +145,7 @@ public partial class MainForm : Form
 
 		// collect the results using an async loop
 		await foreach (var item in channel.Reader.ReadAllAsync())
-		{
-			if (fullpath)
-				results.Add(item);
-			else
-				results.Add(item with { Path = Path.GetFileName(item.Path) });
-		}
+			results.Add(item);
 
 		var finalmsg = await task;
 
