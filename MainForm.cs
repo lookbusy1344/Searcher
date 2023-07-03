@@ -131,6 +131,8 @@ public partial class MainForm : Form
 	/// </summary>
 	public async Task<IList<SingleResult>> TestHarness(CliOptions config)
 	{
+		// This just serves as a way for the tests to search for files, and get a IList back from the channel
+
 		var channel = Channel.CreateUnbounded<SingleResult>();
 		this.cts = new CancellationTokenSource();
 
@@ -147,6 +149,7 @@ public partial class MainForm : Form
 		await foreach (var item in channel.Reader.ReadAllAsync())
 			results.Add(item);
 
+		// wait for the task to finish
 		var finalmsg = await task;
 
 		// because the checking is parallel, we need to sort to get deterministic results
