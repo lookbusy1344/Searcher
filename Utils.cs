@@ -7,12 +7,12 @@ namespace Searcher;
 /// <summary>
 /// Result of a search
 /// </summary>
-internal enum SearchResult { Found, NotFound, Error }
+public enum SearchResult { Found, NotFound, Error }
 
 /// <summary>
 /// A single search result
 /// </summary>
-internal readonly record struct SingleResult(string Path, SearchResult Result);
+public readonly record struct SingleResult(string Path, SearchResult Result);
 
 internal class Utils
 {

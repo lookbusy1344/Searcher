@@ -6,11 +6,11 @@ using System.Threading.Channels;
 
 namespace Searcher;
 
-internal partial class MainForm : Form
+public partial class MainForm : Form
 {
 	private CancellationTokenSource? cts;
 	private bool loaded;
-	internal CliOptions? cliOptions;
+	public CliOptions? cliOptions;
 	private readonly System.Windows.Forms.Timer timerProgress;
 	private readonly Monotonic monotonic = new();
 
@@ -51,7 +51,7 @@ internal partial class MainForm : Form
 		this.cts = new CancellationTokenSource();
 
 		var task = Task.Factory.StartNew(
-		  () => LongRunningTask(channel.Writer, config),
+		  () => LongRunningTask(channel.Writer, config, true),
 		  cts.Token,
 		  TaskCreationOptions.LongRunning,
 		  TaskScheduler.Default);
@@ -127,12 +127,41 @@ internal partial class MainForm : Form
 	}
 
 	/// <summary>
+	/// Test harness for running without a GUI
+	/// </summary>
+	public async Task<IList<SingleResult>> TestHarness(CliOptions config)
+	{
+		var channel = Channel.CreateUnbounded<SingleResult>();
+		this.cts = new CancellationTokenSource();
+
+		// start the background task, performs the actual search
+		var task = Task.Factory.StartNew(
+		  () => LongRunningTask(channel.Writer, config, false),
+		  cts.Token,
+		  TaskCreationOptions.LongRunning,
+		  TaskScheduler.Default);
+
+		var results = new List<SingleResult>();
+
+		// collect the results using an async loop
+		await foreach (var item in channel.Reader.ReadAllAsync())
+			results.Add(item);
+
+		var finalmsg = await task;
+
+		// because the checking is parallel, we need to sort to get deterministic results
+		results.Sort((a, b) => string.Compare(a.Path, b.Path, StringComparison.OrdinalIgnoreCase));
+
+		return results;
+	}
+
+	/// <summary>
 	/// This is a blocking method that will run on a background thread
 	/// Its more like a compute-bound task
 	/// </summary>
 	/// <param name="writer"></param>
 	/// <returns></returns>
-	private string LongRunningTask(ChannelWriter<SingleResult> writer, CliOptions config)
+	private string LongRunningTask(ChannelWriter<SingleResult> writer, CliOptions config, bool allowinvoke)
 	{
 		var parallelthreads = config.DegreeOfParallelism();
 		var count = 0;
@@ -169,11 +198,12 @@ internal partial class MainForm : Form
 			modulo = Utils.CalculateModulo(filescount);
 
 			// Show how many files need to be searched, now we know
-			Invoke(() =>
-			{
-				progressLabel.Text = $"Searching {filescount} files...";
-				scanProgress.Maximum = filescount;
-			});
+			if (allowinvoke)
+				Invoke(() =>
+				{
+					progressLabel.Text = $"Searching {filescount} files...";
+					scanProgress.Maximum = filescount;
+				});
 
 			// search the files in parallel
 			_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts!.Token }, file =>
@@ -187,7 +217,7 @@ internal partial class MainForm : Form
 				var tempcount = Interlocked.Increment(ref count);
 
 				// update progress bar when needed
-				if ((modulo == 1 || tempcount % modulo == 0) && !cts!.Token.IsCancellationRequested)
+				if (allowinvoke && (modulo == 1 || tempcount % modulo == 0) && !cts!.Token.IsCancellationRequested)
 				{
 					Invoke(() =>
 					{
@@ -209,7 +239,8 @@ internal partial class MainForm : Form
 		writer.Complete();
 
 		// Update the UI bar to 100%
-		_ = Invoke(() => scanProgress.Value = filescount);
+		if (allowinvoke)
+			_ = Invoke(() => scanProgress.Value = filescount);
 
 		// return a string to be displayed on the UI
 		if (cts!.Token.IsCancellationRequested)
