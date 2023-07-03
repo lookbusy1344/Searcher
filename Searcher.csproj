@@ -37,8 +37,11 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <Compile Remove="TestDocs\**" />
     <Compile Remove="TestSearcher\**" />
+    <EmbeddedResource Remove="TestDocs\**" />
     <EmbeddedResource Remove="TestSearcher\**" />
+    <None Remove="TestDocs\**" />
     <None Remove="TestSearcher\**" />
   </ItemGroup>
 
