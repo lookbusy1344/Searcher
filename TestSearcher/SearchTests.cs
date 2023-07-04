@@ -41,9 +41,9 @@ public class SearchTests
 	public void TerrorsOfTheEarth()
 	{
 		// searcher.exe -s "terrors of the earth"
-		// 3 matches, the King Lear documents in different formats
+		// 4 matches, the King Lear documents in different formats and 'King Lear pdf.zip'
 
-		var expected = new string[] { "King Lear.docx", "King Lear.txt", "King Lear.pdf" };
+		var expected = new string[] { "King Lear.docx", "King Lear.txt", "King Lear.pdf", "King Lear pdf.zip" };
 		var options = new CliOptions { Search = "terrors of the earth" };
 		var found = SearchCaller(options);
 

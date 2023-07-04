@@ -5,7 +5,7 @@ These are all automated in the TestSearcher project (xUnit). They run against th
 ## General tests for pdf, docx and txt
 
 ### searcher.exe -s "terrors of the earth"
-Expected: the 3 king lear files
+Expected: the 3 king lear files and 'King Lear pdf.zip' (a pdf inside a zip)
 
 ### searcher.exe -s "it is the east"
 Expected: the 3 Romeo files, and 'Macbeth and Romeo txt.zip'

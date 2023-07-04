@@ -14,7 +14,7 @@ internal class SearchFile
 		if (path.EndsWith(".docx", CliOptions.FilenameComparison))
 			return DocxContainsString(path, text, comparer);
 		if (path.EndsWith(".pdf", CliOptions.FilenameComparison))
-			return PdfCheck.CheckPdfForContent(path, text, comparer);
+			return PdfCheck.CheckPdfFile(path, text, comparer);
 		if (path.EndsWith(".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path))
 			return ZipContainsString(path, text, innerpatterns, comparer, token);
 
@@ -118,6 +118,11 @@ internal class SearchFile
 				// its another nested zip file, we need to open it and search inside
 				using var nestedArchive = new ZipArchive(nestedEntry.Open());
 				found = RecursiveArchiveCheck(nestedArchive, text, innerpatterns, comparer, token);
+			}
+			else if (nestedEntry.FullName.EndsWith(".pdf", CliOptions.FilenameComparison))
+			{
+				// this is a PDF inside a zip
+				found = PdfCheck.CheckStream(nestedEntry, text, comparer);
 			}
 			else if (nestedEntry.FullName.EndsWith('/'))
 			{
