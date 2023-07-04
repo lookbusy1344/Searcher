@@ -27,7 +27,7 @@ internal class GlobSearch
 	/// </summary>
 	private static void FindFilesRecursivelyInternal(ref List<string> files, string path, Glob g, CancellationToken token)
 	{
-		if (token.IsCancellationRequested) throw new Exception("Cancelled");
+		if (token.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
 
 		foreach (var file in Directory.GetFiles(path))
 			if (g.IsMatch(Path.GetFileName(file)))
@@ -54,14 +54,14 @@ internal class GlobSearch
 
 		while (!currentbuffer.IsEmpty)
 		{
-			if (cancellationtoken.IsCancellationRequested) throw new Exception("Cancelled");
+			if (cancellationtoken.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
 
 			count += currentbuffer.Count;
 			progress?.Invoke(count);
 
 			_ = Parallel.ForEach(currentbuffer, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cancellationtoken }, (folder) =>
 			{
-				if (cancellationtoken.IsCancellationRequested) throw new Exception("Cancelled");
+				if (cancellationtoken.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
 
 				// add subdirectories to the queue, to be processed in parallel on the next batch
 				foreach (var dir in Directory.GetDirectories(folder, "*", diroptions))
@@ -72,7 +72,7 @@ internal class GlobSearch
 				List<string>? found = null;
 				foreach (var c in candidates)
 				{
-					if (cancellationtoken.IsCancellationRequested) throw new Exception("Cancelled");
+					if (cancellationtoken.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
 					var size = candidates.Length > 10 ? 10 : candidates.Length;
 
 					var filename = Path.GetFileName(c);

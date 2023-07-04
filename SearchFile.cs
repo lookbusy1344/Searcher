@@ -109,7 +109,7 @@ internal class SearchFile
 		foreach (var nestedEntry in archive.Entries)
 		{
 			// loop through all entries in the nested zip file
-			if (token.IsCancellationRequested) throw new Exception("Cancelled");
+			if (token.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
 
 			var found = false;
 
@@ -158,7 +158,7 @@ internal class SearchFile
 			if (line == null) continue;
 			if (line.Contains(text, comparer)) return true;
 
-			if (token.IsCancellationRequested) throw new Exception("Cancelled");
+			if (token.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
 		}
 
 		return false;
