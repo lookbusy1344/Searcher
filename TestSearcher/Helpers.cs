@@ -9,6 +9,42 @@ internal static partial class Helpers
 	private const string SearchPath = @"C:\Users\JohnT\Documents\Visual Studio\Projects\Searcher\TestDocs";
 
 	/// <summary>
+	/// Try the action, and assert that it throws the expected exception
+	/// </summary>
+	public static void AssertThrows<E>(Action action, string errmsg) where E : Exception
+	{
+		var result = CheckThrows<E>(action);
+		if (!result)
+			Assert.Fail(errmsg);
+		else
+			Assert.True(true);
+	}
+
+	/// <summary>
+	/// Try the action, and if it throws the expected exception, return true
+	/// </summary>
+	public static bool CheckThrows<E>(Action action) where E : Exception
+	{
+		try
+		{
+			action();
+		}
+		catch (E)
+		{
+			// expected exception was thrown, test passed
+			return true;
+		}
+		catch
+		{
+			// some other exception was thrown, test failed
+			return false;
+		}
+
+		// no exception was thrown, test failed
+		return false;
+	}
+
+	/// <summary>
 	/// Take a single string and parse it into a CliOptions instance
 	/// </summary>
 	public static CliOptions ParseCommandLine(string s)

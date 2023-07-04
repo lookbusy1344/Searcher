@@ -254,16 +254,10 @@ public partial class SearchTests
 		// this command line is an error, -Q is not a valid option
 
 		var commandline = "-s \"it is the east\" -p *.docx,*.txt -z -Q";
-		try
+
+		Helpers.AssertThrows<Exception>(() =>
 		{
 			var options = Helpers.ParseCommandLine(commandline);
-		}
-		catch
-		{
-			// an exception should be thrown for this to work properly
-			Assert.True(true);
-			return;
-		}
-		Assert.Fail("Did not detect the invalid parameter(s)");
+		}, "Did not detect the invalid parameter(s)");
 	}
 }
