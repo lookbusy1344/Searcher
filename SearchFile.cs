@@ -47,6 +47,27 @@ internal class SearchFile
 	}
 
 	/// <summary>
+	/// Function to check if a docx inside ZIP contains a given string
+	/// </summary>
+
+	private static bool DocxContainsStringZip(ZipArchive archive, string text, StringComparison comparer)
+	{
+		var documentEntry = archive.GetEntry("word/document.xml");
+		if (documentEntry == null) return false;
+
+		using var stream = documentEntry.Open();
+		using var reader = XmlReader.Create(stream);
+
+		while (reader.Read())
+		{
+			if (reader.NodeType == XmlNodeType.Text && reader.Value.Contains(text, comparer))
+				return true;
+		}
+
+		return false;
+	}
+
+	/// <summary>
 	/// Function to check if a docx contains a given string
 	/// </summary>
 	private static SearchResult DocxContainsString(string path, string text, StringComparison comparer)
@@ -118,6 +139,12 @@ internal class SearchFile
 				// its another nested zip file, we need to open it and search inside
 				using var nestedArchive = new ZipArchive(nestedEntry.Open());
 				found = RecursiveArchiveCheck(nestedArchive, text, innerpatterns, comparer, token);
+			}
+			else if (nestedEntry.FullName.EndsWith(".docx", CliOptions.FilenameComparison))
+			{
+				// this is a DOCX inside a zip
+				using var nestedArchive = new ZipArchive(nestedEntry.Open());
+				found = DocxContainsStringZip(nestedArchive, text, comparer);
 			}
 			else if (nestedEntry.FullName.EndsWith(".pdf", CliOptions.FilenameComparison))
 			{
