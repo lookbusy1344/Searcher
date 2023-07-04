@@ -128,38 +128,6 @@ public partial class MainForm : Form
 	}
 
 	/// <summary>
-	/// Test harness for running without a GUI
-	/// </summary>
-	public async Task<IList<SingleResult>> TestHarness(CliOptions config)
-	{
-		// This just serves as a way for the tests to search for files, and get a IList back from the channel
-
-		var channel = Channel.CreateUnbounded<SingleResult>();
-		this.cts = new CancellationTokenSource();
-
-		// start the background task, performs the actual search
-		var task = Task.Factory.StartNew(
-		  () => LongRunningTask(channel.Writer, config, false),
-		  cts.Token,
-		  TaskCreationOptions.LongRunning,
-		  TaskScheduler.Default);
-
-		var results = new List<SingleResult>();
-
-		// collect the results using an async loop
-		await foreach (var item in channel.Reader.ReadAllAsync())
-			results.Add(item);
-
-		// wait for the task to finish
-		var finalmsg = await task;
-
-		// because the checking is parallel, we need to sort to get deterministic results
-		//results.Sort((a, b) => string.Compare(a.Path, b.Path, StringComparison.OrdinalIgnoreCase));
-
-		return results;
-	}
-
-	/// <summary>
 	/// This is a blocking method that will run on a background thread
 	/// Its more like a compute-bound task
 	/// </summary>
@@ -357,6 +325,41 @@ public partial class MainForm : Form
 		this.cts?.Cancel();
 	}
 #pragma warning restore IDE0022 // Use expression body for methods
+
+#if DEBUG
+	/// <summary>
+	/// Test harness for running without a GUI
+	/// </summary>
+	public async Task<IList<SingleResult>> TestHarness(CliOptions config)
+	{
+		// This just serves as a way for the tests to search for files, and get a IList back from the channel
+
+		var channel = Channel.CreateUnbounded<SingleResult>();
+		this.cts = new CancellationTokenSource();
+
+		// start the background task, performs the actual search
+		var task = Task.Factory.StartNew(
+		  () => LongRunningTask(channel.Writer, config, false),
+		  cts.Token,
+		  TaskCreationOptions.LongRunning,
+		  TaskScheduler.Default);
+
+		var results = new List<SingleResult>();
+
+		// collect the results using an async loop
+		await foreach (var item in channel.Reader.ReadAllAsync())
+			results.Add(item);
+
+		// wait for the task to finish
+		var finalmsg = await task;
+
+		// because the checking is parallel, we need to sort to get deterministic results
+		//results.Sort((a, b) => string.Compare(a.Path, b.Path, StringComparison.OrdinalIgnoreCase));
+
+		return results;
+	}
+#endif
+
 }
 
 /// <summary>
