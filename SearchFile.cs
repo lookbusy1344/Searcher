@@ -119,7 +119,7 @@ internal class SearchFile
 				using var nestedArchive = new ZipArchive(nestedEntry.Open());
 				found = RecursiveArchiveCheck(nestedArchive, text, innerpatterns, comparer, token);
 			}
-			if (nestedEntry.FullName.EndsWith(".pdf", CliOptions.FilenameComparison))
+			else if (nestedEntry.FullName.EndsWith(".pdf", CliOptions.FilenameComparison))
 			{
 				// this is a PDF inside a zip
 				found = PdfCheck.CheckStream(nestedEntry, text, comparer);
