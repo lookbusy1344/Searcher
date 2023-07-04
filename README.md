@@ -53,3 +53,11 @@ Or to make a single-file bundle with necessary nuget packages:
 ```
 publish.cmd
 ```
+
+## Testing
+
+xUnit is used for testing. They can be run from Test Explorer in Visual Studio, or by running:
+
+```
+RunTests.cmd
+```
