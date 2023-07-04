@@ -40,9 +40,9 @@ public partial class SearchTests
 	public void TerrorsOfTheEarth()
 	{
 		// searcher.exe -s "terrors of the earth"
-		// 4 matches, the King Lear documents in different formats and 'King Lear pdf.zip'
+		// 5 matches, the King Lear documents in different formats and 'King Lear pdf.zip'
 
-		var expected = new string[] { "King Lear.docx", "King Lear.txt", "King Lear.pdf", "King Lear pdf.zip" };
+		var expected = new string[] { "King Lear.docx", "King Lear.txt", "King Lear.pdf", "King Lear pdf.zip", "Lear and Macbeth docx.zip" };
 		var options = new CliOptions { Search = "terrors of the earth" };
 		var found = Helpers.SearchCaller(options);
 
@@ -68,9 +68,9 @@ public partial class SearchTests
 	public void PoorPlayerThatStruts()
 	{
 		// searcher.exe -s "poor player That struts"
-		// 4 matches, Macbeth documents and a ZIP
+		// 5 matches, Macbeth documents and a ZIP
 
-		var expected = new string[] { "Macbeth.txt", "Macbeth.docx", "Macbeth and Romeo txt.zip", "Macbeth.pdf" };
+		var expected = new string[] { "Macbeth.txt", "Macbeth.docx", "Macbeth and Romeo txt.zip", "Macbeth.pdf", "Lear and Macbeth docx.zip" };
 		var options = new CliOptions { Search = "poor player That struts" };
 		var found = Helpers.SearchCaller(options);
 
@@ -223,10 +223,10 @@ public partial class SearchTests
 	public void BasicCommandLineParse()
 	{
 		// searcher.exe -s "poor player That struts"
-		// 4 matches, Macbeth documents and a ZIP
+		// 5 matches, Macbeth documents and a ZIP
 
 		var commandline = "-s \"poor player That struts\"";
-		var expected = new string[] { "Macbeth.txt", "Macbeth.docx", "Macbeth and Romeo txt.zip", "Macbeth.pdf" };
+		var expected = new string[] { "Macbeth.txt", "Macbeth.docx", "Macbeth and Romeo txt.zip", "Macbeth.pdf", "Lear and Macbeth docx.zip" };
 		var found = Helpers.SearchCaller(Helpers.ParseCommandLine(commandline));
 
 		Assert.True(Helpers.CompareNames(expected, found));

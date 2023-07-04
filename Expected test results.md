@@ -5,7 +5,7 @@ These are all automated in the TestSearcher project (xUnit). They run against th
 ## General tests for pdf, docx and txt
 
 ### searcher.exe -s "terrors of the earth"
-Expected: the 3 king lear files and 'King Lear pdf.zip' (a pdf inside a zip)
+Expected: the 3 king lear files and 'King Lear pdf.zip' (a pdf inside a zip) and 'Lear and Macbeth docx.zip' (a docx inside a zip)
 
 ### searcher.exe -s "it is the east"
 Expected: the 3 Romeo files, and 'Macbeth and Romeo txt.zip'
@@ -13,7 +13,7 @@ Expected: the 3 Romeo files, and 'Macbeth and Romeo txt.zip'
 ## Test for basic zip
 
 ### searcher.exe -s "poor player That struts"
-Expected: the 3 Macbeth files, and 'Macbeth and Romeo txt.zip'
+Expected: the 3 Macbeth files, 'Macbeth and Romeo txt.zip' and 'Lear and Macbeth docx.zip'
 
 ## Test for nested zips
 
