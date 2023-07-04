@@ -13,6 +13,7 @@ public partial class MainForm : Form
 	public CliOptions? cliOptions;
 	private readonly System.Windows.Forms.Timer timerProgress;
 	private readonly Monotonic monotonic = new();
+	private long nextProgressUpdate = 0L;
 
 	// this is here to allow the console output to work in a WinForms app
 	[LibraryImport("kernel32.dll")]
@@ -222,10 +223,14 @@ public partial class MainForm : Form
 				// update progress bar when needed
 				if (allowinvoke && (modulo == 1 || tempcount % modulo == 0) && !cts!.Token.IsCancellationRequested)
 				{
+					// ideally nextProgressUpdate would be checked before the invoke, but that would require a lock
 					Invoke(() =>
 					{
-						if (cts!.Token.IsCancellationRequested) return;
-						if (tempcount < scanProgress.Value) return;    // dont go backwards
+						if (monotonic.GetMilliseconds() < nextProgressUpdate) return;   // only update every 100ms
+						if (cts!.Token.IsCancellationRequested) return;                 // cancelled
+						if (tempcount < scanProgress.Value) return;                     // dont go backwards
+
+						nextProgressUpdate = this.monotonic.GetMilliseconds() + 100;    // time for next update
 
 						progressLabel.Text = $"Searching {filescount - tempcount} files...";
 						scanProgress.Value = tempcount;
@@ -233,7 +238,7 @@ public partial class MainForm : Form
 				}
 			});
 		}
-		catch // (OperationCanceledException)
+		catch
 		{
 			// just ignore it
 		}
