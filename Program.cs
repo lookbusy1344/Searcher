@@ -16,17 +16,7 @@ public static class Program
 
 		GlobOptions.Default.Evaluation.CaseInsensitive = true;
 
-		var parsed = Parser.Default.ParseArguments<CliOptions>(args)
-			.WithParsed<CliOptions>(o =>
-			{
-				// if not specified, pattern seems to be string[0] rather than null
-				// Cant use Length so using Count() instead
-				if (o.Pattern == null || o.Pattern.Count == 0)
-					o.Pattern = CliOptions.DefaultPattern;
-
-			}).WithNotParsed<CliOptions>(o =>
-			{
-			});
+		var parsed = ParseParams(args);
 
 		if (parsed.Tag == ParserResultType.NotParsed)
 		{
@@ -49,6 +39,25 @@ public static class Program
 		var form = new MainForm { cliOptions = parsed.Value };
 
 		Application.Run(form);
+	}
+
+	/// <summary>
+	/// Parse the command line, seperated out to help with testing
+	/// </summary>
+	public static ParserResult<CliOptions> ParseParams(string[] args)
+	{
+		return Parser.Default.ParseArguments<CliOptions>(args)
+			.WithParsed<CliOptions>(o =>
+			{
+				// if not specified, pattern seems to be string[0] rather than null
+				// Cant use Length so using Count() instead
+				if (o.Pattern == null || o.Pattern.Count == 0)
+					o.Pattern = CliOptions.DefaultPattern;
+
+			}).WithNotParsed<CliOptions>(o =>
+			{
+			});
+
 	}
 
 	private const string CommandLineMessage =

@@ -2,10 +2,9 @@
 
 namespace TestSearcher;
 
-public class SearchTests
+public partial class SearchTests
 {
 	private const int SearchTimeout = 2000;
-	private const string SearchPath = @"C:\Users\JohnT\Documents\Visual Studio\Projects\Searcher\TestDocs";
 
 	[Fact(DisplayName = "Search: No matching items", Timeout = SearchTimeout)]
 	[Trait("Category", "Search")]
@@ -15,7 +14,7 @@ public class SearchTests
 		// No matches
 
 		var options = new CliOptions { Search = "summer" };
-		var result = SearchCaller(options);
+		var result = Helpers.SearchCaller(options);
 		Assert.True(result.Length == 0);
 	}
 
@@ -31,7 +30,7 @@ public class SearchTests
 			Search = "terrors of the earth",
 			Pattern = new string[] { "*.log", "*.x" }
 		};
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
 		Assert.True(found.Length == 0);
 	}
@@ -45,9 +44,9 @@ public class SearchTests
 
 		var expected = new string[] { "King Lear.docx", "King Lear.txt", "King Lear.pdf", "King Lear pdf.zip" };
 		var options = new CliOptions { Search = "terrors of the earth" };
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
 	[Fact(DisplayName = "Search: Basic + ZIP - It is the east", Timeout = SearchTimeout)]
@@ -59,9 +58,9 @@ public class SearchTests
 
 		var expected = new string[] { "Macbeth and Romeo txt.zip", "Romeo and Juliet.docx", "Romeo and Juliet.txt", "Romeo and Juliet.pdf" };
 		var options = new CliOptions { Search = "it is the east" };
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
 	[Fact(DisplayName = "Search: Basic + ZIP - Poor player That struts", Timeout = SearchTimeout)]
@@ -73,9 +72,9 @@ public class SearchTests
 
 		var expected = new string[] { "Macbeth.txt", "Macbeth.docx", "Macbeth and Romeo txt.zip", "Macbeth.pdf" };
 		var options = new CliOptions { Search = "poor player That struts" };
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
 	[Fact(DisplayName = "Search: TXT in ZIP in ZIP - Brown fox", Timeout = SearchTimeout)]
@@ -87,9 +86,9 @@ public class SearchTests
 
 		var expected = new string[] { "Nested zip brown fox.zip" };
 		var options = new CliOptions { Search = "brown fox" };
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
 	[Fact(DisplayName = "Search: Single TXT file - This day", Timeout = SearchTimeout)]
@@ -101,9 +100,9 @@ public class SearchTests
 
 		var expected = new string[] { "Henry V.txt" };
 		var options = new CliOptions { Search = "this day" };
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
 	[Fact(DisplayName = "Search: Explicit globs - terrors of the earth", Timeout = SearchTimeout)]
@@ -119,9 +118,9 @@ public class SearchTests
 			Search = "terrors of the earth",
 			Pattern = new string[] { "*.pdf", "*.txt" }
 		};
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
 	[Fact(DisplayName = "Search: Single glob and zip", Timeout = SearchTimeout)]
@@ -138,9 +137,9 @@ public class SearchTests
 			Pattern = new string[] { "*.docx" },
 			InsideZips = true
 		};
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
 	[Fact(DisplayName = "Search: Two globs including zip match", Timeout = SearchTimeout)]
@@ -157,9 +156,9 @@ public class SearchTests
 			Pattern = new string[] { "*.docx", "*.txt" },
 			InsideZips = true
 		};
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
 	[Fact(DisplayName = "Search: Wrong case, but case-insensitive", Timeout = SearchTimeout)]
@@ -176,9 +175,9 @@ public class SearchTests
 			Pattern = new string[] { "*.txt" },
 			CaseSensitive = false
 		};
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
 	[Fact(DisplayName = "Search: Wrong case, case-sensitive", Timeout = SearchTimeout)]
@@ -195,7 +194,7 @@ public class SearchTests
 			Pattern = new string[] { "*.txt" },
 			CaseSensitive = true
 		};
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
 		Assert.True(found.Length == 0);
 	}
@@ -214,47 +213,8 @@ public class SearchTests
 			Pattern = new string[] { "*.docx" },
 			CaseSensitive = true
 		};
-		var found = SearchCaller(options);
+		var found = Helpers.SearchCaller(options);
 
-		Assert.True(CompareNames(expected, found));
-	}
-
-
-
-	// ================= HELPERS ==============================================================
-
-	/// <summary>
-	/// Helper to set up the instance, run the test, and return the results
-	/// </summary>
-	private static string[] SearchCaller(CliOptions options)
-	{
-		// default testing options
-		options.Folder = new DirectoryInfo(SearchPath);
-		options.Pattern ??= new List<string>() { "*" };
-
-		var searcher = new MainForm();
-		var task = searcher.TestHarness(options);
-
-		task.Wait();
-
-		if (task.IsFaulted) throw task.Exception!;
-		if (task.IsCanceled) throw new Exception("Task was canceled");
-		if (task.IsCompletedSuccessfully == false) throw new Exception("Task was not completed successfully");
-		if (task.Result == null) throw new Exception("Task result was null");
-
-		return task.Result.Where(r => r.Result == SearchResult.Found)
-			.Select(r => Path.GetFileName(r.Path))
-			.ToArray();
-	}
-
-	/// <summary>
-	/// Compare the lengths, and sort and compare the arrays
-	/// </summary>
-	private static bool CompareNames(string[] a, string[] b)
-	{
-		if (a.Length != b.Length) return false;
-
-		return a.OrderBy(s => s)
-			.SequenceEqual(b.OrderBy(s => s));
+		Assert.True(Helpers.CompareNames(expected, found));
 	}
 }
