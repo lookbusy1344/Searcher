@@ -16,7 +16,7 @@ internal class SearchFile
 		if (path.EndsWith(".pdf", CliOptions.FilenameComparison))
 			return PdfCheck.CheckPdfFile(path, text, comparer, token);
 		if (path.EndsWith(".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path))
-			return ZipContainsString(path, text, innerpatterns, comparer, token);
+			return CheckZipFile(path, text, innerpatterns, comparer, token);
 
 		return FileContainsString(path, text, comparer);
 	}
@@ -44,27 +44,6 @@ internal class SearchFile
 		{
 			return SearchResult.Error;
 		}
-	}
-
-	/// <summary>
-	/// Function to check if a docx inside ZIP contains a given string
-	/// </summary>
-
-	private static bool DocxContainsStringZip(ZipArchive archive, string text, StringComparison comparer)
-	{
-		var documentEntry = archive.GetEntry("word/document.xml");
-		if (documentEntry == null) return false;
-
-		using var stream = documentEntry.Open();
-		using var reader = XmlReader.Create(stream);
-
-		while (reader.Read())
-		{
-			if (reader.NodeType == XmlNodeType.Text && reader.Value.Contains(text, comparer))
-				return true;
-		}
-
-		return false;
 	}
 
 	/// <summary>
@@ -101,7 +80,7 @@ internal class SearchFile
 	/// <summary>
 	/// Wrapper around zip search to handle nested zips
 	/// </summary>
-	private static SearchResult ZipContainsString(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
+	private static SearchResult CheckZipFile(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
 	{
 		if (string.IsNullOrEmpty(text)) return SearchResult.NotFound;
 		try
@@ -109,7 +88,7 @@ internal class SearchFile
 			// this is an actual zip file, so open it as archive and then use the recursive function
 
 			using var archive = ZipFile.OpenRead(path);
-			return RecursiveArchiveCheck(archive, text, innerpatterns, comparer, token) ? SearchResult.Found : SearchResult.NotFound;
+			return ZipInternals.RecursiveArchiveCheck(archive, text, innerpatterns, comparer, token) ? SearchResult.Found : SearchResult.NotFound;
 		}
 		catch (OperationCanceledException)
 		{
@@ -121,11 +100,14 @@ internal class SearchFile
 			return SearchResult.Error;
 		}
 	}
+}
 
+internal static class ZipInternals
+{
 	/// <summary>
 	/// Given a zip archive, loop through and check the contents. Recursively calls for nested zips
 	/// </summary>
-	private static bool RecursiveArchiveCheck(ZipArchive archive, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
+	public static bool RecursiveArchiveCheck(ZipArchive archive, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
 	{
 		foreach (var nestedEntry in archive.Entries)
 		{
@@ -144,7 +126,7 @@ internal class SearchFile
 			{
 				// this is a DOCX inside a zip
 				using var nestedArchive = new ZipArchive(nestedEntry.Open());
-				found = DocxContainsStringZip(nestedArchive, text, comparer);
+				found = DocxContainsString(nestedArchive, text, comparer);
 			}
 			else if (nestedEntry.FullName.EndsWith(".pdf", CliOptions.FilenameComparison))
 			{
@@ -163,7 +145,7 @@ internal class SearchFile
 
 				// This fails when using FullName, because the '/' separator screws up the globbing
 				if (innerpatterns.Count == 0 || innerpatterns.Any(p => p.IsMatch(nestedEntry.Name)))
-					found = ArchiveEntryContainsString(nestedEntry, text, comparer, token);
+					found = GeneralContainsString(nestedEntry, text, comparer, token);
 			}
 
 			if (found) return true;
@@ -173,9 +155,30 @@ internal class SearchFile
 	}
 
 	/// <summary>
+	/// Function to check if a docx inside ZIP contains a given string
+	/// </summary>
+
+	public static bool DocxContainsString(ZipArchive archive, string text, StringComparison comparer)
+	{
+		var documentEntry = archive.GetEntry("word/document.xml");
+		if (documentEntry == null) return false;
+
+		using var stream = documentEntry.Open();
+		using var reader = XmlReader.Create(stream);
+
+		while (reader.Read())
+		{
+			if (reader.NodeType == XmlNodeType.Text && reader.Value.Contains(text, comparer))
+				return true;
+		}
+
+		return false;
+	}
+
+	/// <summary>
 	/// Check an entry in a zip file for a given string
 	/// </summary>
-	private static bool ArchiveEntryContainsString(ZipArchiveEntry entry, string text, StringComparison comparer, CancellationToken token)
+	public static bool GeneralContainsString(ZipArchiveEntry entry, string text, StringComparison comparer, CancellationToken token)
 	{
 		using var stream = entry.Open();
 		using var file = new StreamReader(stream);
