@@ -14,11 +14,11 @@ public partial class SearchTests
 		// No matches
 
 		var options = new CliOptions { Search = "summer" };
-		var result = Helpers.SearchCaller(options);
-		Assert.True(result.Length == 0);
+		var found = Helpers.SearchCaller(options);
+		Assert.Empty(found);
 	}
 
-	[Fact(DisplayName = "Search: Wrong glob - terrors of the earth", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "GLOBS: Wrong glob - terrors of the earth", Timeout = SearchTimeout)]
 	[Trait("Category", "Globs")]
 	public void SearchNoMatchingGlob()
 	{
@@ -32,7 +32,7 @@ public partial class SearchTests
 		};
 		var found = Helpers.SearchCaller(options);
 
-		Assert.True(found.Length == 0);
+		Assert.Empty(found);
 	}
 
 	[Fact(DisplayName = "Search: Basic search TXT, PDF, ZIP - Terrors of the Earth", Timeout = SearchTimeout)]
@@ -105,7 +105,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "Search: Explicit globs - terrors of the earth", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "GLOBS: Explicit globs - terrors of the earth", Timeout = SearchTimeout)]
 	[Trait("Category", "Globs")]
 	public void TerrorsOfTheEarthGlobs()
 	{
@@ -123,7 +123,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "Search: Single glob and zip", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "ZIP: Single glob and zip", Timeout = SearchTimeout)]
 	[Trait("Category", "Zip")]
 	public void SingleGlobNoZip()
 	{
@@ -142,7 +142,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "Search: Two globs including zip match", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "ZIP: Two globs including zip match", Timeout = SearchTimeout)]
 	[Trait("Category", "Zip")]
 	public void GlobsAndZip()
 	{
@@ -161,7 +161,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "Search: Wrong case, but case-insensitive", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "CASE: Wrong case, but case-insensitive", Timeout = SearchTimeout)]
 	[Trait("Category", "Case")]
 	public void CaseInsensitiveBasic()
 	{
@@ -180,7 +180,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "Search: Wrong case, case-sensitive", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "CASE: Wrong case, case-sensitive", Timeout = SearchTimeout)]
 	[Trait("Category", "Case")]
 	public void CaseSensitive()
 	{
@@ -196,10 +196,10 @@ public partial class SearchTests
 		};
 		var found = Helpers.SearchCaller(options);
 
-		Assert.True(found.Length == 0);
+		Assert.Empty(found);
 	}
 
-	[Fact(DisplayName = "Search: Correct case, case-sensitive", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "CASE: Correct case, case-sensitive", Timeout = SearchTimeout)]
 	[Trait("Category", "Case")]
 	public void CaseSensitiveMatch()
 	{
@@ -216,5 +216,54 @@ public partial class SearchTests
 		var found = Helpers.SearchCaller(options);
 
 		Assert.True(Helpers.CompareNames(expected, found));
+	}
+
+	[Fact(DisplayName = "CLI: Command line parsing basic", Timeout = SearchTimeout)]
+	[Trait("Category", "CLI")]
+	public void BasicCommandLineParse()
+	{
+		// searcher.exe -s "poor player That struts"
+		// 4 matches, Macbeth documents and a ZIP
+
+		var commandline = "-s \"poor player That struts\"";
+		var expected = new string[] { "Macbeth.txt", "Macbeth.docx", "Macbeth and Romeo txt.zip", "Macbeth.pdf" };
+		var found = Helpers.SearchCaller(Helpers.ParseCommandLine(commandline));
+
+		Assert.True(Helpers.CompareNames(expected, found));
+	}
+
+	[Fact(DisplayName = "CLI: Command line parsing complex", Timeout = SearchTimeout)]
+	[Trait("Category", "CLI")]
+	public void ComplexCommandLineParse()
+	{
+		// searcher.exe -s "it is the east" -p *.docx,*.txt -z
+		// 3 results, this time we look inside zips for DOCX and TXT files
+
+		var commandline = "-s \"it is the east\" -p *.docx,*.txt -z";
+		var expected = new string[] { "Romeo and Juliet.docx", "Macbeth and Romeo txt.zip", "Romeo and Juliet.txt" };
+		var found = Helpers.SearchCaller(Helpers.ParseCommandLine(commandline));
+
+		Assert.True(Helpers.CompareNames(expected, found));
+	}
+
+	[Fact(DisplayName = "CLI: Command line parsing with error", Timeout = SearchTimeout)]
+	[Trait("Category", "CLI")]
+	public void ErrorCommandLineParse()
+	{
+		// searcher.exe -s "it is the east" -p *.docx,*.txt -z -Q
+		// this command line is an error, -Q is not a valid option
+
+		var commandline = "-s \"it is the east\" -p *.docx,*.txt -z -Q";
+		try
+		{
+			var options = Helpers.ParseCommandLine(commandline);
+		}
+		catch
+		{
+			// an exception should be thrown for this to work properly
+			Assert.True(true);
+			return;
+		}
+		Assert.Fail("Did not detect the invalid parameter(s)");
 	}
 }

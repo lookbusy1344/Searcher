@@ -8,6 +8,9 @@ internal static partial class Helpers
 {
 	private const string SearchPath = @"C:\Users\JohnT\Documents\Visual Studio\Projects\Searcher\TestDocs";
 
+	/// <summary>
+	/// Take a single string and parse it into a CliOptions instance
+	/// </summary>
 	public static CliOptions ParseCommandLine(string s)
 	{
 		var items = SplitParams(s);
@@ -21,7 +24,7 @@ internal static partial class Helpers
 	/// <summary>
 	/// Split a single string into a string array, respecting quotes and spaces
 	/// </summary>
-	private static string[] SplitParams(string s) => SplitOnSpacesRespctQuotes().Split(s);
+	private static string[] SplitParams(string s) => SplitOnSpacesRespctQuotes().Split(s).Where(i => i != "\"").ToArray();
 
 	/// <summary>
 	/// Helper to set up the instance, run the test, and return the results
