@@ -10,12 +10,12 @@ internal partial class PdfCheck
 	/// <summary>
 	/// Check inside a PDF zip entry for a string
 	/// </summary>
-	public static bool CheckStream(ZipArchiveEntry entry, string content, StringComparison strcomp)
+	public static bool CheckStream(ZipArchiveEntry entry, string content, StringComparison strcomp, CancellationToken token)
 	{
 		using var stream = entry.Open();
 		using var reader = new PdfReader(stream);
 
-		var result = SearchPdfInternal(reader, content, strcomp);
+		var result = SearchPdfInternal(reader, content, strcomp, token);
 
 		if (result == SearchResult.Error) throw new Exception("Error reading PDF file");
 		return result == SearchResult.Found;
@@ -24,12 +24,16 @@ internal partial class PdfCheck
 	/// <summary>
 	/// Search inside a PDF file for a string
 	/// </summary>
-	public static SearchResult CheckPdfFile(string path, string content, StringComparison strcomp)
+	public static SearchResult CheckPdfFile(string path, string content, StringComparison strcomp, CancellationToken token)
 	{
 		try
 		{
 			using var pdfReader = new PdfReader(path);
-			return SearchPdfInternal(pdfReader, content, strcomp);
+			return SearchPdfInternal(pdfReader, content, strcomp, token);
+		}
+		catch (OperationCanceledException)
+		{
+			return SearchResult.NotFound;
 		}
 		catch
 		{
@@ -40,7 +44,7 @@ internal partial class PdfCheck
 	/// <summary>
 	/// Internal helper to search inside a PdfReader object (file or stream) for a string
 	/// </summary>
-	private static SearchResult SearchPdfInternal(PdfReader reader, string content, StringComparison strcomp)
+	private static SearchResult SearchPdfInternal(PdfReader reader, string content, StringComparison strcomp, CancellationToken token)
 	{
 		var containsspace = content.Contains(' ', strcomp);
 
@@ -59,6 +63,8 @@ internal partial class PdfCheck
 
 			// does the page text contain our search string?
 			if (text.Contains(content, strcomp)) return SearchResult.Found;
+
+			if (token.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
 		}
 		return SearchResult.NotFound;
 	}
