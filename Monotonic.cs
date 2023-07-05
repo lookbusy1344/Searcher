@@ -39,13 +39,11 @@ public class Monotonic
 	/// <summary>
 	/// Get the number of seconds since initialisation.
 	/// </summary>
-	[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-	public double GetSeconds() => watch.Elapsed.TotalSeconds;
+	public double Seconds => watch.Elapsed.TotalSeconds;
 
 	/// <summary>
 	/// Monotonic milliseconds - arbitrary start point, but monotonic.
 	/// </summary>
 	/// <returns>Long number of milliseconds</returns>
-	[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-	public long GetMilliseconds() => watch.ElapsedMilliseconds;
+	public long Milliseconds => watch.ElapsedMilliseconds;
 }

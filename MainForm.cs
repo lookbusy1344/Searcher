@@ -10,10 +10,13 @@ public partial class MainForm : Form
 {
 	private CancellationTokenSource? cts;
 	private bool loaded;
+
+#pragma warning disable CA1051 // Do not declare visible instance fields
 	public CliOptions? cliOptions;
+#pragma warning restore CA1051 // Do not declare visible instance fields
 	private readonly System.Windows.Forms.Timer timerProgress;
 	private readonly Monotonic monotonic = new();
-	private long nextProgressUpdate = 0L;
+	private long nextProgressUpdate;
 
 	// this is here to allow the console output to work in a WinForms app
 	[LibraryImport("kernel32.dll")]
@@ -181,7 +184,7 @@ public partial class MainForm : Form
 			_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts!.Token }, file =>
 			{
 				// Search the file for the search string
-				var found = SearchFile.FileContainsStringWrapper(file, config.Search, innerpatterns, config.GetStringComparison(), cts!.Token);
+				var found = SearchFile.FileContainsStringWrapper(file, config.Search, innerpatterns, config.StringComparison, cts!.Token);
 				if (found is SearchResult.Found or SearchResult.Error)
 					_ = writer.TryWrite(new SingleResult { Path = file, Result = found });      // put the file path in the channel, to be displayed on the main UI thread
 
@@ -194,11 +197,11 @@ public partial class MainForm : Form
 					// ideally nextProgressUpdate would be checked before the invoke, but that would require a lock
 					Invoke(() =>
 					{
-						if (monotonic.GetMilliseconds() < nextProgressUpdate) return;   // only update every 100ms
+						if (monotonic.Milliseconds < nextProgressUpdate) return;   // only update every 100ms
 						if (cts!.Token.IsCancellationRequested) return;                 // cancelled
 						if (tempcount < scanProgress.Value) return;                     // dont go backwards
 
-						nextProgressUpdate = this.monotonic.GetMilliseconds() + 100;    // time for next update
+						nextProgressUpdate = this.monotonic.Milliseconds + 100;    // time for next update
 
 						progressLabel.Text = $"Searching {filescount - tempcount} files...";
 						scanProgress.Value = tempcount;
@@ -222,7 +225,7 @@ public partial class MainForm : Form
 		if (cts!.Token.IsCancellationRequested)
 			return "Cancelled!";
 		else
-			return $"Finished! {filescount} files scanned in {monotonic.GetSeconds():F1} secs";
+			return $"Finished! {filescount} files scanned in {monotonic.Seconds:F1} secs";
 	}
 
 	private void CancelButton_Click(object sender, EventArgs e)

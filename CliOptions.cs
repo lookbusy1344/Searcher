@@ -22,7 +22,7 @@ public class CliOptions
 	/// <summary>
 	/// Get the string comparison to use for the search
 	/// </summary>
-	public StringComparison GetStringComparison() => CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+	public StringComparison StringComparison => CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 
 	/// <summary>
 	/// Number of threads to use, according to --one-thread
@@ -57,11 +57,13 @@ public class CliOptions
 		set => folder = value;
 	}
 
+#pragma warning disable CA2227 // Collection properties should be read only
 	/// <summary>
 	/// Search pattern, eg "*.txt"
 	/// </summary>
 	[Option('p', "pattern", Required = false, HelpText = "File pattern", Default = null, Min = 1, Max = 20, Separator = ',')]
 	public IList<string>? Pattern { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
 	/// <summary>
 	/// Search text eg "hello world"

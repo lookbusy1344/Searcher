@@ -9,7 +9,7 @@ public class MonotonicTest
 	public void MonotonicZeroStart()
 	{
 		var m = new Monotonic();
-		var dur = m.GetMilliseconds();
+		var dur = m.Milliseconds;
 
 		// we expect the diff to be within 3ms of the requested duration
 		Assert.True(dur is >= 0 and <= 3);
@@ -43,7 +43,7 @@ public class MonotonicTest
 
 		Thread.Sleep(dur);
 
-		var diff = m.GetMilliseconds() - dur;
+		var diff = m.Milliseconds - dur;
 
 		// we expect the diff to be within 50ms of the requested duration
 		Assert.True(diff is >= 0 and <= 50);

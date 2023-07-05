@@ -36,7 +36,7 @@ public static class Program
 
 		ApplicationConfiguration.Initialize();
 
-		var form = new MainForm { cliOptions = parsed.Value };
+		using var form = new MainForm { cliOptions = parsed.Value };
 
 		Application.Run(form);
 	}

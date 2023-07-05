@@ -71,7 +71,7 @@ internal static partial class Helpers
 		options.Folder = new DirectoryInfo(SearchPath);
 		options.Pattern ??= new List<string>() { "*" };
 
-		var searcher = new MainForm();
+		using var searcher = new MainForm();
 		var task = searcher.TestHarness(options);
 
 		task.Wait();
