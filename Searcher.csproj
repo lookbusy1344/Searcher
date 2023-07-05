@@ -16,8 +16,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>AnyCPU;x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <Description>Recursively search for files containing text</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+	
+	<AnalysisModeDesign>All</AnalysisModeDesign>
+    <AnalysisModeSecurity>All</AnalysisModeSecurity>
+	<AnalysisModePerformance>All</AnalysisModePerformance>
+	<AnalysisModeReliability>All</AnalysisModeReliability>
+	<AnalysisModeUsage>All</AnalysisModeUsage>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
