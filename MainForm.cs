@@ -46,26 +46,19 @@ public partial class MainForm : Form
 	protected override void Dispose(bool disposing)
 	{
 		// this method was taken from MainForm.Designer.cs and modified to dispose of my custom objects
-
-		if (disposing && (components != null))
+		if (disposing)
 		{
-			components.Dispose();       // this is always required
+			components?.Dispose();
 
-			timerProgress.Dispose();    // these are my custom disposals
+			timerProgress?.Dispose();    // these are my custom disposals
 			cts?.Dispose();
 		}
+
 		base.Dispose(disposing);
 	}
 
-	//public new void Dispose()
-	//{
-	// this is not needed because we inherit an implementation from Component
-	//	Dispose(true);
-	//	GC.SuppressFinalize(this);
-	//}
-
 	/// <summary>
-	/// Helper to clean up the cancellation token
+	/// Helper to clean up the cancellation token, and set it to null
 	/// </summary>
 	private void CleanUpCancellationToken()
 	{
