@@ -31,8 +31,49 @@ public partial class MainForm : Form
 		timerProgress = new System.Windows.Forms.Timer { Interval = 1500 };
 		timerProgress.Tick += TimerProgress_Tick;
 
+		// should I manually add this timer to the components collection? I'm ok since I am implementing IDisposable manually
+		//components ??= new System.ComponentModel.Container();
+		//components.Add(timerProgress);
+
 		// this is to reduce flicker
 		itemsList.SetDoubleBuffered(true);
+	}
+
+	/// <summary>
+	///  Clean up any resources being used.
+	/// </summary>
+	/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+	protected override void Dispose(bool disposing)
+	{
+		// this method was taken from MainForm.Designer.cs and modified to dispose of my custom objects
+
+		if (disposing && (components != null))
+		{
+			components.Dispose();       // this is always required
+
+			timerProgress.Dispose();    // these are my custom disposals
+			cts?.Dispose();
+		}
+		base.Dispose(disposing);
+	}
+
+	//public new void Dispose()
+	//{
+	// this is not needed because we inherit an implementation from Component
+	//	Dispose(true);
+	//	GC.SuppressFinalize(this);
+	//}
+
+	/// <summary>
+	/// Helper to clean up the cancellation token
+	/// </summary>
+	private void CleanUpCancellationToken()
+	{
+		if (cts != null)
+		{
+			cts.Dispose();
+			cts = null;
+		}
 	}
 
 	private void TimerProgress_Tick(object? sender, EventArgs e)
@@ -103,7 +144,7 @@ public partial class MainForm : Form
 		// Wait for the long-running task to complete and get its result
 		var result = await task;
 		progressLabel.Text = result;
-		this.cts = null;
+		CleanUpCancellationToken();
 
 		cancelButton.Text = "Copy";
 		cancelButton.Enabled = true;
