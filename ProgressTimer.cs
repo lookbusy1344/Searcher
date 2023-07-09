@@ -30,4 +30,19 @@ internal sealed class ProgressTimer
 	}
 
 	public long GetRemainingMilliseconds(int current) => (long)(GetRemainingSeconds(current) * 1000.0);
+
+	/// <summary>
+	/// Convert seconds into a human readable string
+	/// </summary>
+	public static string SecondsAsText(double sec)
+	{
+		var ts = TimeSpan.FromSeconds(sec);
+		return ts switch
+		{
+			{ TotalHours: > 1 } => $"{ts.TotalHours:0.00} hrs",
+			{ TotalMinutes: > 2 } => $"{ts.TotalMinutes:0.0} mins",
+			{ TotalSeconds: > 1 } => $"{ts.TotalSeconds:0.0} secs",
+			_ => $"{ts.TotalMilliseconds} ms"
+		};
+	}
 }

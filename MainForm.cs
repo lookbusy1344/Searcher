@@ -235,18 +235,19 @@ public partial class MainForm : Form
 					{
 						if (monotonic.Milliseconds < nextProgressUpdate) return;   // only update every 100ms
 						if (cts!.Token.IsCancellationRequested) return;                 // cancelled
-						if (tempcount < scanProgress.Value) return;                     // dont go backwards
 
 						nextProgressUpdate = this.monotonic.Milliseconds + 100;    // time for next update
 						if (tempcount >= 5)
 						{
 							var remainingtime = progresstimer.GetRemainingSeconds(tempcount);
-							progressLabel.Text = $"{remainingtime:F1} secs remaining, {filescount - tempcount} files...";
+							var timetxt = ProgressTimer.SecondsAsText(remainingtime);
+							progressLabel.Text = $"{timetxt} remaining, {filescount - tempcount} files...";
 						}
 						else
 							progressLabel.Text = $"{filescount - tempcount} files remaining...";
 
-						scanProgress.Value = tempcount;
+						if (tempcount > scanProgress.Value)
+							scanProgress.Value = tempcount;
 					});
 				}
 			});
