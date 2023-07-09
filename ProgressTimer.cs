@@ -39,10 +39,10 @@ internal sealed class ProgressTimer
 		var ts = TimeSpan.FromSeconds(sec);
 		return ts switch
 		{
+			{ TotalDays: >= 1 } => $"{ts.Days} days {ts.Hours} hrs",
 			{ TotalHours: >= 1 } => $"{ts.Hours}:{ts.Minutes:00}:{ts.Seconds:00}",
 			{ TotalMinutes: >= 1 } => $"{ts.Minutes:00}:{ts.Seconds:00}",
-			{ TotalSeconds: >= 1 } => $"{ts.TotalSeconds:0.0} secs",
-			_ => $"{ts.TotalMilliseconds} ms"
+			_ => $"{ts.TotalSeconds:0.0} secs",
 		};
 	}
 }
