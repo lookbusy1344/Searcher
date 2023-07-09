@@ -214,6 +214,8 @@ public partial class MainForm : Form
 					scanProgress.Maximum = filescount;
 				});
 
+			var progresstimer = new ProgressTimer(filescount);
+
 			// search the files in parallel
 			_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts!.Token }, file =>
 			{
@@ -236,8 +238,14 @@ public partial class MainForm : Form
 						if (tempcount < scanProgress.Value) return;                     // dont go backwards
 
 						nextProgressUpdate = this.monotonic.Milliseconds + 100;    // time for next update
+						if (tempcount >= 5)
+						{
+							var remainingtime = progresstimer.GetRemainingSeconds(tempcount);
+							progressLabel.Text = $"{remainingtime:F1} secs remaining, {filescount - tempcount} files...";
+						}
+						else
+							progressLabel.Text = $"{filescount - tempcount} files remaining...";
 
-						progressLabel.Text = $"Searching {filescount - tempcount} files...";
 						scanProgress.Value = tempcount;
 					});
 				}

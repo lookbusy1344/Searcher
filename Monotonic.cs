@@ -5,7 +5,7 @@ namespace Searcher;
 /// <summary>
 /// A monotonic clock that returns the current date and time, or miliseconds as a long
 /// </summary>
-public class Monotonic
+public sealed class Monotonic
 {
 	// record when the instance is constructed
 	private readonly DateTime start;
