@@ -1,6 +1,10 @@
 ﻿using System.Diagnostics;
 
 namespace Searcher;
+
+/// <summary>
+/// A simple timer to estimate the remaining time for a set of work items
+/// </summary>
 internal sealed class ProgressTimer
 {
 	// Stopwatch is a monotonic timer
@@ -20,7 +24,7 @@ internal sealed class ProgressTimer
 	/// <summary>
 	/// Get the remaining duration in seconds
 	/// </summary>
-	public double GetRemainingSeconds(int current)
+	public double GetRemainingSeconds(int current, bool uptodate = false)
 	{
 		if (current >= total) return 0L;
 		if (current <= 0) throw new Exception("Current must be greater than zero");
@@ -30,7 +34,7 @@ internal sealed class ProgressTimer
 		var expectedduration = duration / progress;        // expected total duration in seconds
 
 		var newexpected = expectedduration - duration;      // remaining time in seconds
-		if (lastduration < 0 || newexpected - lastduration > 3.5 || newexpected < lastduration - 0.9)
+		if (uptodate || lastduration < 0 || newexpected - lastduration > 3.5 || newexpected < lastduration - 0.9)
 		{
 			// only update if the duration is significantly different (3.5 secs longer that previous calc, or 0.9 secs less)
 			lastduration = newexpected;
@@ -39,6 +43,9 @@ internal sealed class ProgressTimer
 		return lastduration;
 	}
 
+	/// <summary>
+	/// Remaining duration in milliseconds
+	/// </summary>
 	public long GetRemainingMilliseconds(int current) => (long)(GetRemainingSeconds(current) * 1000.0);
 
 	/// <summary>
