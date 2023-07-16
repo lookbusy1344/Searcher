@@ -17,8 +17,6 @@ public class CliOptions
 		OneThread = false;
 	}
 
-	private DirectoryInfo? folder;
-
 	/// <summary>
 	/// Get the string comparison to use for the search
 	/// </summary>
@@ -44,18 +42,13 @@ public class CliOptions
 	/// Folder to search. If its NULL it will return current directory
 	/// </summary>
 	[Option('f', "folder", Required = false, HelpText = "Folder to search", Default = null)]
-	public DirectoryInfo? Folder
+	public DirectoryInfo Folder
 	{
-		get
-		{
-			// if the folder is not set, return the current directory
-			if (folder == null)
-				return CurrentDir;
-			else
-				return folder;
-		}
+		get => folder ?? CurrentDir;        // if the folder is not set, return the current directory
 		set => folder = value;
 	}
+
+	private DirectoryInfo? folder;
 
 #pragma warning disable CA2227 // Collection properties should be read only
 	/// <summary>
