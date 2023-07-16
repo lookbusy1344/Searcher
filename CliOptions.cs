@@ -32,12 +32,12 @@ public class CliOptions
 	/// Are any patterns defined?
 	/// </summary>
 	[MemberNotNullWhen(false, nameof(pattern))] // if we return false, then pattern is not null. This tells the compiler that
-	private bool IsPatternEmpty() => Pattern is null || Pattern.Count == 0;
+	private bool IsPatternEmpty => pattern is null || pattern.Count == 0;
 
 	/// <summary>
 	/// Get a string representation of the patterns
 	/// </summary>
-	public string GetPatterns() => IsPatternEmpty() ? "*" : string.Join(',', Pattern);
+	public string GetPatterns() => IsPatternEmpty ? "*" : string.Join(',', Pattern);
 
 	/// <summary>
 	/// Folder to search. If its NULL it will return current directory
@@ -61,7 +61,7 @@ public class CliOptions
 	[Option('p', "pattern", Required = false, HelpText = "File pattern", Default = null, Min = 1, Max = 20, Separator = ',')]
 	public IList<string> Pattern
 	{
-		get => IsPatternEmpty() ? DefaultPattern : pattern;
+		get => IsPatternEmpty ? DefaultPattern : pattern;
 		set => pattern = value;
 	}
 #pragma warning restore CA2227 // Collection properties should be read only
