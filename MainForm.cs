@@ -173,7 +173,6 @@ public partial class MainForm : Form
 	private string LongRunningTask(ChannelWriter<SingleResult> writer, CliOptions config, bool allowinvoke)
 	{
 		var parallelthreads = config.DegreeOfParallelism();
-		var count = 0;
 		var filescount = 0;
 		var modulo = 20;
 
@@ -215,6 +214,7 @@ public partial class MainForm : Form
 				});
 
 			var progresstimer = new ProgressTimer(filescount);
+			var counter = new SafeCounter();
 
 			// search the files in parallel
 			_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts!.Token }, file =>
@@ -224,11 +224,11 @@ public partial class MainForm : Form
 				if (found is SearchResult.Found or SearchResult.Error)
 					_ = writer.TryWrite(new SingleResult { Path = file, Result = found });      // put the file path in the channel, to be displayed on the main UI thread
 
-				// when the task completes, update completed counter. This needs to be thread-safe
-				var tempcount = Interlocked.Increment(ref count);
+				// when the task completes, update completed counter. This is thread safe
+				var currentcount = counter.Increment();
 
 				// update progress bar when needed
-				if (allowinvoke && (modulo == 1 || tempcount % modulo == 0) && !cts!.Token.IsCancellationRequested)
+				if (allowinvoke && (modulo == 1 || currentcount % modulo == 0) && !cts!.Token.IsCancellationRequested)
 				{
 					// ideally nextProgressUpdate would be checked before the invoke, but that would require a lock
 					Invoke(() =>
@@ -237,17 +237,17 @@ public partial class MainForm : Form
 						if (cts!.Token.IsCancellationRequested) return;                 // cancelled
 
 						nextProgressUpdate = this.monotonic.Milliseconds + 100;    // time for next update
-						if (tempcount >= 5)
+						if (currentcount >= 5)
 						{
-							var remainingtime = progresstimer.GetRemainingSeconds(tempcount);
+							var remainingtime = progresstimer.GetRemainingSeconds(currentcount);
 							var timetxt = ProgressTimer.SecondsAsText(remainingtime);
-							progressLabel.Text = $"{timetxt} remaining, {filescount - tempcount} files...";
+							progressLabel.Text = $"{timetxt} remaining, {filescount - currentcount} files...";
 						}
 						else
-							progressLabel.Text = $"{filescount - tempcount} files remaining...";
+							progressLabel.Text = $"{filescount - currentcount} files remaining...";
 
-						if (tempcount > scanProgress.Value)
-							scanProgress.Value = tempcount;
+						if (currentcount > scanProgress.Value)
+							scanProgress.Value = currentcount;
 					});
 				}
 			});
