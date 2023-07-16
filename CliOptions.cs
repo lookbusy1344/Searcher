@@ -6,7 +6,7 @@ namespace Searcher;
 public class CliOptions
 {
 	private static readonly DirectoryInfo CurrentDir = new(".");
-	private static readonly string[] DefaultPattern = new string[] { "*" };
+	private static readonly IReadOnlyList<string> DefaultPattern = new string[] { "*" };
 	public const StringComparison FilenameComparison = StringComparison.OrdinalIgnoreCase;
 
 	/// <summary>
@@ -54,22 +54,20 @@ public class CliOptions
 	/// </summary>
 	private DirectoryInfo? folder;
 
-#pragma warning disable CA2227 // Collection properties should be read only
 	/// <summary>
 	/// Search pattern, eg "*.txt"
 	/// </summary>
 	[Option('p', "pattern", Required = false, HelpText = "File pattern", Default = null, Min = 1, Max = 20, Separator = ',')]
-	public IList<string> Pattern
+	public IReadOnlyList<string> Pattern
 	{
 		get => IsPatternEmpty ? DefaultPattern : pattern;
 		set => pattern = value;
 	}
-#pragma warning restore CA2227 // Collection properties should be read only
 
 	/// <summary>
 	/// Backing field for pattern. This can be null but the property never will be
 	/// </summary>
-	private IList<string>? pattern;
+	private IReadOnlyList<string>? pattern;
 
 	/// <summary>
 	/// Search text eg "hello world"

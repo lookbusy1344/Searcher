@@ -183,19 +183,19 @@ public partial class MainForm : Form
 
 			// outerpatterns are the physical files to find, and may include .zip files even if not given as a pattern, when -z is selected
 			// innerpatterns are for searching inside zip files. May be an empty list for everything, but explicitly doesnt include .zip
-			var innerpatterns = Utils.ProcessInnerPatterns(config.Pattern!);
-			var outerpatterns = Utils.ProcessOuterPatterns(config.Pattern!, config.InsideZips);
+			var innerpatterns = Utils.ProcessInnerPatterns(config.Pattern);
+			var outerpatterns = Utils.ProcessOuterPatterns(config.Pattern, config.InsideZips);
 			if (outerpatterns.Count == 0) throw new Exception("No pattern specified");
 
 			// Parallel routine for searching folders
 			var sw = Stopwatch.StartNew();
-			var files = GlobSearch.ParallelFindFiles(config.Folder!.FullName, outerpatterns, parallelthreads, null, cts!.Token);
+			var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerpatterns, parallelthreads, null, cts!.Token);
 			Debug.WriteLine($"Found {files.Length} files in {sw.ElapsedMilliseconds}ms");
 
 			// Original routine - doesnt use globs but is faster for small numbers of files
 			// we search for files matching outerpatterns, eg including zip files if -z switch was given
 			//var sw = Stopwatch.StartNew();
-			//var files = GlobSearch.RecursiveFindFiles(config.Folder!.FullName, outerpatterns, parallelthreads, cts!.Token);
+			//var files = GlobSearch.RecursiveFindFiles(config.Folder.FullName, outerpatterns, parallelthreads, cts!.Token);
 			//Debug.WriteLine($"Found {files.Length} files in {sw.ElapsedMilliseconds}ms");
 
 			if (cts!.Token.IsCancellationRequested)

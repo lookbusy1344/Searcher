@@ -136,7 +136,7 @@ internal class Utils
 	/// <summary>
 	/// take the provided patterns, and add *.zip if needed. This is used for searching for files outside zips
 	/// </summary>
-	public static IReadOnlyList<Glob> ProcessOuterPatterns(IList<string> patterns, bool includezips)
+	public static IReadOnlyList<Glob> ProcessOuterPatterns(IReadOnlyList<string> patterns, bool includezips)
 	{
 		var needzip = false;
 		if (includezips)
@@ -177,7 +177,7 @@ internal class Utils
 	/// <summary>
 	/// This is used for searching for files inside zips, and returns globs
 	/// </summary>
-	public static IReadOnlyList<Glob> ProcessInnerPatterns(IList<string> patterns)
+	public static IReadOnlyList<Glob> ProcessInnerPatterns(IReadOnlyList<string> patterns)
 	{
 		return patterns.Where(pat => !pat.EndsWith(".zip", CliOptions.FilenameComparison))
 			.Select(pat => Glob.Parse(pat))
