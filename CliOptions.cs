@@ -1,11 +1,12 @@
 ﻿using CommandLine;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Searcher;
 
 public class CliOptions
 {
 	private static readonly DirectoryInfo CurrentDir = new(".");
-	public static readonly string[] DefaultPattern = new string[] { "*" };
+	private static readonly string[] DefaultPattern = new string[] { "*" };
 	public const StringComparison FilenameComparison = StringComparison.OrdinalIgnoreCase;
 
 	/// <summary>
@@ -28,15 +29,15 @@ public class CliOptions
 	public int DegreeOfParallelism() => OneThread ? 1 : Environment.ProcessorCount;
 
 	/// <summary>
+	/// Are any patterns defined?
+	/// </summary>
+	[MemberNotNullWhen(false, nameof(pattern))] // if we return false, then pattern is not null. This tells the compiler that
+	private bool IsPatternEmpty() => Pattern is null || Pattern.Count == 0;
+
+	/// <summary>
 	/// Get a string representation of the patterns
 	/// </summary>
-	public string GetPatterns()
-	{
-		if (Pattern == null || Pattern.Count == 0)
-			return "*";
-		else
-			return string.Join(',', Pattern);
-	}
+	public string GetPatterns() => IsPatternEmpty() ? "*" : string.Join(',', Pattern);
 
 	/// <summary>
 	/// Folder to search. If its NULL it will return current directory
@@ -48,6 +49,9 @@ public class CliOptions
 		set => folder = value;
 	}
 
+	/// <summary>
+	/// Backing field for folder. This can be null but the property never will be
+	/// </summary>
 	private DirectoryInfo? folder;
 
 #pragma warning disable CA2227 // Collection properties should be read only
@@ -55,8 +59,17 @@ public class CliOptions
 	/// Search pattern, eg "*.txt"
 	/// </summary>
 	[Option('p', "pattern", Required = false, HelpText = "File pattern", Default = null, Min = 1, Max = 20, Separator = ',')]
-	public IList<string>? Pattern { get; set; }
+	public IList<string> Pattern
+	{
+		get => IsPatternEmpty() ? DefaultPattern : pattern;
+		set => pattern = value;
+	}
 #pragma warning restore CA2227 // Collection properties should be read only
+
+	/// <summary>
+	/// Backing field for pattern. This can be null but the property never will be
+	/// </summary>
+	private IList<string>? pattern;
 
 	/// <summary>
 	/// Search text eg "hello world"

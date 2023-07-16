@@ -49,11 +49,6 @@ public static class Program
 		return Parser.Default.ParseArguments<CliOptions>(args)
 			.WithParsed<CliOptions>(o =>
 			{
-				// if not specified, pattern seems to be string[0] rather than null
-				// Cant use Length so using Count() instead
-				if (o.Pattern == null || o.Pattern.Count == 0)
-					o.Pattern = CliOptions.DefaultPattern;
-
 			}).WithNotParsed<CliOptions>(o =>
 			{
 			});
