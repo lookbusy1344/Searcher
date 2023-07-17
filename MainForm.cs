@@ -172,7 +172,7 @@ public partial class MainForm : Form
 	/// <returns></returns>
 	private string LongRunningTask(ChannelWriter<SingleResult> writer, CliOptions config, bool allowinvoke)
 	{
-		var parallelthreads = config.DegreeOfParallelism();
+		var parallelthreads = config.DegreeOfParallelism;
 		var filescount = 0;
 		var modulo = 20;
 

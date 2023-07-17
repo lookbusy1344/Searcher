@@ -26,7 +26,7 @@ public class CliOptions
 	/// <summary>
 	/// Number of threads to use, according to --one-thread
 	/// </summary>
-	public int DegreeOfParallelism() => OneThread ? 1 : Environment.ProcessorCount;
+	public int DegreeOfParallelism => OneThread ? 1 : Environment.ProcessorCount;
 
 	/// <summary>
 	/// Are any patterns defined?
