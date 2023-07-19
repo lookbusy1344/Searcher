@@ -16,6 +16,7 @@ public class CliOptions
 	{
 		CaseSensitive = false;
 		OneThread = false;
+		IsSSD = true;
 	}
 
 	/// <summary>
@@ -26,7 +27,21 @@ public class CliOptions
 	/// <summary>
 	/// Number of threads to use, according to --one-thread
 	/// </summary>
-	public int DegreeOfParallelism => OneThread ? 1 : Environment.ProcessorCount;
+	public int DegreeOfParallelism => OneThread ? 1 : GetMaxParallelism();
+
+	/// <summary>
+	/// Get the max allowed parallelism, which is number of cores or half the cores if its a spinning disk
+	/// </summary>
+	private int GetMaxParallelism()
+	{
+		var p = Environment.ProcessorCount;
+		if (IsSSD) return p;
+
+		// spinning disk, so use half the cores. 
+		p /= 2;
+		if (p < 1) p = 1;
+		return p;
+	}
 
 	/// <summary>
 	/// Are any patterns defined?
@@ -98,4 +113,6 @@ public class CliOptions
 	/// </summary>
 	[Option('h', "hide-errors", Required = false, HelpText = "Hide errors in output list", Default = false)]
 	public bool HideErrors { get; set; }
+
+	public bool IsSSD { get; set; }
 }

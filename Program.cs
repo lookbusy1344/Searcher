@@ -47,12 +47,10 @@ public static class Program
 	public static ParserResult<CliOptions> ParseParams(string[] args)
 	{
 		return Parser.Default.ParseArguments<CliOptions>(args)
-			.WithParsed<CliOptions>(o =>
-			{
-			}).WithNotParsed<CliOptions>(o =>
+			.WithParsed<CliOptions>(o => o.IsSSD = DiskQuery.IsSSD(o.Folder))
+			.WithNotParsed<CliOptions>(o =>
 			{
 			});
-
 	}
 
 	private const string CommandLineMessage =
