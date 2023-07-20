@@ -17,6 +17,7 @@ public class CliOptions
 		CaseSensitive = false;
 		OneThread = false;
 		IsSSD = true;
+		Search = string.Empty;
 	}
 
 	/// <summary>
@@ -88,7 +89,7 @@ public class CliOptions
 	/// Search text eg "hello world"
 	/// </summary>
 	[Option('s', "search", Required = true, HelpText = "Search text")]
-	public string? Search { get; set; }
+	public string Search { get; set; }
 
 	/// <summary>
 	/// true if the search should be case sensitive; false otherwise

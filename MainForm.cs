@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Channels;
@@ -62,11 +61,8 @@ public partial class MainForm : Form
 	/// </summary>
 	private void CleanUpCancellationToken()
 	{
-		if (cts != null)
-		{
-			cts.Dispose();
-			cts = null;
-		}
+		cts?.Dispose();
+		cts = null;
 	}
 
 	private void TimerProgress_Tick(object? sender, EventArgs e)
@@ -178,7 +174,7 @@ public partial class MainForm : Form
 
 		try
 		{
-			if (string.IsNullOrEmpty(config.Search))
+			if (string.IsNullOrWhiteSpace(config.Search))
 				throw new OperationCanceledException();
 
 			// outerpatterns are the physical files to find, and may include .zip files even if not given as a pattern, when -z is selected
@@ -188,14 +184,8 @@ public partial class MainForm : Form
 			if (outerpatterns.Count == 0) throw new Exception("No pattern specified");
 
 			// Parallel routine for searching folders
-			var sw = Stopwatch.StartNew();
-			var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerpatterns, parallelthreads, null, cts!.Token);
-			Debug.WriteLine($"Found {files.Length} files in {sw.ElapsedMilliseconds}ms");
-
-			// Original routine - doesnt use globs but is faster for small numbers of files
-			// we search for files matching outerpatterns, eg including zip files if -z switch was given
 			//var sw = Stopwatch.StartNew();
-			//var files = GlobSearch.RecursiveFindFiles(config.Folder.FullName, outerpatterns, parallelthreads, cts!.Token);
+			var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerpatterns, parallelthreads, null, cts!.Token);
 			//Debug.WriteLine($"Found {files.Length} files in {sw.ElapsedMilliseconds}ms");
 
 			if (cts!.Token.IsCancellationRequested)
