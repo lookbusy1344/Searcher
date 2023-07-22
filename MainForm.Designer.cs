@@ -71,12 +71,13 @@ partial class MainForm
 		// 
 		// scanProgress
 		// 
+		scanProgress.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 		scanProgress.Location = new Point(511, 12);
 		scanProgress.Name = "scanProgress";
 		scanProgress.Size = new Size(195, 23);
 		scanProgress.TabIndex = 5;
 		// 
-		// Form1
+		// MainForm
 		// 
 		this.AutoScaleDimensions = new SizeF(7F, 15F);
 		this.AutoScaleMode = AutoScaleMode.Font;
@@ -85,7 +86,7 @@ partial class MainForm
 		this.Controls.Add(itemsList);
 		this.Controls.Add(cancelButton);
 		this.Controls.Add(progressLabel);
-		this.Name = "Form1";
+		this.Name = "MainForm";
 		this.Text = "File searching";
 		FormClosing += MainForm_FormClosing;
 		Load += MainForm_Load;
