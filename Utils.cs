@@ -64,7 +64,7 @@ internal class Utils
 	/// <summary>
 	/// Open a file using the default program for that file type
 	/// </summary>
-	public static void OpenFile(string path)
+	public static void OpenFile(string path, CliOptions options)
 	{
 		var extension = Path.GetExtension(path).ToLower();
 
@@ -81,7 +81,10 @@ internal class Utils
 		else
 		{
 			// Open file using default program
-			_ = Process.Start(path);
+			if (string.IsNullOrEmpty(options.OpenWith))
+				_ = Process.Start(path);
+			else
+				_ = Process.Start(options.OpenWith, path);
 		}
 	}
 

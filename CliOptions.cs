@@ -91,6 +91,9 @@ public class CliOptions
 	[Option('s', "search", Required = true, HelpText = "Search text")]
 	public string Search { get; set; }
 
+	[Option('w', "open-with", Required = false, HelpText = "App to open apps", Default = null)]
+	public string? OpenWith { get; set; }
+
 	/// <summary>
 	/// true if the search should be case sensitive; false otherwise
 	/// </summary>

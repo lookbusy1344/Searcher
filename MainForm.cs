@@ -335,7 +335,7 @@ public partial class MainForm : Form
 		var path = row.SubItems[1].Text;
 		if (string.IsNullOrEmpty(path)) return;
 
-		Utils.OpenFile(path);
+		Utils.OpenFile(path, this.cliOptions!);
 	}
 
 	// Handle the ColumnClick event to sort items by the clicked column
