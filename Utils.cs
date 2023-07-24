@@ -16,6 +16,7 @@ public readonly record struct SingleResult(string Path, SearchResult Result);
 
 internal class Utils
 {
+	private const string TextFileOpener = "notepad.exe";
 	private static readonly byte[] magicNumberZip = new byte[] { 0x50, 0x4B, 0x03, 0x04 };
 	private static readonly string[] textFileTypes = new string[] { ".txt", ".log", ".md", ".cs", ".rs", ".js", ".html" };
 	private static readonly string[] wordFileTypes = new string[] { ".docx", ".doc", ".rtf" };
@@ -66,12 +67,13 @@ internal class Utils
 	/// </summary>
 	public static void OpenFile(string path, CliOptions options)
 	{
+		var opener = string.IsNullOrEmpty(options.OpenWith) ? TextFileOpener : options.OpenWith;
 		var extension = Path.GetExtension(path).ToLower();
 
 		path = $"\"{path}\"";   // the quotes are needed if the path has spaces, in some cases
 
 		if (textFileTypes.Contains(extension))
-			_ = Process.Start("notepad.exe", path);
+			_ = Process.Start(opener, path);
 		else if (wordFileTypes.Contains(extension))
 			_ = Process.Start(pathToWord.Value, path);
 		else if (extension == ".zip")
@@ -81,10 +83,8 @@ internal class Utils
 		else
 		{
 			// Open file using default program
-			if (string.IsNullOrEmpty(options.OpenWith))
-				_ = Process.Start(path);
-			else
-				_ = Process.Start(options.OpenWith, path);
+			//_ = Process.Start(path);
+			_ = Process.Start(opener, path);
 		}
 	}
 

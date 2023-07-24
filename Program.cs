@@ -63,6 +63,7 @@ Mandatory parameters:
 Optional parameters:
   --folder <x>, -f <x>                Folder to search (default '.')
   --pattern <x, ...>, -p <x, ...>     File patterns to match eg '*.txt,*.docx' (default '*')
+  --open-with <x>, -w <x>             Open files with this program instead of Notepad
 
   --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
   --one-thread, -o                    Don't search files in parallel
