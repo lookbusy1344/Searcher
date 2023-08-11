@@ -10,6 +10,7 @@
 	<Version>1.7.5.0</Version> 
 	<InformationalVersion>$(SourceRevisionId)</InformationalVersion> 
     <OutputType>WinExe</OutputType>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
