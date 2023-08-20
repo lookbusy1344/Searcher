@@ -72,7 +72,7 @@ internal static partial class Helpers
 		options.Pattern ??= new List<string>() { "*" };
 
 		using var searcher = new MainForm();
-		var task = searcher.TestHarness(options);
+		var task = searcher.TestHarnessAsync(options);
 
 		task.Wait();
 

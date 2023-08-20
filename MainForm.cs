@@ -131,7 +131,7 @@ public partial class MainForm : Form
 		}
 
 		// Wait for the long-running task to complete and get its result
-		var result = await task;
+		var result = await task.ConfigureAwait(true);
 		progressLabel.Text = result;
 		CleanUpCancellationToken();
 
@@ -295,7 +295,9 @@ public partial class MainForm : Form
 		return sb.ToString();
 	}
 
+#pragma warning disable VSTHRD100 // Avoid async void methods
 	private async void MainForm_Load(object sender, EventArgs e)
+#pragma warning restore VSTHRD100 // Avoid async void methods
 	{
 		try
 		{
@@ -317,7 +319,7 @@ public partial class MainForm : Form
 			this.Text = $"Searching for: '{cliOptions.Search}' -f '{path}' -p {patterns} (commit: {info.GetHash(8)})";
 
 			// this is a async void method, so we need to catch any exceptions
-			await MainAsync(cliOptions);
+			await MainAsync(cliOptions).ConfigureAwait(true);
 		}
 		catch (Exception ex)
 		{
@@ -366,7 +368,7 @@ public partial class MainForm : Form
 	/// <summary>
 	/// Test harness for running without a GUI
 	/// </summary>
-	public async Task<IList<SingleResult>> TestHarness(CliOptions config)
+	public async Task<IList<SingleResult>> TestHarnessAsync(CliOptions config)
 	{
 		// This just serves as a way for the tests to search for files, and get a IList back from the channel
 
@@ -387,7 +389,7 @@ public partial class MainForm : Form
 			results.Add(item);
 
 		// wait for the task to finish
-		var finalmsg = await task;
+		var finalmsg = await task.ConfigureAwait(true);
 
 		// because the checking is parallel, we need to sort to get deterministic results
 		//results.Sort((a, b) => string.Compare(a.Path, b.Path, StringComparison.OrdinalIgnoreCase));
