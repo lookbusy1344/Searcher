@@ -131,7 +131,7 @@ public partial class MainForm : Form
 		}
 
 		// Wait for the long-running task to complete and get its result
-		var result = await task.ConfigureAwait(true);
+		var result = await task;
 		progressLabel.Text = result;
 		CleanUpCancellationToken();
 
@@ -319,7 +319,7 @@ public partial class MainForm : Form
 			this.Text = $"Searching for: '{cliOptions.Search}' -f '{path}' -p {patterns} (commit: {info.GetHash(8)})";
 
 			// this is a async void method, so we need to catch any exceptions
-			await MainAsync(cliOptions).ConfigureAwait(true);
+			await MainAsync(cliOptions);
 		}
 		catch (Exception ex)
 		{
@@ -389,7 +389,7 @@ public partial class MainForm : Form
 			results.Add(item);
 
 		// wait for the task to finish
-		var finalmsg = await task.ConfigureAwait(true);
+		var finalmsg = await task;
 
 		// because the checking is parallel, we need to sort to get deterministic results
 		//results.Sort((a, b) => string.Compare(a.Path, b.Path, StringComparison.OrdinalIgnoreCase));
