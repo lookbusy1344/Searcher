@@ -225,7 +225,7 @@ public partial class SearchTests
 		// searcher.exe -s "poor player That struts"
 		// 5 matches, Macbeth documents and a ZIP
 
-		var commandline = "-s \"poor player That struts\"";
+		const string commandline = "-s \"poor player That struts\"";
 		var expected = new string[] { "Macbeth.txt", "Macbeth.docx", "Macbeth and Romeo txt.zip", "Macbeth.pdf", "Lear and Macbeth docx.zip" };
 		var found = Helpers.SearchCaller(Helpers.ParseCommandLine(commandline));
 
@@ -239,7 +239,7 @@ public partial class SearchTests
 		// searcher.exe -s "it is the east" -p *.docx,*.txt -z
 		// 3 results, this time we look inside zips for DOCX and TXT files
 
-		var commandline = "-s \"it is the east\" -p *.docx,*.txt -z";
+		const string commandline = "-s \"it is the east\" -p *.docx,*.txt -z";
 		var expected = new string[] { "Romeo and Juliet.docx", "Macbeth and Romeo txt.zip", "Romeo and Juliet.txt" };
 		var found = Helpers.SearchCaller(Helpers.ParseCommandLine(commandline));
 
@@ -253,7 +253,7 @@ public partial class SearchTests
 		// searcher.exe -s "it is the east" -p *.docx,*.txt -z -Q
 		// this command line is an error, -Q is not a valid option
 
-		var commandline = "-s \"it is the east\" -p *.docx,*.txt -z -Q";
+		const string commandline = "-s \"it is the east\" -p *.docx,*.txt -z -Q";
 
 		Helpers.AssertThrows<Exception>(() =>
 		{
