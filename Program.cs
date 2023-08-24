@@ -80,5 +80,4 @@ Or..
   Searcher.exe -f . -p *.txt,*.zip -s hello
 Search txt files (excluding those in zips) for anything containing 'hello':
   Searcher.exe -f . -p *.txt -s hello";
-
 }

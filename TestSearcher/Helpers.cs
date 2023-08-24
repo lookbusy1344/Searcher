@@ -78,7 +78,7 @@ internal static partial class Helpers
 
 		if (task.IsFaulted) throw task.Exception!;
 		if (task.IsCanceled) throw new Exception("Task was canceled");
-		if (task.IsCompletedSuccessfully == false) throw new Exception("Task was not completed successfully");
+		if (!task.IsCompletedSuccessfully) throw new Exception("Task was not completed successfully");
 		if (task.Result == null) throw new Exception("Task result was null");
 
 		return task.Result.Where(r => r.Result == SearchResult.Found)

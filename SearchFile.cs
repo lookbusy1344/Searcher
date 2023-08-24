@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace Searcher;
 
-internal class SearchFile
+internal static class SearchFile
 {
 	/// <summary>
 	/// Wrapper to pick the correct search function. Special cases for docx, pdf and zip files
@@ -159,7 +159,6 @@ internal static class ZipInternals
 	/// <summary>
 	/// Function to check if a docx inside ZIP contains a given string
 	/// </summary>
-
 	public static bool DocxContainsString(ZipArchive archive, string text, StringComparison comparer)
 	{
 		var documentEntry = archive.GetEntry("word/document.xml");

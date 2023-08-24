@@ -14,7 +14,7 @@ public enum SearchResult { Found, NotFound, Error }
 /// </summary>
 public readonly record struct SingleResult(string Path, SearchResult Result);
 
-internal class Utils
+internal static class Utils
 {
 	private const string TextFileOpener = "notepad.exe";
 	private static readonly byte[] magicNumberZip = new byte[] { 0x50, 0x4B, 0x03, 0x04 };
@@ -104,7 +104,7 @@ internal class Utils
 	/// </summary>
 	private static string GetWordPath()
 	{
-		var keyName = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Winword.exe";
+		const string keyName = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Winword.exe";
 		var winwordPath = (string?)Registry.GetValue(keyName, "Path", null);
 		if (winwordPath == null)
 			return "C:\\Program Files\\Microsoft Office\\root\\Office16\\winword.exe";

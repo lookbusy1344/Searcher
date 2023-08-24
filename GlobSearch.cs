@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace Searcher;
 
-internal class GlobSearch
+internal static class GlobSearch
 {
 	private static readonly EnumerationOptions diroptions = new() { IgnoreInaccessible = true };
 
@@ -85,7 +85,7 @@ internal class GlobSearch
 						}
 				}
 
-				if (found != null && found.Count > 0)
+				if (found?.Count > 0)
 					results.Add(found);
 			});
 
