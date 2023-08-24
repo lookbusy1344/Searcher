@@ -119,13 +119,15 @@ internal static class ZipInternals
 			if (nestedEntry.FullName.EndsWith(".zip", CliOptions.FilenameComparison))
 			{
 				// its another nested zip file, we need to open it and search inside
-				using var nestedArchive = new ZipArchive(nestedEntry.Open());
+				using var nestedStream = nestedEntry.Open();
+				using var nestedArchive = new ZipArchive(nestedStream);
 				found = RecursiveArchiveCheck(nestedArchive, text, innerpatterns, comparer, token);
 			}
 			else if (nestedEntry.FullName.EndsWith(".docx", CliOptions.FilenameComparison))
 			{
 				// this is a DOCX inside a zip
-				using var nestedArchive = new ZipArchive(nestedEntry.Open());
+				using var nestedStream = nestedEntry.Open();
+				using var nestedArchive = new ZipArchive(nestedStream);
 				found = DocxContainsString(nestedArchive, text, comparer);
 			}
 			else if (nestedEntry.FullName.EndsWith(".pdf", CliOptions.FilenameComparison))
