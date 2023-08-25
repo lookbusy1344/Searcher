@@ -188,8 +188,7 @@ public partial class MainForm : Form
 			var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerpatterns, parallelthreads, null, cts!.Token);
 			//Debug.WriteLine($"Found {files.Length} files in {sw.ElapsedMilliseconds}ms");
 
-			if (cts!.Token.IsCancellationRequested)
-				throw new OperationCanceledException();
+			cts!.Token.ThrowIfCancellationRequested();
 
 			// Work out a reasonable update frequency for the progress bar
 			filescount = files.Length;

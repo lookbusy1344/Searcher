@@ -112,7 +112,7 @@ internal static class ZipInternals
 		foreach (var nestedEntry in archive.Entries)
 		{
 			// loop through all entries in the nested zip file
-			if (token.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
+			token.ThrowIfCancellationRequested();
 
 			var found = false;
 
@@ -189,7 +189,7 @@ internal static class ZipInternals
 			if (line == null) continue;
 			if (line.Contains(text, comparer)) return true;
 
-			if (token.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
+			token.ThrowIfCancellationRequested();
 		}
 
 		return false;

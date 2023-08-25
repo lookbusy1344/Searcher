@@ -64,7 +64,7 @@ internal partial class PdfCheck
 			// does the page text contain our search string?
 			if (text.Contains(content, strcomp)) return SearchResult.Found;
 
-			if (token.IsCancellationRequested) throw new OperationCanceledException("Cancelled");
+			token.ThrowIfCancellationRequested();
 		}
 		return SearchResult.NotFound;
 	}
