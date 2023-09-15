@@ -18,6 +18,7 @@
     <Platforms>AnyCPU;x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Description>Recursively search for files containing text</Description>
+	<TieredPGO>true</TieredPGO>
   </PropertyGroup>
 
   <PropertyGroup>

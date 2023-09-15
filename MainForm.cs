@@ -5,6 +5,8 @@ using System.Threading.Channels;
 
 namespace Searcher;
 
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+
 public partial class MainForm : Form
 {
 	private CancellationTokenSource? cts;
