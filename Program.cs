@@ -53,31 +53,34 @@ public static class Program
 		//});
 	}
 
-	private const string CommandLineMessage =
+	private const string CommandLineMessage = """
+		Recursively search for files containing text.
 
-@"Recursively search for files containing text.
+		Mandatory parameters:
+		  --search <text>, -s <text>          Text to find
 
-Mandatory parameters:
-  --search <text>, -s <text>          Text to find
+		Optional parameters:
+		  --folder <x>, -f <x>                Folder to search (default '.')
+		  --pattern <x, ...>, -p <x, ...>     File patterns to match eg '*.txt,*.docx' (default '*')
+		  --open-with <x>, -w <x>             Open files with this program instead of Notepad
 
-Optional parameters:
-  --folder <x>, -f <x>                Folder to search (default '.')
-  --pattern <x, ...>, -p <x, ...>     File patterns to match eg '*.txt,*.docx' (default '*')
-  --open-with <x>, -w <x>             Open files with this program instead of Notepad
+		  --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
+		  --one-thread, -o                    Don't search files in parallel
+		  --case-sensitive, -c                Text is matched in a case-sensitive way
+		  --hide-errors, -h                   Hide errors from the output list
 
-  --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
-  --one-thread, -o                    Don't search files in parallel
-  --case-sensitive, -c                Text is matched in a case-sensitive way
-  --hide-errors, -h                   Hide errors from the output list
+		Examples. Search current folder for txt and Word files containing "hello world":
+		  Searcher.exe --folder . --pattern *.txt,*.docx --search "hello world"
 
-Examples. Search current folder for txt and Word files containing 'hello world':
-  Searcher.exe --folder . --pattern *.txt,*.docx --search ""hello world""
-Search just zip files for anything containing 'hello':
-  Searcher.exe -f . -p *.zip -s hello
-Search txt files (including those in zips) for anything containing 'hello':
-  Searcher.exe -z -f . -p *.txt -s hello
-Or..
-  Searcher.exe -f . -p *.txt,*.zip -s hello
-Search txt files (excluding those in zips) for anything containing 'hello':
-  Searcher.exe -f . -p *.txt -s hello";
+		Search just zip files for anything containing 'hello':
+		  Searcher.exe -f . -p *.zip -s hello
+
+		Search txt files (including those in zips) for anything containing "hello":
+		  Searcher.exe -z -f . -p *.txt -s hello
+		Or..
+		  Searcher.exe -f . -p *.txt,*.zip -s hello
+
+		Search txt files (excluding those in zips) for anything containing "hello":
+		  Searcher.exe -f . -p *.txt -s hello
+		""";
 }
