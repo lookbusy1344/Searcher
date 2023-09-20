@@ -37,13 +37,14 @@ internal static class SearchFile
 				if (line == null) continue;
 				if (line.Contains(text, comparer)) return SearchResult.Found;
 			}
-
-			return SearchResult.NotFound;
 		}
 		catch
 		{
+			// exceptions are not thrown by my code here, but potentially by the StreamReader
 			return SearchResult.Error;
 		}
+
+		return SearchResult.NotFound;
 	}
 
 	/// <summary>
@@ -71,6 +72,7 @@ internal static class SearchFile
 		}
 		catch
 		{
+			// exceptions are not thrown by my code here, but potentially by libraries
 			return SearchResult.Error;
 		}
 
