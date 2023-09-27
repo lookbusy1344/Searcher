@@ -1,4 +1,6 @@
-# Searcher
+# Searcher - multi-threaded file searcher
+
+[![CodeQL](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql)
 
 Recursively search for files containing text. C#, .NET 7 and WinForms
 
