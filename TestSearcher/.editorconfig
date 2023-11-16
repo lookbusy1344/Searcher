@@ -371,3 +371,6 @@ dotnet_diagnostic.CA2213.severity = warning
 dotnet_diagnostic.CA1031.severity = none
 dotnet_diagnostic.CA2201.severity = none
 dotnet_diagnostic.CA2007.severity = none
+
+# CA1416: Validate platform compatibility
+dotnet_diagnostic.CA1416.severity = none
