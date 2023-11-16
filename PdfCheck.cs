@@ -5,7 +5,9 @@ using System.Text.RegularExpressions;
 
 namespace Searcher;
 
-internal partial class PdfCheck
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes - .NET8 analyser bug? These static methods are used!
+internal sealed partial class PdfCheck
+#pragma warning restore CA1812 // Avoid uninstantiated internal classes
 {
 	/// <summary>
 	/// Check inside a PDF zip entry for a string

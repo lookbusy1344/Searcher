@@ -22,7 +22,10 @@ public partial class MainForm : Form
 	// this is here to allow the console output to work in a WinForms app
 	[LibraryImport("kernel32.dll")]
 	[return: MarshalAs(UnmanagedType.Bool)]
+#pragma warning disable CA5392 // Use DefaultDllImportSearchPaths attribute for P/Invokes
 	public static partial bool AttachConsole(int dwProcessId);
+#pragma warning restore CA5392 // Use DefaultDllImportSearchPaths attribute for P/Invokes
+
 	public const int ATTACH_PARENT_PROCESS = -1;
 
 	public MainForm()

@@ -3,7 +3,7 @@
 /// <summary>
 /// This is a thread safe Int32 counter using Interlocked.Increment etc
 /// </summary>
-internal class SafeCounter
+internal sealed class SafeCounter
 {
 	/// <summary>
 	/// The counter, cannot be accessed directly in a thread safe way
