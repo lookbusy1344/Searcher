@@ -7,13 +7,8 @@
 /// Create a new counter with an optional start value
 /// </remarks>
 /// <param name="startvalue">The initial value</param>
-internal sealed class SafeCounter(int startvalue = 0)
+internal sealed class SafeCounter(int counter = 0) // this class exists to wrap this field and prevent direct access
 {
-	/// <summary>
-	/// The counter, cannot be accessed directly in a thread safe way
-	/// </summary>
-	private int counter = startvalue;    // this class exists to wrap this field and prevent direct access
-
 	/// <summary>
 	/// Get the current value of the counter
 	/// </summary>
