@@ -19,8 +19,8 @@ internal static class Utils
 {
 	private const string TextFileOpener = "notepad.exe";
 	private static ReadOnlySpan<byte> MagicNumberZip => [0x50, 0x4B, 0x03, 0x04];
-	private static readonly string[] textFileTypes = [".txt", ".log", ".md", ".cs", ".rs", ".js", ".html"];
-	private static readonly string[] wordFileTypes = [".docx", ".doc", ".rtf"];
+	private static ReadOnlySpan<string> TextFileTypes => new string[] { ".txt", ".log", ".md", ".cs", ".rs", ".js", ".html" };
+	private static ReadOnlySpan<string> WordFileTypes => new string[] { ".docx", ".doc", ".rtf" };
 	private static readonly Lazy<string> pathToWord = new(GetWordPath);
 	private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acrobat.exe") ?? GetProgramPath("AcroRd32.exe") ?? string.Empty);
 
@@ -73,9 +73,9 @@ internal static class Utils
 
 		path = $"\"{path}\"";   // the quotes are needed if the path has spaces, in some cases
 
-		if (textFileTypes.Contains(extension))
+		if (TextFileTypes.Contains(extension))
 			_ = Process.Start(opener, path);
-		else if (wordFileTypes.Contains(extension))
+		else if (WordFileTypes.Contains(extension))
 			_ = Process.Start(pathToWord.Value, path);
 		else if (extension == ".zip")
 			_ = Process.Start("explorer.exe", path);
