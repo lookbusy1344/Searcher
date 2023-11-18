@@ -1,6 +1,7 @@
 ﻿using DotNet.Globbing;
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Searcher;
 
