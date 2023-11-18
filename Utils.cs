@@ -18,9 +18,9 @@ public readonly record struct SingleResult(string Path, SearchResult Result);
 internal static class Utils
 {
 	private const string TextFileOpener = "notepad.exe";
-	private static readonly byte[] magicNumberZip = new byte[] { 0x50, 0x4B, 0x03, 0x04 };
-	private static readonly string[] textFileTypes = new string[] { ".txt", ".log", ".md", ".cs", ".rs", ".js", ".html" };
-	private static readonly string[] wordFileTypes = new string[] { ".docx", ".doc", ".rtf" };
+	private static ReadOnlySpan<byte> MagicNumberZip => [0x50, 0x4B, 0x03, 0x04];
+	private static readonly string[] textFileTypes = [".txt", ".log", ".md", ".cs", ".rs", ".js", ".html"];
+	private static readonly string[] wordFileTypes = [".docx", ".doc", ".rtf"];
 	private static readonly Lazy<string> pathToWord = new(GetWordPath);
 	private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acrobat.exe") ?? GetProgramPath("AcroRd32.exe") ?? string.Empty);
 
@@ -49,12 +49,12 @@ internal static class Utils
 	{
 		try
 		{
-			var fileBytes = new byte[magicNumberZip.Length];
+			var fileBytes = new byte[MagicNumberZip.Length];
 
 			using var file = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 			_ = file.Read(fileBytes, 0, fileBytes.Length);
 
-			return fileBytes.SequenceEqual(magicNumberZip);
+			return fileBytes.SequenceEqual(MagicNumberZip);
 		}
 		catch (Exception)
 		{
