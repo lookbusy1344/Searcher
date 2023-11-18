@@ -49,10 +49,10 @@ internal static class Utils
 	{
 		try
 		{
-			var fileBytes = new byte[MagicNumberZip.Length];
+			Span<byte> fileBytes = stackalloc byte[MagicNumberZip.Length];
 
 			using var file = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-			_ = file.Read(fileBytes, 0, fileBytes.Length);
+			_ = file.Read(fileBytes);
 
 			return fileBytes.SequenceEqual(MagicNumberZip);
 		}
