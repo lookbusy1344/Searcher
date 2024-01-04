@@ -6,7 +6,6 @@
 /// <remarks>
 /// Create a new counter with an optional start value
 /// </remarks>
-/// <param name="startvalue">The initial value</param>
 internal sealed class SafeCounter(int counter = 0) // this class exists to wrap this field and prevent direct access
 {
 	/// <summary>
