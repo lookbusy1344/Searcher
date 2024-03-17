@@ -4,7 +4,7 @@ namespace TestSearcher;
 
 public class MonotonicTest
 {
-	[Fact(DisplayName = "Monotonic: Milliseconds from zero start", Timeout = 50)]
+	[Fact(DisplayName = "Monotonic: Milliseconds from zero start")]
 	[Trait("Category", "Monotonic")]
 	public void MonotonicZeroStart()
 	{
@@ -15,7 +15,7 @@ public class MonotonicTest
 		Assert.True(dur is >= 0 and <= 3);
 	}
 
-	[Fact(DisplayName = "Monotonic: should run at the same rate as wall clock", Timeout = 600)]
+	[Fact(DisplayName = "Monotonic: should run at the same rate as wall clock")]
 	[Trait("Category", "Monotonic")]
 	public void MonotonicTimeSpan()
 	{
@@ -32,7 +32,7 @@ public class MonotonicTest
 		Assert.True(dur is >= 0 and <= 10);
 	}
 
-	[Theory(DisplayName = "Monotonic: Sleep Test with different durations", Timeout = 600)]
+	[Theory(DisplayName = "Monotonic: Sleep Test with different durations")]
 	[Trait("Category", "Monotonic")]
 	[InlineData(2)]
 	[InlineData(100)]

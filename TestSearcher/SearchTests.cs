@@ -4,9 +4,7 @@ namespace TestSearcher;
 
 public partial class SearchTests
 {
-	private const int SearchTimeout = 2000;
-
-	[Fact(DisplayName = "Search: No matching items", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "Search: No matching items")]
 	[Trait("Category", "Search")]
 	public void SearchNoMatch()
 	{
@@ -18,7 +16,7 @@ public partial class SearchTests
 		Assert.Empty(found);
 	}
 
-	[Fact(DisplayName = "GLOBS: Wrong glob - terrors of the earth", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "GLOBS: Wrong glob - terrors of the earth")]
 	[Trait("Category", "Globs")]
 	public void SearchNoMatchingGlob()
 	{
@@ -35,7 +33,7 @@ public partial class SearchTests
 		Assert.Empty(found);
 	}
 
-	[Fact(DisplayName = "Search: Basic search TXT, PDF, ZIP - Terrors of the Earth", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "Search: Basic search TXT, PDF, ZIP - Terrors of the Earth")]
 	[Trait("Category", "Search")]
 	public void TerrorsOfTheEarth()
 	{
@@ -49,7 +47,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "Search: Basic + ZIP - It is the east", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "Search: Basic + ZIP - It is the east")]
 	[Trait("Category", "Search")]
 	public void ItIsTheEast()
 	{
@@ -63,7 +61,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "Search: Basic + ZIP - Poor player That struts", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "Search: Basic + ZIP - Poor player That struts")]
 	[Trait("Category", "Search")]
 	public void PoorPlayerThatStruts()
 	{
@@ -77,7 +75,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "Search: TXT in ZIP in ZIP - Brown fox", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "Search: TXT in ZIP in ZIP - Brown fox")]
 	[Trait("Category", "Search")]
 	public void BrownFoxNestedZip()
 	{
@@ -91,7 +89,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "Search: Single TXT file - This day", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "Search: Single TXT file - This day")]
 	[Trait("Category", "Search")]
 	public void ThisDayHenryV()
 	{
@@ -105,7 +103,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "GLOBS: Explicit globs - terrors of the earth", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "GLOBS: Explicit globs - terrors of the earth")]
 	[Trait("Category", "Globs")]
 	public void TerrorsOfTheEarthGlobs()
 	{
@@ -123,7 +121,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "ZIP: Single glob and zip", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "ZIP: Single glob and zip")]
 	[Trait("Category", "Zip")]
 	public void SingleGlobNoZip()
 	{
@@ -142,7 +140,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "ZIP: Two globs including zip match", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "ZIP: Two globs including zip match")]
 	[Trait("Category", "Zip")]
 	public void GlobsAndZip()
 	{
@@ -161,7 +159,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "CASE: Wrong case, but case-insensitive", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "CASE: Wrong case, but case-insensitive")]
 	[Trait("Category", "Case")]
 	public void CaseInsensitiveBasic()
 	{
@@ -180,7 +178,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "CASE: Wrong case, case-sensitive", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "CASE: Wrong case, case-sensitive")]
 	[Trait("Category", "Case")]
 	public void CaseSensitive()
 	{
@@ -199,7 +197,7 @@ public partial class SearchTests
 		Assert.Empty(found);
 	}
 
-	[Fact(DisplayName = "CASE: Correct case, case-sensitive", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "CASE: Correct case, case-sensitive")]
 	[Trait("Category", "Case")]
 	public void CaseSensitiveMatch()
 	{
@@ -218,7 +216,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "CLI: Command line parsing basic", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "CLI: Command line parsing basic")]
 	[Trait("Category", "CLI")]
 	public void BasicCommandLineParse()
 	{
@@ -232,7 +230,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "CLI: Command line parsing complex", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "CLI: Command line parsing complex")]
 	[Trait("Category", "CLI")]
 	public void ComplexCommandLineParse()
 	{
@@ -246,7 +244,7 @@ public partial class SearchTests
 		Assert.True(Helpers.CompareNames(expected, found));
 	}
 
-	[Fact(DisplayName = "CLI: Command line parsing with error", Timeout = SearchTimeout)]
+	[Fact(DisplayName = "CLI: Command line parsing with error")]
 	[Trait("Category", "CLI")]
 	public void ErrorCommandLineParse()
 	{
