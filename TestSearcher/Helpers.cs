@@ -69,7 +69,7 @@ internal static partial class Helpers
 	{
 		// default testing options
 		options.Folder = new DirectoryInfo(SearchPath);
-		options.Pattern ??= new List<string>() { "*" };
+		options.Pattern ??= ["*"];
 
 		using var searcher = new MainForm();
 		var task = searcher.TestHarnessAsync(options);

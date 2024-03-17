@@ -26,7 +26,7 @@ public partial class SearchTests
 		var options = new CliOptions
 		{
 			Search = "terrors of the earth",
-			Pattern = new string[] { "*.log", "*.x" }
+			Pattern = ["*.log", "*.x"]
 		};
 		var found = Helpers.SearchCaller(options);
 
@@ -114,7 +114,7 @@ public partial class SearchTests
 		var options = new CliOptions
 		{
 			Search = "terrors of the earth",
-			Pattern = new string[] { "*.pdf", "*.txt" }
+			Pattern = ["*.pdf", "*.txt"]
 		};
 		var found = Helpers.SearchCaller(options);
 
@@ -132,7 +132,7 @@ public partial class SearchTests
 		var options = new CliOptions
 		{
 			Search = "it is the east",
-			Pattern = new string[] { "*.docx" },
+			Pattern = ["*.docx"],
 			InsideZips = true
 		};
 		var found = Helpers.SearchCaller(options);
@@ -151,7 +151,7 @@ public partial class SearchTests
 		var options = new CliOptions
 		{
 			Search = "it is the east",
-			Pattern = new string[] { "*.docx", "*.txt" },
+			Pattern = ["*.docx", "*.txt"],
 			InsideZips = true
 		};
 		var found = Helpers.SearchCaller(options);
@@ -170,7 +170,7 @@ public partial class SearchTests
 		var options = new CliOptions
 		{
 			Search = "Having some BUSINESS",
-			Pattern = new string[] { "*.txt" },
+			Pattern = ["*.txt"],
 			CaseSensitive = false
 		};
 		var found = Helpers.SearchCaller(options);
@@ -189,7 +189,7 @@ public partial class SearchTests
 		var options = new CliOptions
 		{
 			Search = "Having some BUSINESS",
-			Pattern = new string[] { "*.txt" },
+			Pattern = ["*.txt"],
 			CaseSensitive = true
 		};
 		var found = Helpers.SearchCaller(options);
@@ -208,7 +208,7 @@ public partial class SearchTests
 		var options = new CliOptions
 		{
 			Search = "Having some business",
-			Pattern = new string[] { "*.docx" },
+			Pattern = ["*.docx"],
 			CaseSensitive = true
 		};
 		var found = Helpers.SearchCaller(options);

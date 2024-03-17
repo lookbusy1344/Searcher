@@ -6,7 +6,7 @@ namespace Searcher;
 public class CliOptions
 {
 	private static readonly DirectoryInfo CurrentDir = new(".");
-	private static readonly IReadOnlyList<string> DefaultPattern = new string[] { "*" };
+	private static readonly IReadOnlyList<string> DefaultPattern = ["*"];
 	public const StringComparison FilenameComparison = StringComparison.OrdinalIgnoreCase;
 
 	/// <summary>
