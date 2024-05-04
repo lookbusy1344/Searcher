@@ -23,8 +23,7 @@ public partial class SearchTests
 		// searcher.exe -s "terrors of the earth" -p *.log,*.x
 		// no results, using explicit globs that don't exist
 
-		var options = new CliOptions
-		{
+		var options = new CliOptions {
 			Search = "terrors of the earth",
 			Pattern = ["*.log", "*.x"]
 		};
@@ -111,8 +110,7 @@ public partial class SearchTests
 		// 2 results, using explicit globs and excluding DOCX
 
 		var expected = new string[] { "King Lear.txt", "King Lear.pdf" };
-		var options = new CliOptions
-		{
+		var options = new CliOptions {
 			Search = "terrors of the earth",
 			Pattern = ["*.pdf", "*.txt"]
 		};
@@ -129,8 +127,7 @@ public partial class SearchTests
 		// 1 result, looking for DOCX and inside ZIPs (but there is no docx matching inside a zip)
 
 		var expected = new string[] { "Romeo and Juliet.docx" };
-		var options = new CliOptions
-		{
+		var options = new CliOptions {
 			Search = "it is the east",
 			Pattern = ["*.docx"],
 			InsideZips = true
@@ -148,8 +145,7 @@ public partial class SearchTests
 		// 3 results, this time we look inside zips for DOCX and TXT files
 
 		var expected = new string[] { "Romeo and Juliet.docx", "Macbeth and Romeo txt.zip", "Romeo and Juliet.txt" };
-		var options = new CliOptions
-		{
+		var options = new CliOptions {
 			Search = "it is the east",
 			Pattern = ["*.docx", "*.txt"],
 			InsideZips = true
@@ -167,8 +163,7 @@ public partial class SearchTests
 		// 1 result, the wrong case doesnt matter without -c
 
 		var expected = new string[] { "Romeo and Juliet.txt" };
-		var options = new CliOptions
-		{
+		var options = new CliOptions {
 			Search = "Having some BUSINESS",
 			Pattern = ["*.txt"],
 			CaseSensitive = false
@@ -186,8 +181,7 @@ public partial class SearchTests
 		// no result, the wrong case
 
 		//var expected = new string[] { };
-		var options = new CliOptions
-		{
+		var options = new CliOptions {
 			Search = "Having some BUSINESS",
 			Pattern = ["*.txt"],
 			CaseSensitive = true
@@ -205,8 +199,7 @@ public partial class SearchTests
 		// 1 result, we are using the correct case in this CS search
 
 		var expected = new string[] { "Romeo and Juliet.docx" };
-		var options = new CliOptions
-		{
+		var options = new CliOptions {
 			Search = "Having some business",
 			Pattern = ["*.docx"],
 			CaseSensitive = true
@@ -253,8 +246,7 @@ public partial class SearchTests
 
 		const string commandline = "-s \"it is the east\" -p *.docx,*.txt -z -Q";
 
-		Helpers.AssertThrows<Exception>(() =>
-		{
+		Helpers.AssertThrows<Exception>(() => {
 			var options = Helpers.ParseCommandLine(commandline);
 		}, "Did not detect the invalid parameter(s)");
 	}

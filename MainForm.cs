@@ -50,8 +50,7 @@ public partial class MainForm : Form
 	protected override void Dispose(bool disposing)
 	{
 		// this method was taken from MainForm.Designer.cs and modified to dispose of my custom objects
-		if (disposing)
-		{
+		if (disposing) {
 			components?.Dispose();
 
 			timerProgress?.Dispose();    // these are my custom disposals
@@ -100,24 +99,21 @@ public partial class MainForm : Form
 		var longestfname = 30;
 
 		// Consume the items from the channel as they arrive
-		await foreach (var item in channel.Reader.ReadAllAsync())
-		{
+		await foreach (var item in channel.Reader.ReadAllAsync()) {
 			var fname = Path.GetFileName(item.Path);
 
-			if (item.Result == SearchResult.Error)
-			{
+			if (item.Result == SearchResult.Error) {
 				++errors;
-				if (config.HideErrors) continue;
+				if (config.HideErrors) {
+					continue;
+				}
 
 				// an error occurred, show it in the list
-				_ = itemsList.Items.Add(new ListViewItem(new string[] { "ERROR", item.Path })
-				{
+				_ = itemsList.Items.Add(new ListViewItem(new string[] { "ERROR", item.Path }) {
 					ForeColor = Color.Red,
 					Tag = SearchResult.Error
 				});
-			}
-			else
-			{
+			} else {
 				// found a match, add it to the list
 				var l = new ListViewItem(new string[] { fname, item.Path }) { Tag = SearchResult.Found };
 				_ = itemsList.Items.Add(l);
@@ -125,14 +121,13 @@ public partial class MainForm : Form
 
 			// resize the columns as needed
 			++count;
-			if (fname.Length > longestfname)
-			{
+			if (fname.Length > longestfname) {
 				// this filename is longer than any we've seen so far, so resize the columns
 				longestfname = fname.Length;
 				ResizeColumns();
-			}
-			else if (count % 10 == 0)
+			} else if (count % 10 == 0) {
 				itemsList.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+			}
 		}
 
 		// Wait for the long-running task to complete and get its result
@@ -143,16 +138,18 @@ public partial class MainForm : Form
 		cancelButton.Text = "Copy";
 		cancelButton.Enabled = true;
 
-		if (count > 0)
+		if (count > 0) {
 			ResizeColumns();
+		}
+
 		timerProgress.Start();
 
-		if (errors > 0)
-		{
-			if (config.HideErrors)
+		if (errors > 0) {
+			if (config.HideErrors) {
 				_ = MessageBox.Show($"There were {errors} errors. Remove the -h / --hide-errors switch to see details", "Errors", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else
+			} else {
 				_ = MessageBox.Show($"There were {errors} errors, indicated in the output list", "Errors", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 	}
 
@@ -177,16 +174,18 @@ public partial class MainForm : Form
 		var filescount = 0;
 		var modulo = 20;
 
-		try
-		{
-			if (string.IsNullOrWhiteSpace(config.Search))
+		try {
+			if (string.IsNullOrWhiteSpace(config.Search)) {
 				throw new OperationCanceledException();
+			}
 
 			// outerpatterns are the physical files to find, and may include .zip files even if not given as a pattern, when -z is selected
 			// innerpatterns are for searching inside zip files. May be an empty list for everything, but explicitly doesnt include .zip
 			var innerpatterns = Utils.ProcessInnerPatterns(config.Pattern);
 			var outerpatterns = Utils.ProcessOuterPatterns(config.Pattern, config.InsideZips);
-			if (outerpatterns.Count == 0) throw new Exception("No pattern specified");
+			if (outerpatterns.Count == 0) {
+				throw new Exception("No pattern specified");
+			}
 
 			// Parallel routine for searching folders
 			//var sw = Stopwatch.StartNew();
@@ -200,54 +199,56 @@ public partial class MainForm : Form
 			modulo = Utils.CalculateModulo(filescount);
 
 			// Show how many files need to be searched, now we know
-			if (allowinvoke)
-				Invoke(() =>
-				{
+			if (allowinvoke) {
+				Invoke(() => {
 					progressLabel.Text = $"Searching {filescount} files...";
 					scanProgress.Maximum = filescount;
 				});
+			}
 
 			var progresstimer = new ProgressTimer(filescount);
 			var counter = new SafeCounter();
 
 			// search the files in parallel
-			_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts!.Token }, file =>
-			{
+			_ = Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts!.Token }, file => {
 				// Search the file for the search string
 				var found = SearchFile.FileContainsStringWrapper(file, config.Search, innerpatterns, config.StringComparison, cts!.Token);
-				if (found is SearchResult.Found or SearchResult.Error)
+				if (found is SearchResult.Found or SearchResult.Error) {
 					_ = writer.TryWrite(new SingleResult { Path = file, Result = found });      // put the file path in the channel, to be displayed on the main UI thread
+				}
 
 				// when the task completes, update completed counter. This is thread safe
 				var currentcount = counter.Increment();
 
 				// update progress bar when needed
-				if (allowinvoke && (modulo == 1 || currentcount % modulo == 0) && !cts!.Token.IsCancellationRequested)
-				{
+				if (allowinvoke && (modulo == 1 || currentcount % modulo == 0) && !cts!.Token.IsCancellationRequested) {
 					// ideally nextProgressUpdate would be checked before the invoke, but that would require a lock
-					Invoke(() =>
-					{
-						if (monotonic.Milliseconds < nextProgressUpdate) return;   // only update every 100ms
-						if (cts!.Token.IsCancellationRequested) return;                 // cancelled
+					Invoke(() => {
+						if (monotonic.Milliseconds < nextProgressUpdate) {
+							return;     // only update every 100ms
+						}
+
+						if (cts!.Token.IsCancellationRequested) {
+							return;     // cancelled
+						}
 
 						nextProgressUpdate = this.monotonic.Milliseconds + 100;    // time for next update
-						if (currentcount >= 5)
-						{
+						if (currentcount >= 5) {
 							var remainingtime = progresstimer.GetRemainingSeconds(currentcount);
 							var timetxt = ProgressTimer.SecondsAsText(remainingtime);
 							progressLabel.Text = $"{timetxt} remaining, {filescount - currentcount} files...";
-						}
-						else
+						} else {
 							progressLabel.Text = $"{filescount - currentcount} files remaining...";
+						}
 
-						if (currentcount > scanProgress.Value)
+						if (currentcount > scanProgress.Value) {
 							scanProgress.Value = currentcount;
+						}
 					});
 				}
 			});
 		}
-		catch
-		{
+		catch {
 			// just ignore it
 		}
 
@@ -255,20 +256,21 @@ public partial class MainForm : Form
 		writer.Complete();
 
 		// Update the UI bar to 100%
-		if (allowinvoke)
+		if (allowinvoke) {
 			_ = Invoke(() => scanProgress.Value = filescount);
+		}
 
 		// return a string to be displayed on the UI
-		if (cts!.Token.IsCancellationRequested)
+		if (cts!.Token.IsCancellationRequested) {
 			return "Cancelled!";
-		else
+		} else {
 			return $"Finished! {filescount} files scanned in {monotonic.Seconds:F1} secs";
+		}
 	}
 
 	private void CancelButton_Click(object sender, EventArgs e)
 	{
-		if (this.cts == null)
-		{
+		if (this.cts == null) {
 			// we've finished, so this is a copy button
 			var results = GetFoundFilenames();
 			Clipboard.SetText(results);
@@ -288,13 +290,15 @@ public partial class MainForm : Form
 	/// </summary>
 	private string GetFoundFilenames()
 	{
-		if (itemsList.Items.Count == 0) return string.Empty;
+		if (itemsList.Items.Count == 0) {
+			return string.Empty;
+		}
 
 		var sb = new StringBuilder(itemsList.Items.Count * 80);
-		foreach (ListViewItem item in itemsList.Items)
-		{
-			if (item.Tag is SearchResult result && result == SearchResult.Found)
+		foreach (ListViewItem item in itemsList.Items) {
+			if (item.Tag is SearchResult result && result == SearchResult.Found) {
 				_ = sb.AppendLine(item.SubItems[1].Text);
+			}
 		}
 		return sb.ToString();
 	}
@@ -303,30 +307,31 @@ public partial class MainForm : Form
 	private async void MainForm_Load(object sender, EventArgs e)
 #pragma warning restore VSTHRD100 // Avoid async void methods
 	{
-		try
-		{
-			if (loaded) return;
+		try {
+			if (loaded) {
+				return;
+			}
+
 			loaded = true;
 
 			var info = GitVersion.VersionInfo.Get();
-			if (cliOptions == null || cliOptions.Folder == null)
-			{
+			if (cliOptions == null || cliOptions.Folder == null) {
 				this.Text = $"File Search {info.GetVersionHash(12)}";
 				return;
 			}
 
 			var patterns = cliOptions.GetPatterns();
 			var path = cliOptions.Folder.FullName;
-			if (path.Length > 20)
+			if (path.Length > 20) {
 				path = $"{path[0..5]}...{path[^14..]}";
+			}
 
 			this.Text = $"Searching for: '{cliOptions.Search}' -f '{path}' -p {patterns} (commit: {info.GetHash(8)})";
 
 			// this is a async void method, so we need to catch any exceptions
 			await MainAsync(cliOptions);
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			// Handle the exception
 			_ = MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
@@ -335,11 +340,15 @@ public partial class MainForm : Form
 	private void ItemList_DoubleClick(object sender, EventArgs e)
 	{
 		var item = itemsList.SelectedItems;
-		if (item.Count != 1) return;
+		if (item.Count != 1) {
+			return;
+		}
 
 		var row = item[0];
 		var path = row.SubItems[1].Text;
-		if (string.IsNullOrEmpty(path)) return;
+		if (string.IsNullOrEmpty(path)) {
+			return;
+		}
 
 		Utils.OpenFile(path, this.cliOptions!);
 	}
@@ -347,16 +356,16 @@ public partial class MainForm : Form
 	// Handle the ColumnClick event to sort items by the clicked column
 	private void ItemList_ColumnClick(object sender, ColumnClickEventArgs e)
 	{
-		if (itemsList.ListViewItemSorter is ListViewItemComparer comparer && comparer.ColumnNumber == e.Column)
-		{
+		if (itemsList.ListViewItemSorter is ListViewItemComparer comparer && comparer.ColumnNumber == e.Column) {
 			// Change the sort order in the existing ListViewItemComparer object
-			if (comparer.Order == SortOrder.Ascending)
+			if (comparer.Order == SortOrder.Ascending) {
 				comparer.Order = SortOrder.Descending;
-			else
+			} else {
 				comparer.Order = SortOrder.Ascending;
-		}
-		else
+			}
+		} else {
 			itemsList.ListViewItemSorter = new ListViewItemComparer(e.Column, SortOrder.Ascending);
+		}
 
 		itemsList.Sort();
 	}
@@ -389,8 +398,9 @@ public partial class MainForm : Form
 		var results = new List<SingleResult>();
 
 		// collect the results using an async loop
-		await foreach (var item in channel.Reader.ReadAllAsync())
+		await foreach (var item in channel.Reader.ReadAllAsync()) {
 			results.Add(item);
+		}
 
 		// wait for the task to finish
 		var finalmsg = await task;
@@ -427,9 +437,17 @@ public class ListViewItemComparer : IComparer
 	public int Compare(object? x, object? y)
 	{
 		// deal with nulls
-		if (x is not ListViewItem xitem || y is not ListViewItem yitem) return 0;
-		if (xitem == null) return -1;
-		if (yitem == null) return 1;
+		if (x is not ListViewItem xitem || y is not ListViewItem yitem) {
+			return 0;
+		}
+
+		if (xitem == null) {
+			return -1;
+		}
+
+		if (yitem == null) {
+			return 1;
+		}
 
 		var xText = xitem.SubItems[ColumnNumber].Text;
 		var yText = yitem.SubItems[ColumnNumber].Text;
@@ -437,8 +455,9 @@ public class ListViewItemComparer : IComparer
 		var returnVal = string.Compare(xText, yText, StringComparison.OrdinalIgnoreCase);
 
 		// Determine whether the sort order is descending
-		if (Order == SortOrder.Descending)
+		if (Order == SortOrder.Descending) {
 			returnVal *= -1;
+		}
 
 		return returnVal;
 	}

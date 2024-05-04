@@ -18,8 +18,7 @@ public static class Program
 
 		var parsed = ParseParams(args);
 
-		if (parsed.Tag == ParserResultType.NotParsed)
-		{
+		if (parsed.Tag == ParserResultType.NotParsed) {
 			// https://stackoverflow.com/questions/23718966/how-console-write-in-c-sharp-windows-form-application
 			// workaround for console output in a WinForms app
 

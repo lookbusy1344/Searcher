@@ -14,10 +14,11 @@ internal static partial class Helpers
 	public static void AssertThrows<E>(Action action, string errmsg) where E : Exception
 	{
 		var result = CheckThrows<E>(action);
-		if (!result)
+		if (!result) {
 			Assert.Fail(errmsg);
-		else
+		} else {
 			Assert.True(true);
+		}
 	}
 
 	/// <summary>
@@ -25,17 +26,14 @@ internal static partial class Helpers
 	/// </summary>
 	public static bool CheckThrows<E>(Action action) where E : Exception
 	{
-		try
-		{
+		try {
 			action();
 		}
-		catch (E)
-		{
+		catch (E) {
 			// expected exception was thrown, test passed
 			return true;
 		}
-		catch
-		{
+		catch {
 			// some other exception was thrown, test failed
 			return false;
 		}
@@ -51,8 +49,9 @@ internal static partial class Helpers
 	{
 		var items = SplitParams(s);
 		var parsed = Searcher.Program.ParseParams(items);
-		if (parsed.Tag == ParserResultType.NotParsed)
+		if (parsed.Tag == ParserResultType.NotParsed) {
 			throw new Exception($"Failed to parse command line: {s}");
+		}
 
 		return parsed.Value;
 	}
@@ -76,10 +75,21 @@ internal static partial class Helpers
 
 		task.Wait();
 
-		if (task.IsFaulted) throw task.Exception!;
-		if (task.IsCanceled) throw new Exception("Task was canceled");
-		if (!task.IsCompletedSuccessfully) throw new Exception("Task was not completed successfully");
-		if (task.Result == null) throw new Exception("Task result was null");
+		if (task.IsFaulted) {
+			throw task.Exception!;
+		}
+
+		if (task.IsCanceled) {
+			throw new Exception("Task was canceled");
+		}
+
+		if (!task.IsCompletedSuccessfully) {
+			throw new Exception("Task was not completed successfully");
+		}
+
+		if (task.Result == null) {
+			throw new Exception("Task result was null");
+		}
 
 		return task.Result.Where(r => r.Result == SearchResult.Found)
 			.Select(r => Path.GetFileName(r.Path))
@@ -91,7 +101,9 @@ internal static partial class Helpers
 	/// </summary>
 	public static bool CompareNames(string[] a, string[] b)
 	{
-		if (a.Length != b.Length) return false;
+		if (a.Length != b.Length) {
+			return false;
+		}
 
 		return a.OrderBy(s => s)
 			.SequenceEqual(b.OrderBy(s => s));

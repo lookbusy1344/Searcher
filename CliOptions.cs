@@ -36,12 +36,14 @@ public class CliOptions
 	private int GetMaxParallelism()
 	{
 		var p = Environment.ProcessorCount;
-		if (IsSSD) return p;
+		if (IsSSD) {
+			return p;
+		}
 
 		// spinning disk, so use half the cores. 
 		p /= 2;
-		if (p < 1) p = 1;
-		return p;
+
+		return Math.Max(p, 1);
 	}
 
 	/// <summary>

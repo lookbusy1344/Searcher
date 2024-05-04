@@ -13,8 +13,9 @@ internal static class GlobSearch
 	public static string[] FindFiles(string path, IReadOnlyList<Glob> globs, CancellationToken token)
 	{
 		var files = new List<string>(100);
-		foreach (var g in globs)
+		foreach (var g in globs) {
 			FindFilesRecursivelyInternal(ref files, path, g, token);
+		}
 
 		return files
 			.OrderBy(s => s)
@@ -29,12 +30,15 @@ internal static class GlobSearch
 	{
 		token.ThrowIfCancellationRequested();
 
-		foreach (var file in Directory.GetFiles(path))
-			if (g.IsMatch(Path.GetFileName(file)))
+		foreach (var file in Directory.GetFiles(path)) {
+			if (g.IsMatch(Path.GetFileName(file))) {
 				files.Add(file);
+			}
+		}
 
-		foreach (var dir in Directory.GetDirectories(path, "*", diroptions))
+		foreach (var dir in Directory.GetDirectories(path, "*", diroptions)) {
 			FindFilesRecursivelyInternal(ref files, dir, g, token);
+		}
 	}
 
 	/// <summary>
@@ -42,7 +46,9 @@ internal static class GlobSearch
 	/// </summary>
 	public static string[] ParallelFindFiles(string path, IReadOnlyList<Glob> globs, int parallelthreads, Action<int>? progress, CancellationToken cancellationtoken)
 	{
-		if (parallelthreads <= 1) return FindFiles(path, globs, cancellationtoken);
+		if (parallelthreads <= 1) {
+			return FindFiles(path, globs, cancellationtoken);
+		}
 
 		var count = 0;
 		var results = new ConcurrentBag<List<string>>();
@@ -52,45 +58,46 @@ internal static class GlobSearch
 
 		// we need 2 buffers, so we can swap them. One is iterated in parallel, the other is build up for the next iteration
 
-		while (!currentbuffer.IsEmpty)
-		{
+		while (!currentbuffer.IsEmpty) {
 			cancellationtoken.ThrowIfCancellationRequested();
 
 			count += currentbuffer.Count;
 			progress?.Invoke(count);
 
-			_ = Parallel.ForEach(currentbuffer, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cancellationtoken }, (folder) =>
-			{
+			_ = Parallel.ForEach(currentbuffer, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cancellationtoken }, (folder) => {
 				cancellationtoken.ThrowIfCancellationRequested();
 
 				// add subdirectories to the queue, to be processed in parallel on the next batch
-				foreach (var dir in Directory.GetDirectories(folder, "*", diroptions))
+				foreach (var dir in Directory.GetDirectories(folder, "*", diroptions)) {
 					nextbuffer.Add(dir);
+				}
 
 				// now find the files that match the globs
 				var candidates = Directory.GetFiles(folder);
 				List<string>? found = null;
-				foreach (var c in candidates)
-				{
+				foreach (var c in candidates) {
 					cancellationtoken.ThrowIfCancellationRequested();
 					var size = candidates.Length > 10 ? 10 : candidates.Length;
 
 					var filename = Path.GetFileName(c);
-					foreach (var g in globs)
-						if (g.IsMatch(filename))
-						{
+					foreach (var g in globs) {
+						if (g.IsMatch(filename)) {
 							found ??= new List<string>(size);
 							found.Add(c);
 							break;
 						}
+					}
 				}
 
-				if (found?.Count > 0)
+				if (found?.Count > 0) {
 					results.Add(found);
+				}
 			});
 
 			// if no new folders were added, we are done
-			if (nextbuffer.IsEmpty) break;
+			if (nextbuffer.IsEmpty) {
+				break;
+			}
 
 			currentbuffer.Clear();  // clear the processed items
 
@@ -113,13 +120,15 @@ internal static class GlobSearch
 		var searchoptions = new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true };
 		var results = new ConcurrentBag<string[]>();
 
-		_ = Parallel.ForEach(outerpatterns, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = token }, pattern =>
-		{
-			if (string.IsNullOrEmpty(pattern)) return;
+		_ = Parallel.ForEach(outerpatterns, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = token }, pattern => {
+			if (string.IsNullOrEmpty(pattern)) {
+				return;
+			}
 
 			var files = Directory.GetFiles(path, pattern, searchoptions);
-			if (files.Length > 0)
+			if (files.Length > 0) {
 				results.Add(files);
+			}
 		});
 
 		// merge the results from each task into single sorted array

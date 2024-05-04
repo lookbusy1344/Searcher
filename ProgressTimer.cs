@@ -26,16 +26,20 @@ internal sealed class ProgressTimer
 	/// </summary>
 	public double GetRemainingSeconds(int current, bool uptodate = false)
 	{
-		if (current >= total) return 0L;
-		if (current <= 0) throw new Exception("Current must be greater than zero");
+		if (current >= total) {
+			return 0L;
+		}
+
+		if (current <= 0) {
+			throw new Exception("Current must be greater than zero");
+		}
 
 		var duration = watch.Elapsed.TotalSeconds;           // current duration in seconds
 		var progress = current / (double)total;            // progress as a fraction
 		var expectedduration = duration / progress;        // expected total duration in seconds
 
 		var newexpected = expectedduration - duration;      // remaining time in seconds
-		if (uptodate || lastduration < 0 || newexpected - lastduration > 3.5 || newexpected < lastduration - 0.9)
-		{
+		if (uptodate || lastduration < 0 || newexpected - lastduration > 3.5 || newexpected < lastduration - 0.9) {
 			// only update if the duration is significantly different (3.5 secs longer that previous calc, or 0.9 secs less)
 			lastduration = newexpected;
 		}
@@ -56,8 +60,7 @@ internal sealed class ProgressTimer
 		var sign = sec < 0 ? "-" : "";
 		var ts = TimeSpan.FromSeconds(Math.Abs(sec));
 
-		return ts switch
-		{
+		return ts switch {
 			{ TotalDays: >= 1 } => $"{sign}{ts.Days} days {ts.Hours} hrs",
 			{ TotalHours: >= 1 } => $"{sign}{ts.Hours}:{ts.Minutes:00}:{ts.Seconds:00}",
 			{ TotalMinutes: >= 1 } => $"{sign}{ts.Minutes:00}:{ts.Seconds:00}",

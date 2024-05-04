@@ -30,14 +30,20 @@ internal static class Utils
 	public static int CalculateModulo(int count)
 	{
 		int modulo;
-		if (count < 100)
+		if (count < 100) {
 			return 1;               // small number of files, so update progress bar every check
-		else
+		} else {
 			modulo = count / 100;   // 100 or more files, so update progress bar every 1% of files
+		}
 
 		// keep the updates between 1 and 201 items
-		if (modulo < 1) return 1;
-		if (modulo > 201) return 201;
+		if (modulo < 1) {
+			return 1;
+		}
+
+		if (modulo > 201) {
+			return 201;
+		}
 
 		return modulo;
 	}
@@ -47,8 +53,7 @@ internal static class Utils
 	/// </summary>
 	public static bool IsZipArchive(string filePath)
 	{
-		try
-		{
+		try {
 			Span<byte> fileBytes = stackalloc byte[MagicNumberZip.Length];
 
 			using var file = new FileStream(filePath, FileMode.Open, FileAccess.Read);
@@ -56,8 +61,7 @@ internal static class Utils
 
 			return fileBytes.SequenceEqual(MagicNumberZip);
 		}
-		catch (Exception)
-		{
+		catch (Exception) {
 			// some error in the zip file
 			return false;
 		}
@@ -73,16 +77,15 @@ internal static class Utils
 
 		path = $"\"{path}\"";   // the quotes are needed if the path has spaces, in some cases
 
-		if (TextFileTypes.Contains(extension))
+		if (TextFileTypes.Contains(extension)) {
 			_ = Process.Start(opener, path);
-		else if (WordFileTypes.Contains(extension))
+		} else if (WordFileTypes.Contains(extension)) {
 			_ = Process.Start(pathToWord.Value, path);
-		else if (extension == ".zip")
+		} else if (extension == ".zip") {
 			_ = Process.Start("explorer.exe", path);
-		else if (extension == ".pdf")
+		} else if (extension == ".pdf") {
 			StartAcrobat(path);
-		else
-		{
+		} else {
 			// Open file using default program
 			//_ = Process.Start(path);
 			_ = Process.Start(opener, path);
@@ -94,10 +97,11 @@ internal static class Utils
 	/// </summary>
 	private static void StartAcrobat(string path)
 	{
-		if (string.IsNullOrEmpty(AcrobatPath.Value))
+		if (string.IsNullOrEmpty(AcrobatPath.Value)) {
 			_ = Process.Start(path);                            // fallback
-		else
+		} else {
 			_ = Process.Start(AcrobatPath.Value, path);
+		}
 	}
 
 	/// <summary>
@@ -107,10 +111,11 @@ internal static class Utils
 	{
 		const string keyName = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Winword.exe";
 		var winwordPath = (string?)Registry.GetValue(keyName, "Path", null);
-		if (winwordPath == null)
+		if (winwordPath == null) {
 			return "C:\\Program Files\\Microsoft Office\\root\\Office16\\winword.exe";
-		else
+		} else {
 			return Path.Combine(winwordPath, "Winword.exe");
+		}
 	}
 
 	/// <summary>
@@ -121,7 +126,9 @@ internal static class Utils
 		var keyName = $"HKEY_CLASSES_ROOT\\Applications\\{program}\\shell\\Open\\command";
 		var appPath = (string?)Registry.GetValue(keyName, null, null);
 
-		if (appPath == null) return null;
+		if (appPath == null) {
+			return null;
+		}
 
 		// may be something like
 		// "C:\Program Files\Adobe\Acrobat DC\Acrobat\Acrobat.exe" "%1"
@@ -131,10 +138,11 @@ internal static class Utils
 			.Replace("%1", "")
 			.Trim();
 
-		if (!File.Exists(appPath))
+		if (!File.Exists(appPath)) {
 			return null;
-		else
+		} else {
 			return appPath;
+		}
 	}
 
 	/// <summary>
@@ -143,15 +151,17 @@ internal static class Utils
 	public static IReadOnlyList<Glob> ProcessOuterPatterns(IReadOnlyList<string> patterns, bool includezips)
 	{
 		var needzip = false;
-		if (includezips)
+		if (includezips) {
 			needzip = !patterns.Any(pat => string.Equals(pat, "*.zip", CliOptions.FilenameComparison));
+		}
 
 		var results = patterns
 			.Select(pat => Glob.Parse(pat))
 			.ToList();
 
-		if (needzip)
+		if (needzip) {
 			results.Add(Glob.Parse("*.zip"));
+		}
 
 		return results;
 	}
@@ -166,15 +176,17 @@ internal static class Utils
 		var haszip = false;
 		// duplicate the list of patterns
 		var copyPatterns = new List<string>(p.Count + 1);
-		foreach (var pattern in p)
-		{
+		foreach (var pattern in p) {
 			copyPatterns.Add(pattern);
-			if (string.Equals(pattern, "*.zip", CliOptions.FilenameComparison)) haszip = true;
+			if (string.Equals(pattern, "*.zip", CliOptions.FilenameComparison)) {
+				haszip = true;
+			}
 		}
 
 		// if we need to, add the zip pattern
-		if (includezips && !haszip)
+		if (includezips && !haszip) {
 			copyPatterns.Add("*.zip");
+		}
 
 		return copyPatterns;
 	}

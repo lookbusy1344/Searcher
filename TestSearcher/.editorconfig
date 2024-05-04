@@ -1,8 +1,18 @@
+# New config, for UI apps
+# This keeps open-braces on same line for code blocks
+# 04 May 2024
+
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
-# C# files
-[*.cs]
+# Razor specific stuff Jan 2024
+[*.{cshtml,razor}]
+charset = utf-8
+trim_trailing_whitespace = true
+
+
+# C# files and Razor pages
+[*.{cs,cshtml,razor}]
 
 #### Core EditorConfig Options ####
 
@@ -107,31 +117,6 @@ csharp_preferred_modifier_order = public,private,protected,internal,file,static,
 csharp_style_prefer_readonly_struct = true
 csharp_style_prefer_readonly_struct_member = true
 
-# Code-block preferences
-csharp_prefer_braces = false
-csharp_prefer_simple_using_statement = true
-csharp_style_namespace_declarations = block_scoped
-csharp_style_prefer_method_group_conversion = true
-csharp_style_prefer_top_level_statements = true
-
-# Expression-level preferences
-csharp_prefer_simple_default_expression = true
-csharp_style_deconstructed_variable_declaration = true
-csharp_style_implicit_object_creation_when_type_is_apparent = true
-csharp_style_inlined_variable_declaration = true
-csharp_style_prefer_index_operator = true
-csharp_style_prefer_local_over_anonymous_function = true
-csharp_style_prefer_null_check_over_type_check = true
-csharp_style_prefer_range_operator = true
-csharp_style_prefer_tuple_swap = true
-csharp_style_prefer_utf8_string_literals = true
-csharp_style_throw_expression = true
-csharp_style_unused_value_assignment_preference = discard_variable
-csharp_style_unused_value_expression_statement_preference = discard_variable
-
-# 'using' directive preferences
-csharp_using_directive_placement = outside_namespace
-
 # New line preferences
 csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = true
 csharp_style_allow_blank_line_after_token_in_arrow_expression_clause_experimental = true
@@ -143,11 +128,12 @@ csharp_style_allow_embedded_statements_on_same_line_experimental = true
 
 # New line preferences
 csharp_new_line_before_catch = true
-csharp_new_line_before_else = true
+csharp_new_line_before_else = false
 csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_before_members_in_object_initializers = true
-csharp_new_line_before_open_brace = all
+csharp_new_line_before_open_brace = methods, types, events, local_functions, anonymous_methods, anonymous_types, properties, indexers, accessors
+  # OTHER OPTS: lambdas, control_blocks, all, none
 csharp_new_line_between_query_expression_clauses = true
 
 # Indentation preferences
@@ -268,10 +254,10 @@ dotnet_style_qualification_for_property = true:silent
 dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_event = false:silent
 
-[*.cs]
+[*.{cs,cshtml,razor}]
 csharp_using_directive_placement = outside_namespace:silent
 csharp_prefer_simple_using_statement = true:warning
-csharp_prefer_braces = false:suggestion
+csharp_prefer_braces = true:suggestion
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_prefer_method_group_conversion = true:suggestion
 csharp_style_prefer_top_level_statements = false:warning
@@ -316,7 +302,8 @@ csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
 csharp_style_prefer_not_pattern = true:suggestion
 csharp_style_prefer_extended_property_pattern = true:suggestion
-[*.{cs,vb}]
+
+[*.{cs,vb,cshtml,razor}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
@@ -359,7 +346,19 @@ dotnet_analyzer_diagnostic.category-Performance.severity = warning
 dotnet_analyzer_diagnostic.category-Reliability.severity = warning
 dotnet_analyzer_diagnostic.category-Usage.severity = warning
 
-[*.{cs,vb}]
+# Spell checking
+
+[*.cs]
+spelling_languages = en-US,en-GB
+spelling_checkable_types = strings,identifiers,comments
+spelling_error_severity = information
+
+[*.md]
+spelling_languages = en-GB
+spelling_checkable_types = strings,identifiers,comments
+spelling_error_severity = information
+
+[*.{cs,vb,cshtml,razor}]
 dotnet_diagnostic.CA2000.severity = warning
 dotnet_diagnostic.CA2011.severity = warning
 dotnet_diagnostic.CA2012.severity = warning
@@ -371,6 +370,25 @@ dotnet_diagnostic.CA2213.severity = warning
 dotnet_diagnostic.CA1031.severity = none
 dotnet_diagnostic.CA2201.severity = none
 dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.CA2100.severity = none
+dotnet_diagnostic.CA5394.severity = none
+dotnet_diagnostic.IDE0042.severity = none
 
-# CA1416: Validate platform compatibility
-dotnet_diagnostic.CA1416.severity = none
+
+# For Microsoft.VisualStudio.Threading.Analyzers
+
+# Unless writing a library
+# https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/editorconfigs/README.md
+# VSTHRD111: Use .ConfigureAwait(bool)
+dotnet_diagnostic.VSTHRD111.severity = silent
+
+# These settings are appropriate for most projects that *never* run inside a process with a main thread and `SynchronizationContext`.
+# Examples of such applications are ASP.NET Core and console applications.
+# VSTHRD012: Provide JoinableTaskFactory where allowed
+# dotnet_diagnostic.VSTHRD012.severity = none
+
+# VSTHRD003: Avoid awaiting foreign Tasks
+# dotnet_diagnostic.VSTHRD003.severity = none
+
+# VSTHRD103: Call async methods when in an async method, duplicate of CA1849
+dotnet_diagnostic.VSTHRD103.severity = none

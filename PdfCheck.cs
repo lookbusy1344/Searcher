@@ -19,7 +19,10 @@ internal sealed partial class PdfCheck
 
 		var result = SearchPdfInternal(reader, content, strcomp, token);
 
-		if (result == SearchResult.Error) throw new Exception("Error reading PDF file");
+		if (result == SearchResult.Error) {
+			throw new Exception("Error reading PDF file");
+		}
+
 		return result == SearchResult.Found;
 	}
 
@@ -28,17 +31,14 @@ internal sealed partial class PdfCheck
 	/// </summary>
 	public static SearchResult CheckPdfFile(string path, string content, StringComparison strcomp, CancellationToken token)
 	{
-		try
-		{
+		try {
 			using var pdfReader = new PdfReader(path);
 			return SearchPdfInternal(pdfReader, content, strcomp, token);
 		}
-		catch (OperationCanceledException)
-		{
+		catch (OperationCanceledException) {
 			return SearchResult.NotFound;
 		}
-		catch
-		{
+		catch {
 			return SearchResult.Error;
 		}
 	}
@@ -53,18 +53,20 @@ internal sealed partial class PdfCheck
 		using var pdfDoc = new PdfDocument(reader);
 		var pages = pdfDoc.GetNumberOfPages();
 
-		for (var i = 1; i <= pages; ++i)
-		{
+		for (var i = 1; i <= pages; ++i) {
 			// get the page text
 			var page = pdfDoc.GetPage(i);
 			var text = PdfTextExtractor.GetTextFromPage(page);
 
 			// if we are searching for a string with spaces, replace all whitespace with a single space
-			if (containsspace)
+			if (containsspace) {
 				text = AnyNumberWhitespace().Replace(text, " ");
+			}
 
 			// does the page text contain our search string?
-			if (text.Contains(content, strcomp)) return SearchResult.Found;
+			if (text.Contains(content, strcomp)) {
+				return SearchResult.Found;
+			}
 
 			token.ThrowIfCancellationRequested();
 		}
