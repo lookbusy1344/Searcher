@@ -20,14 +20,12 @@ public sealed class MonotonicTimer
 	/// <summary>
 	/// A monotonic clock that returns the current local date and time.
 	/// </summary>
-	[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-	public DateTimeOffset Now() => start.Add(watch.Elapsed);
+	public DateTimeOffset Now => start.Add(watch.Elapsed);
 
 	/// <summary>
-	/// A monotonic clock that returns the current UTC date and time.
+	/// A monotonic clock that returns the current UTC DateTime.
 	/// </summary>
-	[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-	public DateTime NowUTC() => start.Add(watch.Elapsed).UtcDateTime;
+	public DateTime NowUTC => start.Add(watch.Elapsed).UtcDateTime;
 
 	/// <summary>
 	/// Monotonic Seconds, just from the Stopwatch

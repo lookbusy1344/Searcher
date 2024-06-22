@@ -24,7 +24,7 @@ public class MonotonicTest
 
 		Thread.Sleep(500);
 
-		var mtime = m.NowUTC();
+		var mtime = m.NowUTC;
 		var diff = mtime - DateTime.UtcNow;
 		var dur = Math.Abs(diff.TotalMilliseconds);
 
