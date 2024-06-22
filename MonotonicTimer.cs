@@ -5,7 +5,7 @@ namespace Searcher;
 /// <summary>
 /// A monotonic clock that returns the current date and time, or miliseconds as a long
 /// </summary>
-public sealed class Monotonic
+public sealed class MonotonicTimer
 {
 	// record when the instance is constructed, including the timezone
 	private readonly DateTimeOffset start;
@@ -13,9 +13,9 @@ public sealed class Monotonic
 	// Stopwatch is a monotonic timer
 	private readonly Stopwatch watch = Stopwatch.StartNew();
 
-	public Monotonic() => start = DateTimeOffset.Now;
+	public MonotonicTimer() => start = DateTimeOffset.Now;
 
-	public Monotonic(DateTimeOffset dateTimeOffset) => start = dateTimeOffset;
+	public MonotonicTimer(DateTimeOffset dateTimeOffset) => start = dateTimeOffset;
 
 	/// <summary>
 	/// A monotonic clock that returns the current local date and time.

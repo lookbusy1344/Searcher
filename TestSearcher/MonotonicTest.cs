@@ -8,7 +8,7 @@ public class MonotonicTest
 	[Trait("Category", "Monotonic")]
 	public void MonotonicZeroStart()
 	{
-		var m = new Monotonic();
+		var m = new MonotonicTimer();
 		var dur = m.Milliseconds;
 
 		// we expect the diff to be within 3ms of the requested duration
@@ -20,7 +20,7 @@ public class MonotonicTest
 	public void MonotonicTimeSpan()
 	{
 		//var dt = DateTime.UtcNow;
-		var m = new Monotonic();
+		var m = new MonotonicTimer();
 
 		Thread.Sleep(500);
 
@@ -39,7 +39,7 @@ public class MonotonicTest
 	[InlineData(560)]
 	public void MonotonicSleepTest(int dur)
 	{
-		var m = new Monotonic();
+		var m = new MonotonicTimer();
 
 		Thread.Sleep(dur);
 
