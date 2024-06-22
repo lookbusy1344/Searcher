@@ -5,19 +5,11 @@ namespace Searcher;
 /// <summary>
 /// A simple timer to estimate the remaining time for a set of work items
 /// </summary>
-internal sealed class ProgressTimer
+internal sealed class ProgressTimer(int total)
 {
 	// Stopwatch is a monotonic timer
-	private readonly Stopwatch watch;
-	private readonly int total;
-	private double lastduration;
-
-	public ProgressTimer(int total)
-	{
-		this.watch = Stopwatch.StartNew();
-		this.total = total;
-		this.lastduration = -1.0;
-	}
+	private readonly Stopwatch watch = Stopwatch.StartNew();
+	private double lastduration = -1.0;
 
 	public long Milliseconds => watch.ElapsedMilliseconds;
 

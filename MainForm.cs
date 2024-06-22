@@ -109,13 +109,13 @@ public partial class MainForm : Form
 				}
 
 				// an error occurred, show it in the list
-				_ = itemsList.Items.Add(new ListViewItem(new string[] { "ERROR", item.Path }) {
+				_ = itemsList.Items.Add(new ListViewItem(["ERROR", item.Path]) {
 					ForeColor = Color.Red,
 					Tag = SearchResult.Error
 				});
 			} else {
 				// found a match, add it to the list
-				var l = new ListViewItem(new string[] { fname, item.Path }) { Tag = SearchResult.Found };
+				var l = new ListViewItem([fname, item.Path]) { Tag = SearchResult.Found };
 				_ = itemsList.Items.Add(l);
 			}
 
