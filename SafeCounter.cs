@@ -30,4 +30,12 @@ internal sealed class SafeCounter(int counter = 0) // this class exists to wrap 
 	/// </summary>
 	/// <returns>The original value</returns>
 	public int Reset(int newvalue = 0) => Interlocked.Exchange(ref counter, newvalue);
+
+	/// <summary>
+	/// Add a value to the counter in a thread safe way. Lock free
+	/// </summary>
+	/// <returns>The new value</returns>
+	public int Add(int value) => Interlocked.Add(ref counter, value);
+
+	public override string ToString() => counter.ToString();
 }
