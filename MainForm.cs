@@ -16,7 +16,7 @@ public partial class MainForm : Form
 	public CliOptions? cliOptions;
 #pragma warning restore CA1051 // Do not declare visible instance fields
 	private readonly System.Windows.Forms.Timer timerProgress;
-	private readonly MonotonicTimer monotonic = new();
+	private readonly MonotonicDateTime monotonic = new();
 	private long nextProgressUpdate;
 
 	// this is here to allow the console output to work in a WinForms app

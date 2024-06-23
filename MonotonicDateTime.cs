@@ -5,17 +5,21 @@ namespace Searcher;
 /// <summary>
 /// A monotonic clock that returns the current date and time, or miliseconds as a long
 /// </summary>
-public sealed class MonotonicTimer
+public sealed class MonotonicDateTime
 {
-	// record when the instance is constructed, including the timezone
+	/// <summary>
+	/// DateTimeOffset when the clock was started (this includes the time zone)
+	/// </summary>
 	private readonly DateTimeOffset start;
 
-	// Stopwatch is a monotonic timer
+	/// <summary>
+	/// Stopwatch is a monotonic timer, but doesnt show wall-clock time
+	/// </summary>
 	private readonly Stopwatch watch = Stopwatch.StartNew();
 
-	public MonotonicTimer() => start = DateTimeOffset.Now;
+	public MonotonicDateTime() => start = DateTimeOffset.Now;
 
-	public MonotonicTimer(DateTimeOffset dateTimeOffset) => start = dateTimeOffset;
+	public MonotonicDateTime(DateTimeOffset dateTimeOffset) => start = dateTimeOffset;
 
 	/// <summary>
 	/// A monotonic clock that returns the current local date and time.
@@ -35,7 +39,6 @@ public sealed class MonotonicTimer
 	/// <summary>
 	/// Monotonic milliseconds, just from the Stopwatch
 	/// </summary>
-	/// <returns>Long number of milliseconds</returns>
 	public long Milliseconds => watch.ElapsedMilliseconds;
 
 	/// <summary>
