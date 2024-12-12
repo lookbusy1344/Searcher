@@ -2,7 +2,7 @@
 
 [![CodeQL](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql)
 
-Recursively search for files containing text. C#, .NET 7 and WinForms
+Recursively search for files containing text. Built with C#, .NET 8 and WinForms
 
 ## Parameters
 
@@ -45,7 +45,7 @@ Searcher can look inside zips (use the -z option), docx and pdf files.
 
 ## Building
 
-Requires Visual Studio 2022, or .NET 7 SDK.
+Requires Visual Studio 2022, or .NET 8 SDK.
 
 ```
 dotnet publish -c Release
