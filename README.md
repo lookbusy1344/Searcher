@@ -1,4 +1,4 @@
-# Searcher - multi-threaded file searcher
+# Searcher - Multi-threaded File Searcher
 
 [![CodeQL](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql)
 
@@ -56,6 +56,10 @@ Or to make a single-file bundle with necessary nuget packages:
 ```
 publish.cmd
 ```
+
+## .NET version support
+
+`Main` branch supports .NET 9. `dotnet8` branch for .NET 8, and .NET 7 work closed out in commit [5daec2245f](https://github.com/lookbusy1344/Searcher/tree/5daec2245f42a0d4146ba2b824bdf894f349c627)
 
 ## Testing
 
