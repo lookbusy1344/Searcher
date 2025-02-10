@@ -263,9 +263,9 @@ public partial class MainForm : Form
 		// return a string to be displayed on the UI
 		if (cts!.Token.IsCancellationRequested) {
 			return "Cancelled!";
-		} else {
-			return $"Finished! {filescount} files scanned in {monotonic.Seconds:F1} secs";
 		}
+
+		return $"Finished! {filescount} files scanned in {monotonic.Seconds:F1} secs";
 	}
 
 	private void CancelButton_Click(object sender, EventArgs e)
