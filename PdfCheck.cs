@@ -1,9 +1,9 @@
-﻿using iText.Kernel.Pdf;
-using iText.Kernel.Pdf.Canvas.Parser;
+﻿namespace Searcher;
+
 using System.IO.Compression;
 using System.Text.RegularExpressions;
-
-namespace Searcher;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes - .NET8 analyser bug? These static methods are used!
 internal sealed partial class PdfCheck

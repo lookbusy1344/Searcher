@@ -1,8 +1,8 @@
-﻿using DotNet.Globbing;
+﻿namespace Searcher;
+
 using System.IO.Compression;
 using System.Xml;
-
-namespace Searcher;
+using DotNet.Globbing;
 
 internal static class SearchFile
 {

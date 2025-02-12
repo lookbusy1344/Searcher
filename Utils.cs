@@ -1,9 +1,9 @@
-﻿using DotNet.Globbing;
-using Microsoft.Win32;
+﻿namespace Searcher;
+
 using System.Diagnostics;
 using System.Linq;
-
-namespace Searcher;
+using DotNet.Globbing;
+using Microsoft.Win32;
 
 /// <summary>
 /// Result of a search
@@ -32,9 +32,9 @@ internal static class Utils
 		int modulo;
 		if (count < 100) {
 			return 1;               // small number of files, so update progress bar every check
-		} else {
-			modulo = count / 100;   // 100 or more files, so update progress bar every 1% of files
 		}
+
+		modulo = count / 100;   // 100 or more files, so update progress bar every 1% of files
 
 		// keep the updates between 1 and 201 items
 		if (modulo < 1) {
@@ -113,9 +113,9 @@ internal static class Utils
 		var winwordPath = (string?)Registry.GetValue(keyName, "Path", null);
 		if (winwordPath == null) {
 			return "C:\\Program Files\\Microsoft Office\\root\\Office16\\winword.exe";
-		} else {
-			return Path.Combine(winwordPath, "Winword.exe");
 		}
+
+		return Path.Combine(winwordPath, "Winword.exe");
 	}
 
 	/// <summary>
@@ -140,9 +140,9 @@ internal static class Utils
 
 		if (!File.Exists(appPath)) {
 			return null;
-		} else {
-			return appPath;
 		}
+
+		return appPath;
 	}
 
 	/// <summary>
@@ -193,12 +193,8 @@ internal static class Utils
 	/// <summary>
 	/// This is used for searching for files inside zips, and returns globs
 	/// </summary>
-	public static IReadOnlyList<Glob> ProcessInnerPatterns(IReadOnlyList<string> patterns)
-	{
-		return patterns.Where(pat => !pat.EndsWith(".zip", CliOptions.FilenameComparison))
-			.Select(pat => Glob.Parse(pat))
-			.ToList();
-	}
+	public static IReadOnlyList<Glob> ProcessInnerPatterns(IReadOnlyList<string> patterns) =>
+		[.. patterns.Where(pat => !pat.EndsWith(".zip", CliOptions.FilenameComparison)).Select(pat => Glob.Parse(pat))];
 }
 
 /// <summary>

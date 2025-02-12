@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿namespace Searcher;
 
-namespace Searcher;
+using System.Diagnostics;
 
 /// <summary>
 /// A monotonic clock that returns the current date and time, or miliseconds as a long

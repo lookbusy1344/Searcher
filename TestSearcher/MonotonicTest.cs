@@ -1,6 +1,6 @@
-using Searcher;
-
 namespace TestSearcher;
+
+using Searcher;
 
 public class MonotonicTest
 {

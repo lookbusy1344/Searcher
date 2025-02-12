@@ -1,7 +1,7 @@
-﻿using CommandLine;
-using System.Diagnostics.CodeAnalysis;
+﻿namespace Searcher;
 
-namespace Searcher;
+using System.Diagnostics.CodeAnalysis;
+using CommandLine;
 
 public class CliOptions
 {

@@ -1,7 +1,7 @@
+namespace Searcher;
+
 using CommandLine;
 using DotNet.Globbing;
-
-namespace Searcher;
 
 public static class Program
 {

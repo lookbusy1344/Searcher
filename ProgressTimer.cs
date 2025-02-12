@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿namespace Searcher;
 
-namespace Searcher;
+using System.Diagnostics;
 
 /// <summary>
 /// A simple timer to estimate the remaining time for a set of work items

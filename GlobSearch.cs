@@ -1,7 +1,7 @@
-﻿using DotNet.Globbing;
-using System.Collections.Concurrent;
+﻿namespace Searcher;
 
-namespace Searcher;
+using System.Collections.Concurrent;
+using DotNet.Globbing;
 
 internal static class GlobSearch
 {
@@ -17,10 +17,9 @@ internal static class GlobSearch
 			FindFilesRecursivelyInternal(ref files, path, g, token);
 		}
 
-		return files
-			.OrderBy(s => s)
-			.Distinct()
-			.ToArray();
+		return [.. files
+			.Order()
+			.Distinct()];
 	}
 
 	/// <summary>
@@ -106,10 +105,9 @@ internal static class GlobSearch
 		}
 
 		// flatten and sort the results
-		return results.SelectMany(s => s)
-			.OrderBy(s => s)
-			.Distinct()
-			.ToArray();
+		return [.. results.SelectMany(s => s)
+			.Order()
+			.Distinct()];
 	}
 
 	/// <summary>
@@ -132,10 +130,9 @@ internal static class GlobSearch
 		});
 
 		// merge the results from each task into single sorted array
-		return results
+		return [.. results
 			.SelectMany(x => x)
-			.OrderBy(x => x)
-			.Distinct()
-			.ToArray();
+			.Order()
+			.Distinct()];
 	}
 }

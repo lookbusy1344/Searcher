@@ -1,9 +1,9 @@
+namespace Searcher;
+
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Channels;
-
-namespace Searcher;
 
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 

@@ -1,8 +1,8 @@
-﻿using CommandLine;
-using Searcher;
-using System.Text.RegularExpressions;
+﻿namespace TestSearcher;
 
-namespace TestSearcher;
+using System.Text.RegularExpressions;
+using CommandLine;
+using Searcher;
 
 internal static partial class Helpers
 {
@@ -59,7 +59,7 @@ internal static partial class Helpers
 	/// <summary>
 	/// Split a single string into a string array, respecting quotes and spaces
 	/// </summary>
-	private static string[] SplitParams(string s) => SplitOnSpacesRespctQuotes().Split(s).Where(i => i != "\"").ToArray();
+	private static string[] SplitParams(string s) => [.. SplitOnSpacesRespctQuotes().Split(s).Where(i => i != "\"")];
 
 	/// <summary>
 	/// Helper to set up the instance, run the test, and return the results
@@ -91,9 +91,7 @@ internal static partial class Helpers
 			throw new Exception("Task result was null");
 		}
 
-		return task.Result.Where(r => r.Result == SearchResult.Found)
-			.Select(r => Path.GetFileName(r.Path))
-			.ToArray();
+		return [.. task.Result.Where(r => r.Result == SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
 	}
 
 	/// <summary>
@@ -105,8 +103,7 @@ internal static partial class Helpers
 			return false;
 		}
 
-		return a.OrderBy(s => s)
-			.SequenceEqual(b.OrderBy(s => s));
+		return a.Order().SequenceEqual(b.Order());
 	}
 
 	[GeneratedRegex("(?<=\")(.*?)(?=\")|\\s+")]

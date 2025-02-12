@@ -1,6 +1,6 @@
-﻿using System.Management;
+﻿namespace Searcher;
 
-namespace Searcher;
+using System.Management;
 
 internal static class DiskQuery
 {

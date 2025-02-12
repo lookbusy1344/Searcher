@@ -1,6 +1,6 @@
-﻿using Searcher;
+﻿namespace TestSearcher;
 
-namespace TestSearcher;
+using Searcher;
 
 public partial class SearchTests
 {
