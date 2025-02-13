@@ -144,6 +144,7 @@ public partial class MainForm : Form
 
 		timerProgress.Start();
 
+#pragma warning disable IDE0045 // Convert to conditional expression
 		if (errors > 0) {
 			if (config.HideErrors) {
 				_ = MessageBox.Show($"There were {errors} errors. Remove the -h / --hide-errors switch to see details", "Errors", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -151,6 +152,7 @@ public partial class MainForm : Form
 				_ = MessageBox.Show($"There were {errors} errors, indicated in the output list", "Errors", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
+#pragma warning restore IDE0045 // Convert to conditional expression
 	}
 
 	/// <summary>
@@ -261,11 +263,7 @@ public partial class MainForm : Form
 		}
 
 		// return a string to be displayed on the UI
-		if (cts!.Token.IsCancellationRequested) {
-			return "Cancelled!";
-		}
-
-		return $"Finished! {filescount} files scanned in {monotonic.Seconds:F1} secs";
+		return cts!.Token.IsCancellationRequested ? "Cancelled!" : $"Finished! {filescount} files scanned in {monotonic.Seconds:F1} secs";
 	}
 
 	private void CancelButton_Click(object sender, EventArgs e)
@@ -358,11 +356,7 @@ public partial class MainForm : Form
 	{
 		if (itemsList.ListViewItemSorter is ListViewItemComparer comparer && comparer.ColumnNumber == e.Column) {
 			// Change the sort order in the existing ListViewItemComparer object
-			if (comparer.Order == SortOrder.Ascending) {
-				comparer.Order = SortOrder.Descending;
-			} else {
-				comparer.Order = SortOrder.Ascending;
-			}
+			comparer.Order = comparer.Order == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
 		} else {
 			itemsList.ListViewItemSorter = new ListViewItemComparer(e.Column, SortOrder.Ascending);
 		}

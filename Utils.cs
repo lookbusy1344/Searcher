@@ -37,15 +37,13 @@ internal static class Utils
 		modulo = count / 100;   // 100 or more files, so update progress bar every 1% of files
 
 		// keep the updates between 1 and 201 items
+#pragma warning disable IDE0046 // Convert to conditional expression
 		if (modulo < 1) {
 			return 1;
 		}
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-		if (modulo > 201) {
-			return 201;
-		}
-
-		return modulo;
+		return modulo > 201 ? 201 : modulo;
 	}
 
 	/// <summary>
@@ -111,11 +109,9 @@ internal static class Utils
 	{
 		const string keyName = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Winword.exe";
 		var winwordPath = (string?)Registry.GetValue(keyName, "Path", null);
-		if (winwordPath == null) {
-			return "C:\\Program Files\\Microsoft Office\\root\\Office16\\winword.exe";
-		}
-
-		return Path.Combine(winwordPath, "Winword.exe");
+		return winwordPath == null
+			? "C:\\Program Files\\Microsoft Office\\root\\Office16\\winword.exe"
+			: Path.Combine(winwordPath, "Winword.exe");
 	}
 
 	/// <summary>
@@ -138,11 +134,7 @@ internal static class Utils
 			.Replace("%1", "")
 			.Trim();
 
-		if (!File.Exists(appPath)) {
-			return null;
-		}
-
-		return appPath;
+		return !File.Exists(appPath) ? null : appPath;
 	}
 
 	/// <summary>

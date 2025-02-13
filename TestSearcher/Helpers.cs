@@ -49,11 +49,7 @@ internal static partial class Helpers
 	{
 		var items = SplitParams(s);
 		var parsed = Searcher.Program.ParseParams(items);
-		if (parsed.Tag == ParserResultType.NotParsed) {
-			throw new Exception($"Failed to parse command line: {s}");
-		}
-
-		return parsed.Value;
+		return parsed.Tag == ParserResultType.NotParsed ? throw new Exception($"Failed to parse command line: {s}") : parsed.Value;
 	}
 
 	/// <summary>
@@ -83,28 +79,21 @@ internal static partial class Helpers
 			throw new Exception("Task was canceled");
 		}
 
+#pragma warning disable IDE0046 // Convert to conditional expression
 		if (!task.IsCompletedSuccessfully) {
 			throw new Exception("Task was not completed successfully");
 		}
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-		if (task.Result == null) {
-			throw new Exception("Task result was null");
-		}
-
-		return [.. task.Result.Where(r => r.Result == SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
+		return task.Result == null
+			? throw new Exception("Task result was null")
+			: [.. task.Result.Where(r => r.Result == SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
 	}
 
 	/// <summary>
 	/// Compare the lengths, and sort and compare the arrays
 	/// </summary>
-	public static bool CompareNames(string[] a, string[] b)
-	{
-		if (a.Length != b.Length) {
-			return false;
-		}
-
-		return a.Order().SequenceEqual(b.Order());
-	}
+	public static bool CompareNames(string[] a, string[] b) => a.Length == b.Length && a.Order().SequenceEqual(b.Order());
 
 	[GeneratedRegex("(?<=\")(.*?)(?=\")|\\s+")]
 	private static partial Regex SplitOnSpacesRespctQuotes();

@@ -11,6 +11,7 @@ internal static class SearchFile
 	/// </summary>
 	public static SearchResult FileContainsStringWrapper(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer, CancellationToken token)
 	{
+#pragma warning disable IDE0046 // Convert to conditional expression
 		if (path.EndsWith(".docx", CliOptions.FilenameComparison)) {
 			return DocxContainsString(path, text, comparer);
 		}
@@ -18,12 +19,11 @@ internal static class SearchFile
 		if (path.EndsWith(".pdf", CliOptions.FilenameComparison)) {
 			return PdfCheck.CheckPdfFile(path, text, comparer, token);
 		}
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-		if (path.EndsWith(".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path)) {
-			return CheckZipFile(path, text, innerpatterns, comparer, token);
-		}
-
-		return FileContainsString(path, text, comparer);
+		return path.EndsWith(".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path)
+			? CheckZipFile(path, text, innerpatterns, comparer, token)
+			: FileContainsString(path, text, comparer);
 	}
 
 	/// <summary>

@@ -19,11 +19,7 @@ internal sealed partial class PdfCheck
 
 		var result = SearchPdfInternal(reader, content, strcomp, token);
 
-		if (result == SearchResult.Error) {
-			throw new Exception("Error reading PDF file");
-		}
-
-		return result == SearchResult.Found;
+		return result == SearchResult.Error ? throw new Exception("Error reading PDF file") : result == SearchResult.Found;
 	}
 
 	/// <summary>
