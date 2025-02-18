@@ -243,6 +243,9 @@ dotnet_diagnostic.CA2100.severity = none
 dotnet_diagnostic.CA5394.severity = none
 dotnet_diagnostic.IDE0042.severity = none
 
+# VSTHRD111: Use .ConfigureAwait(bool)
+dotnet_diagnostic.VSTHRD111.severity = silent
+
 # VSTHRD103: Call async methods when in an async method, duplicate of CA1849
 dotnet_diagnostic.VSTHRD103.severity = none
 
