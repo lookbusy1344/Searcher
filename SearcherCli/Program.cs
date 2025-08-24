@@ -1,6 +1,9 @@
-﻿namespace SearcherCli;
+namespace SearcherCli;
 
 public static class Program
 {
-	public static void Main(string[] args) => Console.WriteLine("Hello, World!");
+	public static void Main(string[] args)
+	{
+		var pico = new PicoArgs_dotnet.PicoArgs(args);
+	}
 }
