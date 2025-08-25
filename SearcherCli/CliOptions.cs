@@ -1,7 +1,6 @@
 ﻿namespace SearcherCli;
 
 using System.Diagnostics.CodeAnalysis;
-using CommandLine;
 
 public class CliOptions
 {
@@ -60,7 +59,6 @@ public class CliOptions
 	/// <summary>
 	/// Folder to search. If its NULL it will return current directory
 	/// </summary>
-	[Option('f', "folder", Required = false, HelpText = "Folder to search", Default = null)]
 	public DirectoryInfo Folder
 	{
 		get => folder ?? CurrentDir; // if the folder is not set, return the current directory
@@ -75,7 +73,6 @@ public class CliOptions
 	/// <summary>
 	/// Search pattern, eg "*.txt"
 	/// </summary>
-	[Option('p', "pattern", Required = false, HelpText = "File pattern", Default = null, Min = 1, Max = 20, Separator = ',')]
 	public IReadOnlyList<string> Pattern
 	{
 		get => IsPatternEmpty ? DefaultPattern : pattern;
@@ -90,35 +87,41 @@ public class CliOptions
 	/// <summary>
 	/// Search text eg "hello world"
 	/// </summary>
-	[Option('s', "search", Required = true, HelpText = "Search text")]
 	public string Search { get; set; }
 
-	[Option('w', "open-with", Required = false, HelpText = "App to open apps", Default = null)]
 	public string? OpenWith { get; set; }
 
 	/// <summary>
 	/// true if the search should be case sensitive; false otherwise
 	/// </summary>
-	[Option('c', "case-sensitive", Required = false, HelpText = "Search case-sensitive", Default = false)]
 	public bool CaseSensitive { get; set; }
 
 	/// <summary>
 	/// true if the search should be case sensitive; false otherwise
 	/// </summary>
-	[Option('o', "one-thread", Required = false, HelpText = "Just use a single thread", Default = false)]
 	public bool OneThread { get; set; }
 
 	/// <summary>
 	/// Always search inside zips
 	/// </summary>
-	[Option('z', "inside-zips", Required = false, HelpText = "Always search inside zips", Default = false)]
 	public bool InsideZips { get; set; }
 
 	/// <summary>
 	/// Hide errors in output list
 	/// </summary>
-	[Option('h', "hide-errors", Required = false, HelpText = "Hide errors in output list", Default = false)]
 	public bool HideErrors { get; set; }
 
 	public bool IsSSD { get; set; }
+}
+
+/// <summary>
+/// Exception thrown when help is requested
+/// </summary>
+public class HelpException : Exception
+{
+	public HelpException(string message) : base(message) { }
+
+	public HelpException() { }
+
+	public HelpException(string message, Exception innerException) : base(message, innerException) { }
 }
