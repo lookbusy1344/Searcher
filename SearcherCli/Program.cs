@@ -19,7 +19,10 @@ public static class Program
 			}
 
 			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}", true);
-			MainSearch.Search(parsed);
+
+			using var mainSearch = new MainSearch();
+			mainSearch.Search(parsed);
+
 			return 0;
 		}
 		catch (HelpException) {

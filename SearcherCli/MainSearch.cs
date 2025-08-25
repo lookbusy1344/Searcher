@@ -1,14 +1,16 @@
 namespace SearcherCli;
 
-internal static class MainSearch
+internal sealed class MainSearch : IDisposable
 {
-	public static void Search(CliOptions config)
+	public CancellationTokenSource CancellationToken { get; init; } = new();
+
+	public void Search(CliOptions config)
 	{
 		var parallelThreads = config.DegreeOfParallelism;
 		// var filesCount = 0;
 		// var modulo = 20;
 
-		using var cts = new CancellationTokenSource();
+		var cts = CancellationToken;
 
 		try {
 			if (string.IsNullOrWhiteSpace(config.Search)) {
@@ -63,4 +65,6 @@ internal static class MainSearch
 				SearchResult.Error => "ERROR",
 				_ => "NOT FOUND"
 			}}");
+
+	public void Dispose() => CancellationToken.Dispose();
 }
