@@ -2,11 +2,11 @@ namespace SearcherCli;
 
 internal static class MainSearch
 {
-	public static void LongRunningTask(CliOptions config)
+	public static void Search(CliOptions config)
 	{
-		var parallelthreads = config.DegreeOfParallelism;
-		var filescount = 0;
-		var modulo = 20;
+		var parallelThreads = config.DegreeOfParallelism;
+		// var filesCount = 0;
+		// var modulo = 20;
 
 		using var cts = new CancellationTokenSource();
 
@@ -15,36 +15,36 @@ internal static class MainSearch
 				throw new OperationCanceledException();
 			}
 
-			// outerpatterns are the physical files to find, and may include .zip files even if not given as a pattern, when -z is selected
-			// innerpatterns are for searching inside zip files. May be an empty list for everything, but explicitly doesnt include .zip
-			var innerpatterns = Utils.ProcessInnerPatterns(config.Pattern);
-			var outerpatterns = Utils.ProcessOuterPatterns(config.Pattern, config.InsideZips);
-			if (outerpatterns.Count == 0) {
+			// outerPatterns are the physical files to find, and may include .zip files even if not given as a pattern, when -z is selected
+			// innerPatterns are for searching inside zip files. May be an empty list for everything, but explicitly doesnt include .zip
+			var innerPatterns = Utils.ProcessInnerPatterns(config.Pattern);
+			var outerPatterns = Utils.ProcessOuterPatterns(config.Pattern, config.InsideZips);
+			if (outerPatterns.Count == 0) {
 				throw new("No pattern specified");
 			}
 
 			// Parallel routine for searching folders
 			//var sw = Stopwatch.StartNew();
-			var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerpatterns, parallelthreads, null, cts.Token);
+			var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerPatterns, parallelThreads, null, cts.Token);
 			//Debug.WriteLine($"Found {files.Length} files in {sw.ElapsedMilliseconds}ms");
 
 			// Work out a reasonable update frequency for the progress bar
-			filescount = files.Length;
-			modulo = Utils.CalculateModulo(filescount);
+			// filesCount = files.Length;
+			// modulo = Utils.CalculateModulo(filesCount);
 
-			// var progresstimer = new ProgressTimer(filescount);
+			// var progressTimer = new ProgressTimer(filesCount);
 			// var counter = new SafeCounter();
 
 			// search the files in parallel
-			_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cts.Token }, file => {
+			_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = parallelThreads, CancellationToken = cts.Token }, file => {
 				// Search the file for the search string
-				var found = SearchFile.FileContainsStringWrapper(file, config.Search, innerpatterns, config.StringComparison, cts.Token);
+				var found = SearchFile.FileContainsStringWrapper(file, config.Search, innerPatterns, config.StringComparison, cts.Token);
 				if (found is SearchResult.Found or SearchResult.Error) {
 					ShowResult(new(file, found));
 				}
 
 				// when the task completes, update completed counter. This is thread safe
-				//var currentcount = counter.Increment();
+				//var currentCount = counter.Increment();
 			});
 		}
 		catch {

@@ -19,7 +19,7 @@ public static class Program
 			}
 
 			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}", true);
-			MainSearch.LongRunningTask(parsed);
+			MainSearch.Search(parsed);
 			return 0;
 		}
 		catch (HelpException) {
