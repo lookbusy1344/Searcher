@@ -14,11 +14,11 @@ public static class Program
 			//raw = parsed.Raw;
 
 			if (!raw) {
-				//Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
+				Console.WriteLine("Searcher - recursively searching inside files, including zips and pdfs");
 				Console.WriteLine(parsed.OneThread ? "Single thread mode" : "Multi-thread mode");
 			}
 
-			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.GetPatterns()}", true);
+			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.GetPatterns()}, search string: \"{parsed.Search}\"", true);
 
 			using var mainSearch = new MainSearch();
 			mainSearch.Search(parsed);
@@ -27,14 +27,12 @@ public static class Program
 		}
 		catch (HelpException) {
 			// --help has been requested
-			//Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(20)}");
 			Console.WriteLine(CommandLineMessage);
 			return 0;
 		}
 		catch (Exception ex) {
 			// any other exception
 			Console.WriteLine($"ERROR: {ex.Message}\r\n");
-			//Console.WriteLine($"ZipDir - list contents of zip files {ver.GetVersionHash(12)}");
 			Console.WriteLine(CommandLineMessage);
 			return 1;
 		}

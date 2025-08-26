@@ -1,5 +1,7 @@
 namespace SearcherCli;
 
+using System.Diagnostics;
+
 internal sealed class MainSearch : IDisposable
 {
 	public CancellationTokenSource CancellationToken { get; init; } = new();
@@ -25,9 +27,9 @@ internal sealed class MainSearch : IDisposable
 		}
 
 		// Parallel routine for searching folders
-		//var sw = Stopwatch.StartNew();
+		var sw = Stopwatch.StartNew();
 		var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerPatterns, parallelThreads, null, CancellationToken.Token);
-		//Debug.WriteLine($"Found {files.Length} files in {sw.ElapsedMilliseconds}ms");
+		Console.WriteLine($"Found {files.Length} files matching pattern in {sw.ElapsedMilliseconds}ms. Searching content...");
 
 		// Work out a reasonable update frequency for the progress bar
 		// filesCount = files.Length;
