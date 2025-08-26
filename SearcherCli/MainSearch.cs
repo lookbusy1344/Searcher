@@ -29,7 +29,7 @@ internal sealed class MainSearch : IDisposable
 		// Parallel routine for searching folders
 		var sw = Stopwatch.StartNew();
 		var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerPatterns, parallelThreads, null, CancellationToken.Token);
-		Console.WriteLine($"Found {files.Length} files matching pattern in {sw.ElapsedMilliseconds}ms. Searching content...");
+		Program.WriteMessage($"Found {files.Length} files matching pattern in {sw.ElapsedMilliseconds}ms. Searching content...");
 
 		// Work out a reasonable update frequency for the progress bar
 		// filesCount = files.Length;

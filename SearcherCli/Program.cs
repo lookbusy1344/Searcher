@@ -11,7 +11,7 @@ public static class Program
 		try {
 			var parsed = ParseCommandLine(args);
 
-			//raw = parsed.Raw;
+			raw = parsed.Raw;
 
 			if (!raw) {
 				Console.WriteLine("Searcher - recursively searching inside files, including zips and pdfs");
@@ -61,6 +61,7 @@ public static class Program
 		var oneThread = pico.Contains("-o", "--one-thread");
 		var caseSensitive = pico.Contains("-c", "--case-sensitive");
 		var hideErrors = pico.Contains("-h", "--hide-errors");
+		var raw = pico.Contains("-r", "--raw");
 
 		return new() {
 			Search = search,
@@ -70,7 +71,8 @@ public static class Program
 			InsideZips = insideZips,
 			OneThread = oneThread,
 			CaseSensitive = caseSensitive,
-			HideErrors = hideErrors
+			HideErrors = hideErrors,
+			Raw = raw
 		};
 	}
 
@@ -79,11 +81,13 @@ public static class Program
 	/// </summary>
 	internal static void WriteMessage(string msg, bool blankLine = false)
 	{
-		if (!raw) {
-			Console.WriteLine(msg);
-			if (blankLine) {
-				Console.WriteLine();
-			}
+		if (raw) {
+			return;
+		}
+
+		Console.WriteLine(msg);
+		if (blankLine) {
+			Console.WriteLine();
 		}
 	}
 
@@ -102,6 +106,7 @@ public static class Program
 	                                            --one-thread, -o                    Don't search files in parallel
 	                                            --case-sensitive, -c                Text is matched in a case-sensitive way
 	                                            --hide-errors, -h                   Hide errors from the output list
+	                                            --raw, -r                           Suppress all non-error messages
 
 	                                          Examples. Search current folder for txt and Word files containing "hello world":
 	                                            Searcher --folder . --pattern *.txt,*.docx --search "hello world"

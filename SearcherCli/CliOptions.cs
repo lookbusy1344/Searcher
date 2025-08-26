@@ -111,6 +111,11 @@ public class CliOptions
 	/// </summary>
 	public bool HideErrors { get; set; }
 
+	/// <summary>
+	/// If true, suppresses all non-error messages and chrome
+	/// </summary>
+	public bool Raw { get; set; }
+
 	public bool IsSSD { get; set; }
 }
 
