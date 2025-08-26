@@ -18,7 +18,7 @@ public static class Program
 				Console.WriteLine(parsed.OneThread ? "Single thread mode" : "Multi-thread mode");
 			}
 
-			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.Pattern}", true);
+			WriteMessage($"Folder: {parsed.Folder}, pattern: {parsed.GetPatterns()}", true);
 
 			using var mainSearch = new MainSearch();
 			mainSearch.Search(parsed);

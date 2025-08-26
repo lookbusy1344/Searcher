@@ -56,10 +56,10 @@ internal sealed class MainSearch : IDisposable
 	/// <param name="result"></param>
 	public static void ShowResult(SingleResult result) =>
 		Console.WriteLine(
-			$"{result.Path}: {result.Result switch {
+			$"{result.Path}{result.Result switch {
 				SearchResult.Found => "",
-				SearchResult.Error => "ERROR",
-				_ => "NOT FOUND"
+				SearchResult.Error => " : ERROR",
+				_ => " : NOT FOUND"
 			}}");
 
 	public void Dispose() => CancellationToken.Dispose();
