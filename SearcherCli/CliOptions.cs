@@ -1,4 +1,4 @@
-﻿namespace SearcherCli;
+namespace SearcherCli;
 
 using System.Diagnostics.CodeAnalysis;
 
