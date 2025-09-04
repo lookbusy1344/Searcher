@@ -4,7 +4,10 @@
       "Bash(dotnet build)",
       "Bash(dotnet clean:*)",
       "Bash(dir)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dotnet build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
