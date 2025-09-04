@@ -1,124 +1,90 @@
-﻿namespace Searcher;
+namespace Searcher;
 
-using System.Diagnostics.CodeAnalysis;
 using CommandLine;
+using SearcherCore;
 
-public class CliOptions
+/// <summary>
+/// Configuration options for WinForms application with command-line parser attributes
+/// </summary>
+public class CliOptions : SearcherCore.CliOptions
 {
-	private static readonly DirectoryInfo CurrentDir = new(".");
-	private static readonly IReadOnlyList<string> DefaultPattern = ["*"];
-	public const StringComparison FilenameComparison = StringComparison.OrdinalIgnoreCase;
-
-	/// <summary>
-	/// Default constructor, be case-insensitive
-	/// </summary>
-	public CliOptions()
-	{
-		CaseSensitive = false;
-		OneThread = false;
-		IsSSD = true;
-		Search = string.Empty;
-	}
-
-	/// <summary>
-	/// Get the string comparison to use for the search
-	/// </summary>
-	public StringComparison StringComparison => CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-
-	/// <summary>
-	/// Number of threads to use, according to --one-thread
-	/// </summary>
-	public int DegreeOfParallelism => OneThread ? 1 : GetMaxParallelism();
-
-	/// <summary>
-	/// Get the max allowed parallelism, which is number of cores or half the cores if its a spinning disk
-	/// </summary>
-	private int GetMaxParallelism()
-	{
-		var p = Environment.ProcessorCount;
-		if (IsSSD) {
-			return p;
-		}
-
-		// spinning disk, so use half the cores. 
-		p /= 2;
-
-		return Math.Max(p, 1);
-	}
-
-	/// <summary>
-	/// Are any patterns defined?
-	/// </summary>
-	[MemberNotNullWhen(false, nameof(pattern))] // if we return false, then pattern is not null. This tells the compiler that
-	private bool IsPatternEmpty => pattern is null || pattern.Count == 0;
-
-	/// <summary>
-	/// Get a string representation of the patterns
-	/// </summary>
-	public string GetPatterns() => IsPatternEmpty ? "*" : string.Join(',', Pattern);
-
 	/// <summary>
 	/// Folder to search. If its NULL it will return current directory
 	/// </summary>
 	[Option('f', "folder", Required = false, HelpText = "Folder to search", Default = null)]
-	public DirectoryInfo Folder
+	public new DirectoryInfo Folder
 	{
-		get => folder ?? CurrentDir;        // if the folder is not set, return the current directory
-		set => folder = value;
+		get => base.Folder;
+		set => base.Folder = value;
 	}
-
-	/// <summary>
-	/// Backing field for folder. This can be null but the property never will be
-	/// </summary>
-	private DirectoryInfo? folder;
 
 	/// <summary>
 	/// Search pattern, eg "*.txt"
 	/// </summary>
 	[Option('p', "pattern", Required = false, HelpText = "File pattern", Default = null, Min = 1, Max = 20, Separator = ',')]
-	public IReadOnlyList<string> Pattern
+	public new IReadOnlyList<string> Pattern
 	{
-		get => IsPatternEmpty ? DefaultPattern : pattern;
-		set => pattern = value;
+		get => base.Pattern;
+		set => base.Pattern = value;
 	}
-
-	/// <summary>
-	/// Backing field for pattern. This can be null but the property never will be
-	/// </summary>
-	private IReadOnlyList<string>? pattern;
 
 	/// <summary>
 	/// Search text eg "hello world"
 	/// </summary>
 	[Option('s', "search", Required = true, HelpText = "Search text")]
-	public string Search { get; set; }
+	public new string Search
+	{
+		get => base.Search;
+		set => base.Search = value;
+	}
 
+	/// <summary>
+	/// App to open files with
+	/// </summary>
 	[Option('w', "open-with", Required = false, HelpText = "App to open apps", Default = null)]
-	public string? OpenWith { get; set; }
+	public new string? OpenWith
+	{
+		get => base.OpenWith;
+		set => base.OpenWith = value;
+	}
 
 	/// <summary>
 	/// true if the search should be case sensitive; false otherwise
 	/// </summary>
 	[Option('c', "case-sensitive", Required = false, HelpText = "Search case-sensitive", Default = false)]
-	public bool CaseSensitive { get; set; }
+	public new bool CaseSensitive
+	{
+		get => base.CaseSensitive;
+		set => base.CaseSensitive = value;
+	}
 
 	/// <summary>
-	/// true if the search should be case sensitive; false otherwise
+	/// true if only one thread should be used; false otherwise
 	/// </summary>
 	[Option('o', "one-thread", Required = false, HelpText = "Just use a single thread", Default = false)]
-	public bool OneThread { get; set; }
+	public new bool OneThread
+	{
+		get => base.OneThread;
+		set => base.OneThread = value;
+	}
 
 	/// <summary>
-	/// Always search inside zips
+	/// Always search inside zip files
 	/// </summary>
 	[Option('z', "inside-zips", Required = false, HelpText = "Always search inside zips", Default = false)]
-	public bool InsideZips { get; set; }
+	public new bool InsideZips
+	{
+		get => base.InsideZips;
+		set => base.InsideZips = value;
+	}
 
 	/// <summary>
 	/// Hide errors in output list
 	/// </summary>
 	[Option('h', "hide-errors", Required = false, HelpText = "Hide errors in output list", Default = false)]
-	public bool HideErrors { get; set; }
-
-	public bool IsSSD { get; set; }
+	public new bool HideErrors
+	{
+		get => base.HideErrors;
+		set => base.HideErrors = value;
+	}
 }

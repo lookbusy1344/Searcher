@@ -74,4 +74,8 @@
     <PackageReference Include="System.Management" Version="9.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="SearcherCore\SearcherCore.csproj" />
+  </ItemGroup>
+
 </Project>

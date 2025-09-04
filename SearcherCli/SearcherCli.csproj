@@ -37,4 +37,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SearcherCore\SearcherCore.csproj" />
+  </ItemGroup>
+
 </Project>
