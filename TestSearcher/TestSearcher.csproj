@@ -41,8 +41,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Searcher.csproj" />
     <ProjectReference Include="..\SearcherCore\SearcherCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="SearchTests.cs" />
+    <Compile Remove="Helpers.cs" />
   </ItemGroup>
 
 </Project>

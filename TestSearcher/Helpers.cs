@@ -3,6 +3,7 @@ namespace TestSearcher;
 using System.Text.RegularExpressions;
 using CommandLine;
 using Searcher;
+using SearcherCore;
 
 internal static partial class Helpers
 {
@@ -87,7 +88,7 @@ internal static partial class Helpers
 
 		return task.Result == null
 			? throw new Exception("Task result was null")
-			: [.. task.Result.Where(r => r.Result == SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
+			: [.. task.Result.Where(r => r.Result == SearcherCore.SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
 	}
 
 	/// <summary>
