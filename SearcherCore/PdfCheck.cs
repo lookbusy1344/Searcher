@@ -1,12 +1,15 @@
-namespace SearcherCli;
+namespace SearcherCore;
 
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 
+/// <summary>
+/// PDF file content searching functionality
+/// </summary>
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes - .NET8 analyser bug? These static methods are used!
-internal sealed partial class PdfCheck
+public sealed partial class PdfCheck
 #pragma warning restore CA1812 // Avoid uninstantiated internal classes
 {
 	/// <summary>
@@ -14,6 +17,8 @@ internal sealed partial class PdfCheck
 	/// </summary>
 	public static bool CheckStream(ZipArchiveEntry entry, string content, StringComparison strcomp, CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(entry);
+		ArgumentNullException.ThrowIfNull(content);
 		using var stream = entry.Open();
 		using var reader = new PdfReader(stream);
 
@@ -27,6 +32,7 @@ internal sealed partial class PdfCheck
 	/// </summary>
 	public static SearchResult CheckPdfFile(string path, string content, StringComparison strcomp, CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(content);
 		try {
 			using var pdfReader = new PdfReader(path);
 			return SearchPdfInternal(pdfReader, content, strcomp, token);

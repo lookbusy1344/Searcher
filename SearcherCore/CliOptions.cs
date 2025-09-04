@@ -1,8 +1,10 @@
-﻿namespace Searcher;
+namespace SearcherCore;
 
 using System.Diagnostics.CodeAnalysis;
-using CommandLine;
 
+/// <summary>
+/// Configuration options for search operations
+/// </summary>
 public class CliOptions
 {
 	private static readonly DirectoryInfo CurrentDir = new(".");
@@ -60,10 +62,9 @@ public class CliOptions
 	/// <summary>
 	/// Folder to search. If its NULL it will return current directory
 	/// </summary>
-	[Option('f', "folder", Required = false, HelpText = "Folder to search", Default = null)]
 	public DirectoryInfo Folder
 	{
-		get => folder ?? CurrentDir;        // if the folder is not set, return the current directory
+		get => folder ?? CurrentDir; // if the folder is not set, return the current directory
 		set => folder = value;
 	}
 
@@ -75,7 +76,6 @@ public class CliOptions
 	/// <summary>
 	/// Search pattern, eg "*.txt"
 	/// </summary>
-	[Option('p', "pattern", Required = false, HelpText = "File pattern", Default = null, Min = 1, Max = 20, Separator = ',')]
 	public IReadOnlyList<string> Pattern
 	{
 		get => IsPatternEmpty ? DefaultPattern : pattern;
@@ -90,35 +90,52 @@ public class CliOptions
 	/// <summary>
 	/// Search text eg "hello world"
 	/// </summary>
-	[Option('s', "search", Required = true, HelpText = "Search text")]
 	public string Search { get; set; }
 
-	[Option('w', "open-with", Required = false, HelpText = "App to open apps", Default = null)]
+	/// <summary>
+	/// App to open files with
+	/// </summary>
 	public string? OpenWith { get; set; }
 
 	/// <summary>
 	/// true if the search should be case sensitive; false otherwise
 	/// </summary>
-	[Option('c', "case-sensitive", Required = false, HelpText = "Search case-sensitive", Default = false)]
 	public bool CaseSensitive { get; set; }
 
 	/// <summary>
-	/// true if the search should be case sensitive; false otherwise
+	/// true if only one thread should be used; false otherwise
 	/// </summary>
-	[Option('o', "one-thread", Required = false, HelpText = "Just use a single thread", Default = false)]
 	public bool OneThread { get; set; }
 
 	/// <summary>
-	/// Always search inside zips
+	/// Always search inside zip files
 	/// </summary>
-	[Option('z', "inside-zips", Required = false, HelpText = "Always search inside zips", Default = false)]
 	public bool InsideZips { get; set; }
 
 	/// <summary>
 	/// Hide errors in output list
 	/// </summary>
-	[Option('h', "hide-errors", Required = false, HelpText = "Hide errors in output list", Default = false)]
 	public bool HideErrors { get; set; }
 
+	/// <summary>
+	/// If true, suppresses all non-error messages and chrome (CLI-specific)
+	/// </summary>
+	public bool Raw { get; set; }
+
+	/// <summary>
+	/// Whether the storage is an SSD (affects parallelism)
+	/// </summary>
 	public bool IsSSD { get; set; }
+}
+
+/// <summary>
+/// Exception thrown when help is requested
+/// </summary>
+public class HelpException : Exception
+{
+	public HelpException(string message) : base(message) { }
+
+	public HelpException() { }
+
+	public HelpException(string message, Exception innerException) : base(message, innerException) { }
 }

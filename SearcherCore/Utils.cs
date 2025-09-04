@@ -1,4 +1,4 @@
-﻿namespace Searcher;
+namespace SearcherCore;
 
 using System.Diagnostics;
 using System.Linq;
@@ -6,16 +6,9 @@ using DotNet.Globbing;
 using Microsoft.Win32;
 
 /// <summary>
-/// Result of a search
+/// Utility functions for file operations and pattern processing
 /// </summary>
-public enum SearchResult { Found, NotFound, Error }
-
-/// <summary>
-/// A single search result
-/// </summary>
-public readonly record struct SingleResult(string Path, SearchResult Result);
-
-internal static class Utils
+public static class Utils
 {
 	private const string TextFileOpener = "notepad.exe";
 	private static ReadOnlySpan<byte> MagicNumberZip => [0x50, 0x4B, 0x03, 0x04];
@@ -31,10 +24,10 @@ internal static class Utils
 	{
 		int modulo;
 		if (count < 100) {
-			return 1;               // small number of files, so update progress bar every check
+			return 1; // small number of files, so update progress bar every check
 		}
 
-		modulo = count / 100;   // 100 or more files, so update progress bar every 1% of files
+		modulo = count / 100; // 100 or more files, so update progress bar every 1% of files
 
 		// keep the updates between 1 and 201 items
 #pragma warning disable IDE0046 // Convert to conditional expression
@@ -70,10 +63,11 @@ internal static class Utils
 	/// </summary>
 	public static void OpenFile(string path, CliOptions options)
 	{
+		ArgumentNullException.ThrowIfNull(options);
 		var opener = string.IsNullOrEmpty(options.OpenWith) ? TextFileOpener : options.OpenWith;
 		var extension = Path.GetExtension(path).ToLower();
 
-		path = $"\"{path}\"";   // the quotes are needed if the path has spaces, in some cases
+		path = $"\"{path}\""; // the quotes are needed if the path has spaces, in some cases
 
 		if (TextFileTypes.Contains(extension)) {
 			_ = Process.Start(opener, path);
@@ -96,7 +90,7 @@ internal static class Utils
 	private static void StartAcrobat(string path)
 	{
 		if (string.IsNullOrEmpty(AcrobatPath.Value)) {
-			_ = Process.Start(path);                            // fallback
+			_ = Process.Start(path); // fallback
 		} else {
 			_ = Process.Start(AcrobatPath.Value, path);
 		}
@@ -104,9 +98,15 @@ internal static class Utils
 
 	/// <summary>
 	/// Use the registry to find the path to MS Word, or a hardcoded path if not found
+	/// Returns empty string on non-Windows platforms
 	/// </summary>
 	private static string GetWordPath()
 	{
+		// Return empty string on non-Windows platforms
+		if (!OperatingSystem.IsWindows()) {
+			return "";
+		}
+
 		const string keyName = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Winword.exe";
 		var winwordPath = (string?)Registry.GetValue(keyName, "Path", null);
 		return winwordPath == null
@@ -116,9 +116,15 @@ internal static class Utils
 
 	/// <summary>
 	/// Look in the registry to see if we can locate the path to the program
+	/// Returns null on non-Windows platforms
 	/// </summary>
 	public static string? GetProgramPath(string program)
 	{
+		// Return null on non-Windows platforms
+		if (!OperatingSystem.IsWindows()) {
+			return null;
+		}
+
 		var keyName = $"HKEY_CLASSES_ROOT\\Applications\\{program}\\shell\\Open\\command";
 		var appPath = (string?)Registry.GetValue(keyName, null, null);
 
@@ -163,6 +169,7 @@ internal static class Utils
 	/// </summary>
 	public static IReadOnlyList<string> ProcessOuterPatternsOld(IList<string> p, bool includezips)
 	{
+		ArgumentNullException.ThrowIfNull(p);
 		// *.doc, *.txt => *.doc, *.txt, *.zip
 
 		var haszip = false;
@@ -182,25 +189,10 @@ internal static class Utils
 
 		return copyPatterns;
 	}
+
 	/// <summary>
 	/// This is used for searching for files inside zips, and returns globs
 	/// </summary>
 	public static IReadOnlyList<Glob> ProcessInnerPatterns(IReadOnlyList<string> patterns) =>
 		[.. patterns.Where(pat => !pat.EndsWith(".zip", CliOptions.FilenameComparison)).Select(pat => Glob.Parse(pat))];
-}
-
-/// <summary>
-/// Extension methods for List Views
-/// </summary>
-public static class ListViewExtensions
-{
-	// https://stackoverflow.com/questions/442817/c-sharp-flickering-listview-on-update
-
-	/// <summary>
-	/// Sets the double buffered property of a list view to the specified value
-	/// </summary>
-	/// <param name="listView">The List view</param>
-	/// <param name="doubleBuffered">Double Buffered or not</param>
-	public static void SetDoubleBuffered(this System.Windows.Forms.ListView listView, bool doubleBuffered = true) =>
-		listView?.GetType().GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)?.SetValue(listView, doubleBuffered, null);
 }

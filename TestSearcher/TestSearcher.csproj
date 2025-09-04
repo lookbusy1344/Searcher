@@ -37,10 +37,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Searcher.csproj" />
+    <ProjectReference Include="..\SearcherCore\SearcherCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="SearchTests.cs" />
+    <Compile Remove="Helpers.cs" />
   </ItemGroup>
 
 </Project>

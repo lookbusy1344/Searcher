@@ -11,10 +11,10 @@
     </PropertyGroup>
 
   <PropertyGroup>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+	<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 
 	<AnalysisModeDesign>All</AnalysisModeDesign>
-    <AnalysisModeSecurity>All</AnalysisModeSecurity>
+	<AnalysisModeSecurity>All</AnalysisModeSecurity>
 	<AnalysisModePerformance>All</AnalysisModePerformance>
 	<AnalysisModeReliability>All</AnalysisModeReliability>
 	<AnalysisModeUsage>All</AnalysisModeUsage>
@@ -29,12 +29,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="DotNet.Glob" Version="3.1.3" />
-    <PackageReference Include="itext7" Version="9.2.0" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.14.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SearcherCore\SearcherCore.csproj" />
   </ItemGroup>
 
 </Project>

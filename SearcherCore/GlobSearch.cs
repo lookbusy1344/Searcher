@@ -1,9 +1,12 @@
-﻿namespace Searcher;
+namespace SearcherCore;
 
 using System.Collections.Concurrent;
 using DotNet.Globbing;
 
-internal static class GlobSearch
+/// <summary>
+/// File discovery using glob patterns
+/// </summary>
+public static class GlobSearch
 {
 	private static readonly EnumerationOptions diroptions = new() { IgnoreInaccessible = true };
 
@@ -12,14 +15,17 @@ internal static class GlobSearch
 	/// </summary>
 	public static string[] FindFiles(string path, IReadOnlyList<Glob> globs, CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(globs);
 		var files = new List<string>(100);
 		foreach (var g in globs) {
 			FindFilesRecursivelyInternal(ref files, path, g, token);
 		}
 
-		return [.. files
-			.Order()
-			.Distinct()];
+		return [
+			.. files
+				.Order()
+				.Distinct()
+		];
 	}
 
 	/// <summary>
@@ -43,7 +49,8 @@ internal static class GlobSearch
 	/// <summary>
 	/// Use globs to find files recursively, in parallel
 	/// </summary>
-	public static string[] ParallelFindFiles(string path, IReadOnlyList<Glob> globs, int parallelthreads, Action<int>? progress, CancellationToken cancellationtoken)
+	public static string[] ParallelFindFiles(string path, IReadOnlyList<Glob> globs, int parallelthreads, Action<int>? progress,
+		CancellationToken cancellationtoken)
 	{
 		if (parallelthreads <= 1) {
 			return FindFiles(path, globs, cancellationtoken);
@@ -63,51 +70,54 @@ internal static class GlobSearch
 			count += currentbuffer.Count;
 			progress?.Invoke(count);
 
-			_ = Parallel.ForEach(currentbuffer, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cancellationtoken }, (folder) => {
-				cancellationtoken.ThrowIfCancellationRequested();
-
-				// add subdirectories to the queue, to be processed in parallel on the next batch
-				foreach (var dir in Directory.GetDirectories(folder, "*", diroptions)) {
-					nextbuffer.Add(dir);
-				}
-
-				// now find the files that match the globs
-				var candidates = Directory.GetFiles(folder);
-				List<string>? found = null;
-				foreach (var c in candidates) {
+			_ = Parallel.ForEach(currentbuffer, new() { MaxDegreeOfParallelism = parallelthreads, CancellationToken = cancellationtoken },
+				(folder) => {
 					cancellationtoken.ThrowIfCancellationRequested();
-					var size = candidates.Length > 10 ? 10 : candidates.Length;
 
-					var filename = Path.GetFileName(c);
-					foreach (var g in globs) {
-						if (g.IsMatch(filename)) {
-							found ??= new List<string>(size);
-							found.Add(c);
-							break;
+					// add subdirectories to the queue, to be processed in parallel on the next batch
+					foreach (var dir in Directory.GetDirectories(folder, "*", diroptions)) {
+						nextbuffer.Add(dir);
+					}
+
+					// now find the files that match the globs
+					var candidates = Directory.GetFiles(folder);
+					List<string>? found = null;
+					foreach (var c in candidates) {
+						cancellationtoken.ThrowIfCancellationRequested();
+						var size = candidates.Length > 10 ? 10 : candidates.Length;
+
+						var filename = Path.GetFileName(c);
+						foreach (var g in globs) {
+							if (g.IsMatch(filename)) {
+								found ??= new(size);
+								found.Add(c);
+								break;
+							}
 						}
 					}
-				}
 
-				if (found?.Count > 0) {
-					results.Add(found);
-				}
-			});
+					if (found?.Count > 0) {
+						results.Add(found);
+					}
+				});
 
 			// if no new folders were added, we are done
 			if (nextbuffer.IsEmpty) {
 				break;
 			}
 
-			currentbuffer.Clear();  // clear the processed items
+			currentbuffer.Clear(); // clear the processed items
 
 			// swap the bags, so currentbuffer is now ready for the next iteration
 			(nextbuffer, currentbuffer) = (currentbuffer, nextbuffer);
 		}
 
 		// flatten and sort the results
-		return [.. results.SelectMany(s => s)
-			.Order()
-			.Distinct()];
+		return [
+			.. results.SelectMany(s => s)
+				.Order()
+				.Distinct()
+		];
 	}
 
 	/// <summary>
@@ -118,7 +128,7 @@ internal static class GlobSearch
 		var searchoptions = new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true };
 		var results = new ConcurrentBag<string[]>();
 
-		_ = Parallel.ForEach(outerpatterns, new ParallelOptions { MaxDegreeOfParallelism = parallelthreads, CancellationToken = token }, pattern => {
+		_ = Parallel.ForEach(outerpatterns, new() { MaxDegreeOfParallelism = parallelthreads, CancellationToken = token }, pattern => {
 			if (string.IsNullOrEmpty(pattern)) {
 				return;
 			}
@@ -130,9 +140,11 @@ internal static class GlobSearch
 		});
 
 		// merge the results from each task into single sorted array
-		return [.. results
-			.SelectMany(x => x)
-			.Order()
-			.Distinct()];
+		return [
+			.. results
+				.SelectMany(x => x)
+				.Order()
+				.Distinct()
+		];
 	}
 }

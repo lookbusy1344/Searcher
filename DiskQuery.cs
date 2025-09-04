@@ -1,4 +1,4 @@
-﻿namespace Searcher;
+namespace Searcher;
 
 using System.Management;
 

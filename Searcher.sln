@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Searcher", "Searcher.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSearcher", "TestSearcher\TestSearcher.csproj", "{E0665587-32EF-46E8-9187-FBC4C7035A1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearcherCore", "SearcherCore\SearcherCore.csproj", "{B4E2D6F1-8C5A-4D3B-9A7E-2F1C3E5A4B9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{E0665587-32EF-46E8-9187-FBC4C7035A1A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E0665587-32EF-46E8-9187-FBC4C7035A1A}.Release|x64.ActiveCfg = Release|Any CPU
 		{E0665587-32EF-46E8-9187-FBC4C7035A1A}.Release|x64.Build.0 = Release|Any CPU
+		{B4E2D6F1-8C5A-4D3B-9A7E-2F1C3E5A4B9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4E2D6F1-8C5A-4D3B-9A7E-2F1C3E5A4B9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4E2D6F1-8C5A-4D3B-9A7E-2F1C3E5A4B9D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B4E2D6F1-8C5A-4D3B-9A7E-2F1C3E5A4B9D}.Debug|x64.Build.0 = Debug|Any CPU
+		{B4E2D6F1-8C5A-4D3B-9A7E-2F1C3E5A4B9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4E2D6F1-8C5A-4D3B-9A7E-2F1C3E5A4B9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4E2D6F1-8C5A-4D3B-9A7E-2F1C3E5A4B9D}.Release|x64.ActiveCfg = Release|Any CPU
+		{B4E2D6F1-8C5A-4D3B-9A7E-2F1C3E5A4B9D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

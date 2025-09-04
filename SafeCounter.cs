@@ -1,4 +1,4 @@
-﻿namespace Searcher;
+namespace Searcher;
 
 /// <summary>
 /// This is a thread safe Int32 counter using Interlocked.Increment etc

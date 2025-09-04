@@ -1,10 +1,13 @@
-namespace SearcherCli;
+namespace SearcherCore;
 
 using System.IO.Compression;
 using System.Xml;
 using DotNet.Globbing;
 
-internal static class SearchFile
+/// <summary>
+/// File content searching functionality
+/// </summary>
+public static class SearchFile
 {
 	/// <summary>
 	/// Wrapper to pick the correct search function. Special cases for docx, pdf and zip files
@@ -12,6 +15,7 @@ internal static class SearchFile
 	public static SearchResult FileContainsStringWrapper(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer,
 		CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(path);
 #pragma warning disable IDE0046 // Convert to conditional expression
 		if (path.EndsWith(".docx", CliOptions.FilenameComparison)) {
 			return DocxContainsString(path, text, comparer);
@@ -120,7 +124,10 @@ internal static class SearchFile
 	}
 }
 
-internal static class ZipInternals
+/// <summary>
+/// Internal ZIP file processing functionality
+/// </summary>
+public static class ZipInternals
 {
 	/// <summary>
 	/// Given a zip archive, loop through and check the contents. Recursively calls for nested zips
@@ -128,6 +135,8 @@ internal static class ZipInternals
 	public static bool RecursiveArchiveCheck(ZipArchive archive, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer,
 		CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(archive);
+		ArgumentNullException.ThrowIfNull(innerpatterns);
 		foreach (var nestedEntry in archive.Entries) {
 			// loop through all entries in the nested zip file
 			token.ThrowIfCancellationRequested();
@@ -173,6 +182,7 @@ internal static class ZipInternals
 	/// </summary>
 	public static bool DocxContainsString(ZipArchive archive, string text, StringComparison comparer)
 	{
+		ArgumentNullException.ThrowIfNull(archive);
 		var documentEntry = archive.GetEntry("word/document.xml");
 		if (documentEntry == null) {
 			return false;
@@ -195,6 +205,7 @@ internal static class ZipInternals
 	/// </summary>
 	public static bool GeneralContainsString(ZipArchiveEntry entry, string text, StringComparison comparer, CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(entry);
 		using var stream = entry.Open();
 		using var file = new StreamReader(stream);
 		while (!file.EndOfStream) {

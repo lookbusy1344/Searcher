@@ -1,8 +1,9 @@
-﻿namespace TestSearcher;
+namespace TestSearcher;
 
 using System.Text.RegularExpressions;
 using CommandLine;
 using Searcher;
+using SearcherCore;
 
 internal static partial class Helpers
 {
@@ -45,7 +46,7 @@ internal static partial class Helpers
 	/// <summary>
 	/// Take a single string and parse it into a CliOptions instance
 	/// </summary>
-	public static CliOptions ParseCommandLine(string s)
+	public static FormsCliOptions ParseCommandLine(string s)
 	{
 		var items = SplitParams(s);
 		var parsed = Searcher.Program.ParseParams(items);
@@ -60,7 +61,7 @@ internal static partial class Helpers
 	/// <summary>
 	/// Helper to set up the instance, run the test, and return the results
 	/// </summary>
-	public static string[] SearchCaller(CliOptions options)
+	public static string[] SearchCaller(FormsCliOptions options)
 	{
 		// default testing options
 		options.Folder = new DirectoryInfo(SearchPath);
@@ -87,7 +88,7 @@ internal static partial class Helpers
 
 		return task.Result == null
 			? throw new Exception("Task result was null")
-			: [.. task.Result.Where(r => r.Result == SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
+			: [.. task.Result.Where(r => r.Result == SearcherCore.SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
 	}
 
 	/// <summary>
