@@ -9,7 +9,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 /// PDF file content searching functionality
 /// </summary>
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes - .NET8 analyser bug? These static methods are used!
-internal sealed partial class PdfCheck
+public sealed partial class PdfCheck
 #pragma warning restore CA1812 // Avoid uninstantiated internal classes
 {
 	/// <summary>

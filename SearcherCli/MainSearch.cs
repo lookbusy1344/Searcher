@@ -1,12 +1,13 @@
 namespace SearcherCli;
 
 using System.Diagnostics;
+using SearcherCore;
 
 internal sealed class MainSearch : IDisposable
 {
 	public CancellationTokenSource CancellationToken { get; init; } = new();
 
-	public void Search(CliOptions config)
+	public void Search(SearcherCore.CliOptions config)
 	{
 		var parallelThreads = config.DegreeOfParallelism;
 		// var filesCount = 0;

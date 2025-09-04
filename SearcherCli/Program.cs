@@ -1,6 +1,7 @@
 namespace SearcherCli;
 
 using PicoArgs_dotnet;
+using SearcherCore;
 
 public static class Program
 {
@@ -41,7 +42,7 @@ public static class Program
 	/// <summary>
 	/// Wrap the call to PicoArgs in a using block, so it automatically throws if there are any errors
 	/// </summary>
-	private static CliOptions ParseCommandLine(string[] args)
+	private static SearcherCore.CliOptions ParseCommandLine(string[] args)
 	{
 		using var pico = new PicoArgsDisposable(args);
 
@@ -63,7 +64,7 @@ public static class Program
 		var hideErrors = pico.Contains("-h", "--hide-errors");
 		var raw = pico.Contains("-r", "--raw");
 
-		return new() {
+		return new SearcherCore.CliOptions {
 			Search = search,
 			Folder = new(folder),
 			Pattern = patterns.AsReadOnly(),

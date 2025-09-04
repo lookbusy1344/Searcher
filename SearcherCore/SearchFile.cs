@@ -7,7 +7,7 @@ using DotNet.Globbing;
 /// <summary>
 /// File content searching functionality
 /// </summary>
-internal static class SearchFile
+public static class SearchFile
 {
 	/// <summary>
 	/// Wrapper to pick the correct search function. Special cases for docx, pdf and zip files
@@ -126,7 +126,7 @@ internal static class SearchFile
 /// <summary>
 /// Internal ZIP file processing functionality
 /// </summary>
-internal static class ZipInternals
+public static class ZipInternals
 {
 	/// <summary>
 	/// Given a zip archive, loop through and check the contents. Recursively calls for nested zips

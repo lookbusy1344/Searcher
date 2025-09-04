@@ -8,7 +8,7 @@ using Microsoft.Win32;
 /// <summary>
 /// Utility functions for file operations and pattern processing
 /// </summary>
-internal static class Utils
+public static class Utils
 {
 	private const string TextFileOpener = "notepad.exe";
 	private static ReadOnlySpan<byte> MagicNumberZip => [0x50, 0x4B, 0x03, 0x04];

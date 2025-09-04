@@ -6,7 +6,7 @@ using DotNet.Globbing;
 /// <summary>
 /// File discovery using glob patterns
 /// </summary>
-internal static class GlobSearch
+public static class GlobSearch
 {
 	private static readonly EnumerationOptions diroptions = new() { IgnoreInaccessible = true };
 
