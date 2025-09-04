@@ -9,6 +9,7 @@ Searcher is a C# WinForms application that recursively searches for text inside 
 **Project Structure:**
 - **Root directory**: Contains the main WinForms application
 - **SearcherCli/**: Console version of the application
+- **SearcherCore/**: Shared .NET library containing core search functionality
 - **TestSearcher/**: xUnit test project
 
 ## Build Commands
@@ -22,6 +23,9 @@ Publish.cmd
 
 # Build console version specifically
 dotnet build SearcherCli/SearcherCli.csproj
+
+# Build shared library specifically
+dotnet build SearcherCore/SearcherCore.csproj
 
 # Run the console application
 dotnet run --project SearcherCli -- --help
@@ -82,11 +86,21 @@ dotnet publish SearcherCli.csproj -r osx-arm64 -c Release -p:PublishSingleFile=t
 - **Program.cs**: Console entry point with command line parsing
 - **MainSearch.cs**: Main search orchestrator for CLI version
 - **PicoArgs.cs**: Custom lightweight command line argument parser
-- Shares core components with main application via file references
+- References SearcherCore library for shared functionality
+
+### Shared Library Components (SearcherCore/)
+
+- **CliOptions.cs**: Configuration and options management for search operations
+- **SearchFile.cs**: Core file content searching logic for different file types
+- **GlobSearch.cs**: Parallel file discovery using glob patterns
+- **PdfCheck.cs**: PDF-specific search implementation using iText7
+- **Utils.cs**: Utility functions for pattern processing and file operations
+- **SearchResult.cs**: Search result data structure
+- Provides shared functionality for both GUI and CLI applications
 
 ### Key Architectural Patterns
 
-1. **Dual Interface Architecture**: Both WinForms GUI and Console CLI share core search logic
+1. **Dual Interface Architecture**: Both WinForms GUI and Console CLI share core search logic via SearcherCore library
 2. **File Type Routing**: Different search strategies based on file extension (.txt, .docx, .pdf, .zip)
 3. **Parallel Processing**: Uses `Parallel.ForEach` for both file discovery and content searching
 4. **Recursive ZIP Handling**: Supports nested ZIP files and archives containing other formats
