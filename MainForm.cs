@@ -14,7 +14,7 @@ public partial class MainForm : Form
 	private bool loaded;
 
 #pragma warning disable CA1051 // Do not declare visible instance fields
-	public CliOptions? cliOptions;
+	public FormsCliOptions? cliOptions;
 #pragma warning restore CA1051 // Do not declare visible instance fields
 	private readonly System.Windows.Forms.Timer timerProgress;
 	private readonly MonotonicDateTime monotonic = new();
@@ -76,7 +76,7 @@ public partial class MainForm : Form
 		timerProgress!.Stop();
 	}
 
-	private async Task MainAsync(CliOptions config)
+	private async Task MainAsync(FormsCliOptions config)
 	{
 		scanProgress.Value = 0;
 		scanProgress.Maximum = 100;
@@ -171,7 +171,7 @@ public partial class MainForm : Form
 	/// </summary>
 	/// <param name="writer"></param>
 	/// <returns></returns>
-	private string LongRunningTask(ChannelWriter<SingleResult> writer, CliOptions config, bool allowinvoke)
+	private string LongRunningTask(ChannelWriter<SingleResult> writer, FormsCliOptions config, bool allowinvoke)
 	{
 		var parallelthreads = config.DegreeOfParallelism;
 		var filescount = 0;
@@ -376,7 +376,7 @@ public partial class MainForm : Form
 	/// <summary>
 	/// Test harness for running without a GUI
 	/// </summary>
-	public async Task<IList<SingleResult>> TestHarnessAsync(CliOptions config)
+	public async Task<IList<SingleResult>> TestHarnessAsync(FormsCliOptions config)
 	{
 		// This just serves as a way for the tests to search for files, and get a IList back from the channel
 

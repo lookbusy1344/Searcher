@@ -6,7 +6,7 @@ using SearcherCore;
 /// <summary>
 /// Configuration options for WinForms application with command-line parser attributes
 /// </summary>
-public class CliOptions : SearcherCore.CliOptions
+public class FormsCliOptions : SearcherCore.CliOptions
 {
 	/// <summary>
 	/// Folder to search. If its NULL it will return current directory

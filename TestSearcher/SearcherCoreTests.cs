@@ -8,7 +8,7 @@ public class SearcherCoreTests
 	[Trait("Category", "Core")]
 	public void CliOptionsDefaults()
 	{
-		var options = new SearcherCore.CliOptions();
+		var options = new CliOptions();
 
 		Assert.False(options.CaseSensitive);
 		Assert.False(options.OneThread);

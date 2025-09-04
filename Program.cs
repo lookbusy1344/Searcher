@@ -43,10 +43,10 @@ public static class Program
 	/// <summary>
 	/// Parse the command line, seperated out to help with testing
 	/// </summary>
-	public static ParserResult<CliOptions> ParseParams(string[] args)
+	public static ParserResult<FormsCliOptions> ParseParams(string[] args)
 	{
-		return Parser.Default.ParseArguments<CliOptions>(args)
-			.WithParsed<CliOptions>(o => o.IsSSD = DiskQuery.IsSSD(o.Folder));
+		return Parser.Default.ParseArguments<FormsCliOptions>(args)
+			.WithParsed<FormsCliOptions>(o => o.IsSSD = DiskQuery.IsSSD(o.Folder));
 		//.WithNotParsed<CliOptions>(o =>
 		//{
 		//});

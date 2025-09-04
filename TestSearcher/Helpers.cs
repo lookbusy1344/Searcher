@@ -45,7 +45,7 @@ internal static partial class Helpers
 	/// <summary>
 	/// Take a single string and parse it into a CliOptions instance
 	/// </summary>
-	public static CliOptions ParseCommandLine(string s)
+	public static FormsCliOptions ParseCommandLine(string s)
 	{
 		var items = SplitParams(s);
 		var parsed = Searcher.Program.ParseParams(items);
@@ -60,7 +60,7 @@ internal static partial class Helpers
 	/// <summary>
 	/// Helper to set up the instance, run the test, and return the results
 	/// </summary>
-	public static string[] SearchCaller(CliOptions options)
+	public static string[] SearchCaller(FormsCliOptions options)
 	{
 		// default testing options
 		options.Folder = new DirectoryInfo(SearchPath);
