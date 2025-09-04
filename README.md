@@ -4,6 +4,11 @@
 
 Recursively search for files containing text. Built with C#, .NET 9 and WinForms
 
+## Available Versions
+
+- **Searcher** (this directory): WinForms GUI application for Windows
+- **SearcherCli** (`SearcherCli/` directory): Command-line version that works on Windows, Mac, and Linux
+
 ## Parameters
 
 ```
@@ -43,7 +48,41 @@ Search txt files (excluding those in zips) for anything containing 'hello':
 
 Searcher can look inside zips (use the -z option), docx and pdf files.
 
-## Building
+## SearcherCli - Command Line Version
+
+The `SearcherCli/` directory contains a cross-platform command-line version that works on Windows, Mac, and Linux. It shares the same core search functionality but provides a pure console interface.
+
+### Building SearcherCli
+
+```
+cd SearcherCli/
+dotnet build
+
+# Or for a self-contained executable:
+dotnet publish -r win-x64 -c Release -p:PublishSingleFile=true --self-contained true
+# For Mac: use -r osx-x64 or -r osx-arm64
+# For Linux: use -r linux-x64
+```
+
+### SearcherCli Examples
+
+```
+# Basic search
+SearcherCli --search "hello world" --folder /path/to/search
+
+# Search with patterns
+SearcherCli -s "TODO" -f src/ -p "*.cs,*.js"
+
+# Search inside archives (cross-platform)
+SearcherCli -z -f . -p "*.txt" -s "config"
+
+# Get help
+SearcherCli --help
+```
+
+For detailed SearcherCli documentation, see `SearcherCli/README.md`.
+
+## Building (WinForms GUI)
 
 Requires Visual Studio 2022, or .NET 9 SDK.
 
