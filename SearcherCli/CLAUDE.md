@@ -56,11 +56,11 @@ dotnet format
 
 # IMPORTANT: Always run 'dotnet format' after making code changes to ensure consistent formatting
 
-# Publish on Windows (single file, framework-dependent):
-dotnet publish SearcherCli.csproj -r win-arm64 -c Release -p:PublishSingleFile=true --self-contained false
+# Publish on Windows (single file, self-contained):
+dotnet publish SearcherCli.csproj -r win-arm64 -c Release -p:PublishSingleFile=true --self-contained true
 
-# Publish on Apple Silicon (single file, framework-dependent):
-dotnet publish SearcherCli.csproj -r osx-arm64 -c Release -p:PublishSingleFile=true --self-contained false
+# Publish on Apple Silicon (single file, self-contained):
+dotnet publish SearcherCli.csproj -r osx-arm64 -c Release -p:PublishSingleFile=true --self-contained true
 ```
 
 ## Project Architecture
