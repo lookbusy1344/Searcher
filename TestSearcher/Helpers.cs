@@ -1,4 +1,4 @@
-﻿namespace TestSearcher;
+namespace TestSearcher;
 
 using System.Text.RegularExpressions;
 using CommandLine;

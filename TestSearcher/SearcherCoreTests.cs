@@ -8,7 +8,7 @@ public class SearcherCoreTests
 	[Trait("Category", "Core")]
 	public void CliOptionsDefaults()
 	{
-		var options = new CliOptions();
+		var options = new SearcherCore.CliOptions();
 
 		Assert.False(options.CaseSensitive);
 		Assert.False(options.OneThread);
@@ -81,34 +81,35 @@ public class SearcherCoreTests
 
 			// Test successful search
 			var result = SearchFile.FileContainsStringWrapper(
-				tempFile, 
-				"test file", 
+				tempFile,
+				"test file",
 				[],
-				StringComparison.OrdinalIgnoreCase, 
+				StringComparison.OrdinalIgnoreCase,
 				CancellationToken.None
 			);
 			Assert.Equal(SearchResult.Found, result);
 
 			// Test case sensitivity
 			result = SearchFile.FileContainsStringWrapper(
-				tempFile, 
-				"TEST FILE", 
+				tempFile,
+				"TEST FILE",
 				[],
-				StringComparison.Ordinal, 
+				StringComparison.Ordinal,
 				CancellationToken.None
 			);
 			Assert.Equal(SearchResult.NotFound, result);
 
 			// Test not found
 			result = SearchFile.FileContainsStringWrapper(
-				tempFile, 
-				"nonexistent text", 
+				tempFile,
+				"nonexistent text",
 				[],
-				StringComparison.OrdinalIgnoreCase, 
+				StringComparison.OrdinalIgnoreCase,
 				CancellationToken.None
 			);
 			Assert.Equal(SearchResult.NotFound, result);
-		} finally {
+		}
+		finally {
 			File.Delete(tempFile);
 		}
 	}
