@@ -15,6 +15,7 @@ public static class GlobSearch
 	/// </summary>
 	public static string[] FindFiles(string path, IReadOnlyList<Glob> globs, CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(globs);
 		var files = new List<string>(100);
 		foreach (var g in globs) {
 			FindFilesRecursivelyInternal(ref files, path, g, token);

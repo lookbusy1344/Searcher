@@ -15,6 +15,7 @@ public static class SearchFile
 	public static SearchResult FileContainsStringWrapper(string path, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer,
 		CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(path);
 #pragma warning disable IDE0046 // Convert to conditional expression
 		if (path.EndsWith(".docx", CliOptions.FilenameComparison)) {
 			return DocxContainsString(path, text, comparer);
@@ -134,6 +135,8 @@ public static class ZipInternals
 	public static bool RecursiveArchiveCheck(ZipArchive archive, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer,
 		CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(archive);
+		ArgumentNullException.ThrowIfNull(innerpatterns);
 		foreach (var nestedEntry in archive.Entries) {
 			// loop through all entries in the nested zip file
 			token.ThrowIfCancellationRequested();
@@ -179,6 +182,7 @@ public static class ZipInternals
 	/// </summary>
 	public static bool DocxContainsString(ZipArchive archive, string text, StringComparison comparer)
 	{
+		ArgumentNullException.ThrowIfNull(archive);
 		var documentEntry = archive.GetEntry("word/document.xml");
 		if (documentEntry == null) {
 			return false;
@@ -201,6 +205,7 @@ public static class ZipInternals
 	/// </summary>
 	public static bool GeneralContainsString(ZipArchiveEntry entry, string text, StringComparison comparer, CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(entry);
 		using var stream = entry.Open();
 		using var file = new StreamReader(stream);
 		while (!file.EndOfStream) {

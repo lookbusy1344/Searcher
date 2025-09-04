@@ -17,6 +17,8 @@ public sealed partial class PdfCheck
 	/// </summary>
 	public static bool CheckStream(ZipArchiveEntry entry, string content, StringComparison strcomp, CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(entry);
+		ArgumentNullException.ThrowIfNull(content);
 		using var stream = entry.Open();
 		using var reader = new PdfReader(stream);
 
@@ -30,6 +32,7 @@ public sealed partial class PdfCheck
 	/// </summary>
 	public static SearchResult CheckPdfFile(string path, string content, StringComparison strcomp, CancellationToken token)
 	{
+		ArgumentNullException.ThrowIfNull(content);
 		try {
 			using var pdfReader = new PdfReader(path);
 			return SearchPdfInternal(pdfReader, content, strcomp, token);

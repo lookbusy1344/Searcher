@@ -63,6 +63,7 @@ public static class Utils
 	/// </summary>
 	public static void OpenFile(string path, CliOptions options)
 	{
+		ArgumentNullException.ThrowIfNull(options);
 		var opener = string.IsNullOrEmpty(options.OpenWith) ? TextFileOpener : options.OpenWith;
 		var extension = Path.GetExtension(path).ToLower();
 
@@ -168,6 +169,7 @@ public static class Utils
 	/// </summary>
 	public static IReadOnlyList<string> ProcessOuterPatternsOld(IList<string> p, bool includezips)
 	{
+		ArgumentNullException.ThrowIfNull(p);
 		// *.doc, *.txt => *.doc, *.txt, *.zip
 
 		var haszip = false;
