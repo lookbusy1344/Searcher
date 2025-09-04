@@ -1,6 +1,7 @@
 ﻿namespace TestSearcher;
 
 using Searcher;
+using SearcherCore;
 
 public partial class SearchTests
 {
