@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Searcher.csproj" />
+    <ProjectReference Include="..\SearcherCore\SearcherCore.csproj" />
   </ItemGroup>
 
 </Project>
