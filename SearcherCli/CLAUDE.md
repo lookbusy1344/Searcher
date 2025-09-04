@@ -8,7 +8,7 @@ Searcher is a C# WinForms application that recursively searches for text inside 
 
 **Project Structure:**
 - **Root directory**: Contains the main WinForms application
-- **SearcherCli/**: Console version of the application 
+- **SearcherCli/**: Console version of the application
 - **TestSearcher/**: xUnit test project
 
 ## Build Commands
@@ -55,6 +55,12 @@ dotnet clean
 dotnet format
 
 # IMPORTANT: Always run 'dotnet format' after making code changes to ensure consistent formatting
+
+# Publish on Windows (single file, framework-dependent):
+dotnet publish SearcherCli.csproj -r win-arm64 -c Release -p:PublishSingleFile=true --self-contained false
+
+# Publish on Apple Silicon (single file, framework-dependent):
+dotnet publish SearcherCli.csproj -r osx-arm64 -c Release -p:PublishSingleFile=true --self-contained false
 ```
 
 ## Project Architecture
@@ -118,7 +124,7 @@ Key NuGet packages:
 
 The project uses comprehensive code analysis with multiple analyzers:
 - Microsoft.VisualStudio.Threading.Analyzers
-- Roslynator.Analyzers  
+- Roslynator.Analyzers
 - lookbusy1344.RecordValueAnalyser
 
 Code style is enforced via `.editorconfig` with specific rules for C# formatting, naming conventions, and analysis severity levels. The configuration includes extensive Roslynator rules for code quality.
