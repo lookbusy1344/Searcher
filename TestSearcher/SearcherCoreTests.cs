@@ -140,4 +140,127 @@ public class SearcherCoreTests
 		var result3 = new SingleResult("other.txt", SearchResult.Found);
 		Assert.NotEqual(result, result3);
 	}
+
+	[Theory(DisplayName = "Security: IsValidFilePath - Valid paths")]
+	[Trait("Category", "Security")]
+	[InlineData("C:\\temp\\file.txt", true)]
+	[InlineData("/tmp/file.txt", true)]
+	[InlineData("file.txt", true)]
+	[InlineData("folder/subfolder/file.txt", true)]
+	[InlineData("normal_file.txt", true)]
+	[InlineData("file-with-dashes.txt", true)]
+	[InlineData("file with spaces.txt", true)]
+	public void IsValidFilePath_ValidPaths(string path, bool expected)
+	{
+		var result = Utils.IsValidFilePath(path);
+		Assert.Equal(expected, result);
+	}
+
+	[Theory(DisplayName = "Security: IsValidFilePath - Invalid paths")]
+	[Trait("Category", "Security")]
+	[InlineData("../../../etc/passwd", false)]
+	[InlineData("..\\..\\Windows\\System32\\config\\sam", false)]
+	[InlineData("CON.txt", false)]
+	[InlineData("PRN", false)]
+	[InlineData("COM1.log", false)]
+	[InlineData("LPT1", false)]
+	[InlineData("AUX.txt", false)]
+	[InlineData("NUL.dat", false)]
+	[InlineData("con", false)] // case insensitive
+	[InlineData("COM9.xyz", false)]
+	[InlineData("LPT9.abc", false)]
+	public void IsValidFilePath_InvalidPaths(string path, bool expected)
+	{
+		var result = Utils.IsValidFilePath(path);
+		Assert.Equal(expected, result);
+	}
+
+	[Theory(DisplayName = "Security: IsValidFilePath - Edge cases")]
+	[Trait("Category", "Security")]
+	[InlineData("", false)]
+	[InlineData("   ", false)]
+	[InlineData(null, false)]
+	public void IsValidFilePath_EdgeCases(string path, bool expected)
+	{
+		var result = Utils.IsValidFilePath(path);
+		Assert.Equal(expected, result);
+	}
+
+	[Fact(DisplayName = "Security: IsValidFilePath - All reserved names")]
+	[Trait("Category", "Security")]
+	public void IsValidFilePath_AllReservedNames()
+	{
+		string[] reservedNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"];
+		
+		foreach (var reserved in reservedNames)
+		{
+			// Test with and without extension
+			Assert.False(Utils.IsValidFilePath(reserved), $"Reserved name {reserved} should be invalid");
+			Assert.False(Utils.IsValidFilePath($"{reserved}.txt"), $"Reserved name {reserved}.txt should be invalid");
+			Assert.False(Utils.IsValidFilePath(reserved.ToLower()), $"Reserved name {reserved.ToLower()} should be invalid (case insensitive)");
+		}
+	}
+
+	[Fact(DisplayName = "Security: ValidateSearchPath - Valid directories")]
+	[Trait("Category", "Security")]
+	public void ValidateSearchPath_ValidDirectories()
+	{
+		// Test with current directory
+		var currentDir = Directory.GetCurrentDirectory();
+		var result = Utils.ValidateSearchPath(currentDir);
+		Assert.Equal(Path.GetFullPath(currentDir), result);
+
+		// Test with temp directory
+		var tempDir = Path.GetTempPath();
+		result = Utils.ValidateSearchPath(tempDir);
+		Assert.Equal(Path.GetFullPath(tempDir), result);
+	}
+
+	[Fact(DisplayName = "Security: ValidateSearchPath - Invalid directories")]
+	[Trait("Category", "Security")]
+	public void ValidateSearchPath_InvalidDirectories()
+	{
+		// Test with non-existent directory
+		var nonExistentPath = Path.Combine(Path.GetTempPath(), "non_existent_directory_12345");
+		var result = Utils.ValidateSearchPath(nonExistentPath);
+		Assert.Null(result);
+
+		// Test with file instead of directory
+		var tempFile = Path.GetTempFileName();
+		try
+		{
+			result = Utils.ValidateSearchPath(tempFile);
+			Assert.Null(result);
+		}
+		finally
+		{
+			File.Delete(tempFile);
+		}
+	}
+
+	[Theory(DisplayName = "Security: ValidateSearchPath - Edge cases")]
+	[Trait("Category", "Security")]
+	[InlineData("")]
+	[InlineData("   ")]
+	[InlineData(null)]
+	public void ValidateSearchPath_EdgeCases(string path)
+	{
+		var result = Utils.ValidateSearchPath(path);
+		Assert.Null(result);
+	}
+
+	[Fact(DisplayName = "Security: ValidateSearchPath - Path normalization")]
+	[Trait("Category", "Security")]
+	public void ValidateSearchPath_PathNormalization()
+	{
+		var currentDir = Directory.GetCurrentDirectory();
+		
+		// Test that paths are normalized (remove redundant separators, etc.)
+		var pathWithRedundantSeparators = currentDir + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar + "." + Path.DirectorySeparatorChar;
+		var result = Utils.ValidateSearchPath(pathWithRedundantSeparators);
+		
+		// Should return normalized path
+		Assert.NotNull(result);
+		Assert.Equal(Path.GetFullPath(currentDir), result);
+	}
 }
