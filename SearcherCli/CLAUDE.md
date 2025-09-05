@@ -33,15 +33,22 @@ dotnet run --project SearcherCli -- --help
 
 ## Test Commands
 
+**Note**: The SearcherCli solution only includes SearcherCli and SearcherCore projects. TestSearcher is in the parent directory's solution.
+
 ```bash
 # Run tests (Windows batch script)
 RunTests.cmd
 
-# Run tests using dotnet (modern approach)
+# Run tests using dotnet from SearcherCli directory
+dotnet test ../TestSearcher/
+
+# Run tests using dotnet (modern approach, from root directory)
 dotnet test TestSearcher/
 
 # Build and run tests
-dotnet build && dotnet test TestSearcher/
+dotnet build && dotnet test ../TestSearcher/
+
+# Note: 'dotnet test' in SearcherCli directory will find no test projects
 ```
 
 ## Development Commands

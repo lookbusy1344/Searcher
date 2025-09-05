@@ -10,10 +10,10 @@
     <OutputType>WinExe</OutputType>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-	
+
 	<AnalysisModeDesign>All</AnalysisModeDesign>
     <AnalysisModeSecurity>All</AnalysisModeSecurity>
 	<AnalysisModePerformance>All</AnalysisModePerformance>
@@ -41,10 +41,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SearcherCore\SearcherCore.csproj" />
+    <ProjectReference Include="..\SearcherCore\SearcherCore.csproj">
+      <Aliases>SearcherCoreLib</Aliases>
+    </ProjectReference>
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- Windows-only references and files -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <ProjectReference Include="..\Searcher.csproj">
+      <Aliases>SearcherApp</Aliases>
+    </ProjectReference>
+    <Compile Include="SearchTests.cs" />
+    <Compile Include="Helpers.cs" />
+  </ItemGroup>
+
+  <!-- Exclude Windows-only files on non-Windows platforms -->
+  <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('Windows'))">
     <Compile Remove="SearchTests.cs" />
     <Compile Remove="Helpers.cs" />
   </ItemGroup>
