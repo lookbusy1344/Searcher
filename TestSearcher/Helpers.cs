@@ -10,7 +10,20 @@ using SearcherCoreLib::SearcherCore;
 
 internal static partial class Helpers
 {
-	private const string SearchPath = @"C:\Users\johnsparrow\Documents\dev-windows\Searcher\TestDocs";
+	private static readonly string SearchPath = Path.Combine(GetProjectRoot(), "TestDocs");
+
+	private static string GetProjectRoot()
+	{
+		var currentDir = Directory.GetCurrentDirectory();
+
+		// Walk up the directory tree until we find the project root (contains Searcher.sln)
+		var dir = new DirectoryInfo(currentDir);
+		while (dir != null && !File.Exists(Path.Combine(dir.FullName, "Searcher.sln"))) {
+			dir = dir.Parent;
+		}
+
+		return dir?.FullName ?? throw new DirectoryNotFoundException("Could not find project root containing Searcher.sln");
+	}
 
 	/// <summary>
 	/// Try the action, and assert that it throws the expected exception
