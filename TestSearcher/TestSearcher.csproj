@@ -10,10 +10,10 @@
     <OutputType>WinExe</OutputType>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-	
+
 	<AnalysisModeDesign>All</AnalysisModeDesign>
     <AnalysisModeSecurity>All</AnalysisModeSecurity>
 	<AnalysisModePerformance>All</AnalysisModePerformance>
@@ -41,12 +41,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SearcherCore\SearcherCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="SearchTests.cs" />
-    <Compile Remove="Helpers.cs" />
+    <ProjectReference Include="..\SearcherCore\SearcherCore.csproj">
+      <Aliases>SearcherCoreLib</Aliases>
+    </ProjectReference>
+    <ProjectReference Include="..\Searcher.csproj">
+      <Aliases>SearcherApp</Aliases>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

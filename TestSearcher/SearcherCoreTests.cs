@@ -1,6 +1,8 @@
+extern alias SearcherCoreLib;
+
 namespace TestSearcher;
 
-using SearcherCore;
+using SearcherCoreLib::SearcherCore;
 
 public class SearcherCoreTests
 {
@@ -8,7 +10,7 @@ public class SearcherCoreTests
 	[Trait("Category", "Core")]
 	public void CliOptionsDefaults()
 	{
-		var options = new SearcherCore.CliOptions();
+		var options = new CliOptions();
 
 		Assert.False(options.CaseSensitive);
 		Assert.False(options.OneThread);
@@ -22,7 +24,7 @@ public class SearcherCoreTests
 	[Trait("Category", "Core")]
 	public void CliOptionsCaseSensitivity()
 	{
-		var options = new SearcherCore.CliOptions { CaseSensitive = true };
+		var options = new CliOptions { CaseSensitive = true };
 		Assert.Equal(StringComparison.Ordinal, options.StringComparison);
 
 		options.CaseSensitive = false;
@@ -33,7 +35,7 @@ public class SearcherCoreTests
 	[Trait("Category", "Core")]
 	public void CliOptionsParallelism()
 	{
-		var options = new SearcherCore.CliOptions();
+		var options = new CliOptions();
 		var maxCores = Environment.ProcessorCount;
 
 		// SSD mode should use all cores
@@ -56,7 +58,7 @@ public class SearcherCoreTests
 	[Trait("Category", "Core")]
 	public void CliOptionsPatterns()
 	{
-		var options = new SearcherCore.CliOptions();
+		var options = new CliOptions();
 
 		// Default pattern
 		Assert.Equal("*", options.GetPatterns());
@@ -87,7 +89,7 @@ public class SearcherCoreTests
 				StringComparison.OrdinalIgnoreCase,
 				CancellationToken.None
 			);
-			Assert.Equal(SearcherCore.SearchResult.Found, result);
+			Assert.Equal(SearchResult.Found, result);
 
 			// Test case sensitivity
 			result = SearchFile.FileContainsStringWrapper(
@@ -97,7 +99,7 @@ public class SearcherCoreTests
 				StringComparison.Ordinal,
 				CancellationToken.None
 			);
-			Assert.Equal(SearcherCore.SearchResult.NotFound, result);
+			Assert.Equal(SearchResult.NotFound, result);
 
 			// Test not found
 			result = SearchFile.FileContainsStringWrapper(
@@ -107,7 +109,7 @@ public class SearcherCoreTests
 				StringComparison.OrdinalIgnoreCase,
 				CancellationToken.None
 			);
-			Assert.Equal(SearcherCore.SearchResult.NotFound, result);
+			Assert.Equal(SearchResult.NotFound, result);
 		}
 		finally {
 			File.Delete(tempFile);
@@ -118,24 +120,24 @@ public class SearcherCoreTests
 	[Trait("Category", "Core")]
 	public void SearchResultValues()
 	{
-		Assert.True(Enum.IsDefined(SearcherCore.SearchResult.Found));
-		Assert.True(Enum.IsDefined(SearcherCore.SearchResult.NotFound));
-		Assert.True(Enum.IsDefined(SearcherCore.SearchResult.Error));
+		Assert.True(Enum.IsDefined(SearchResult.Found));
+		Assert.True(Enum.IsDefined(SearchResult.NotFound));
+		Assert.True(Enum.IsDefined(SearchResult.Error));
 	}
 
 	[Fact(DisplayName = "Core: SingleResult record")]
 	[Trait("Category", "Core")]
 	public void SingleResultRecord()
 	{
-		var result = new SearcherCore.SingleResult("test.txt", SearcherCore.SearchResult.Found);
+		var result = new SingleResult("test.txt", SearchResult.Found);
 		Assert.Equal("test.txt", result.Path);
-		Assert.Equal(SearcherCore.SearchResult.Found, result.Result);
+		Assert.Equal(SearchResult.Found, result.Result);
 
 		// Test equality
-		var result2 = new SearcherCore.SingleResult("test.txt", SearcherCore.SearchResult.Found);
+		var result2 = new SingleResult("test.txt", SearchResult.Found);
 		Assert.Equal(result, result2);
 
-		var result3 = new SearcherCore.SingleResult("other.txt", SearcherCore.SearchResult.Found);
+		var result3 = new SingleResult("other.txt", SearchResult.Found);
 		Assert.NotEqual(result, result3);
 	}
 }

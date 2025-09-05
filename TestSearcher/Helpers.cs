@@ -1,9 +1,12 @@
+extern alias SearcherApp;
+extern alias SearcherCoreLib;
+
 namespace TestSearcher;
 
 using System.Text.RegularExpressions;
 using CommandLine;
-using Searcher;
-using SearcherCore;
+using SearcherApp::Searcher;
+using SearcherCoreLib::SearcherCore;
 
 internal static partial class Helpers
 {
@@ -49,7 +52,7 @@ internal static partial class Helpers
 	public static FormsCliOptions ParseCommandLine(string s)
 	{
 		var items = SplitParams(s);
-		var parsed = Searcher.Program.ParseParams(items);
+		var parsed = Program.ParseParams(items);
 		return parsed.Tag == ParserResultType.NotParsed ? throw new Exception($"Failed to parse command line: {s}") : parsed.Value;
 	}
 
@@ -88,7 +91,7 @@ internal static partial class Helpers
 
 		return task.Result == null
 			? throw new Exception("Task result was null")
-			: [.. task.Result.Where(r => r.Result == SearcherCore.SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
+			: [.. task.Result.Where(r => r.Result == SearcherApp::SearcherCore.SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
 	}
 
 	/// <summary>

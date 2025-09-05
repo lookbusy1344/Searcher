@@ -1,7 +1,10 @@
+extern alias SearcherApp;
+extern alias SearcherCoreLib;
+
 namespace TestSearcher;
 
-using Searcher;
-using SearcherCore;
+using SearcherApp::Searcher;
+using SearcherCoreLib::SearcherCore;
 
 public partial class SearchTests
 {
@@ -12,7 +15,7 @@ public partial class SearchTests
 		// searcher.exe -s "summer"
 		// No matches
 
-		var options = new Searcher.FormsCliOptions { Search = "summer" };
+		var options = new FormsCliOptions { Search = "summer" };
 		var found = Helpers.SearchCaller(options);
 		Assert.Empty(found);
 	}
@@ -24,7 +27,7 @@ public partial class SearchTests
 		// searcher.exe -s "terrors of the earth" -p *.log,*.x
 		// no results, using explicit globs that don't exist
 
-		var options = new Searcher.FormsCliOptions {
+		var options = new FormsCliOptions {
 			Search = "terrors of the earth",
 			Pattern = ["*.log", "*.x"]
 		};
@@ -41,7 +44,7 @@ public partial class SearchTests
 		// 5 matches, the King Lear documents in different formats and 'King Lear pdf.zip'
 
 		var expected = new string[] { "King Lear.docx", "King Lear.txt", "King Lear.pdf", "King Lear pdf.zip", "Lear and Macbeth docx.zip" };
-		var options = new Searcher.FormsCliOptions { Search = "terrors of the earth" };
+		var options = new FormsCliOptions { Search = "terrors of the earth" };
 		var found = Helpers.SearchCaller(options);
 
 		Assert.True(Helpers.CompareNames(expected, found));
@@ -55,7 +58,7 @@ public partial class SearchTests
 		// 4 matches, the Romeo & Juliet documents in different formats. And a ZIP containing R&J
 
 		var expected = new string[] { "Macbeth and Romeo txt.zip", "Romeo and Juliet.docx", "Romeo and Juliet.txt", "Romeo and Juliet.pdf" };
-		var options = new Searcher.FormsCliOptions { Search = "it is the east" };
+		var options = new FormsCliOptions { Search = "it is the east" };
 		var found = Helpers.SearchCaller(options);
 
 		Assert.True(Helpers.CompareNames(expected, found));
@@ -69,7 +72,7 @@ public partial class SearchTests
 		// 5 matches, Macbeth documents and a ZIP
 
 		var expected = new string[] { "Macbeth.txt", "Macbeth.docx", "Macbeth and Romeo txt.zip", "Macbeth.pdf", "Lear and Macbeth docx.zip" };
-		var options = new Searcher.FormsCliOptions { Search = "poor player That struts" };
+		var options = new FormsCliOptions { Search = "poor player That struts" };
 		var found = Helpers.SearchCaller(options);
 
 		Assert.True(Helpers.CompareNames(expected, found));
@@ -83,7 +86,7 @@ public partial class SearchTests
 		// 1 result, a txt file inside a ZIP, inside a ZIP
 
 		var expected = new string[] { "Nested zip brown fox.zip" };
-		var options = new Searcher.FormsCliOptions { Search = "brown fox" };
+		var options = new FormsCliOptions { Search = "brown fox" };
 		var found = Helpers.SearchCaller(options);
 
 		Assert.True(Helpers.CompareNames(expected, found));
@@ -97,7 +100,7 @@ public partial class SearchTests
 		// 1 result, just a basic TXT file
 
 		var expected = new string[] { "Henry V.txt" };
-		var options = new Searcher.FormsCliOptions { Search = "this day" };
+		var options = new FormsCliOptions { Search = "this day" };
 		var found = Helpers.SearchCaller(options);
 
 		Assert.True(Helpers.CompareNames(expected, found));
@@ -111,7 +114,7 @@ public partial class SearchTests
 		// 2 results, using explicit globs and excluding DOCX
 
 		var expected = new string[] { "King Lear.txt", "King Lear.pdf" };
-		var options = new Searcher.FormsCliOptions {
+		var options = new FormsCliOptions {
 			Search = "terrors of the earth",
 			Pattern = ["*.pdf", "*.txt"]
 		};
@@ -128,7 +131,7 @@ public partial class SearchTests
 		// 1 result, looking for DOCX and inside ZIPs (but there is no docx matching inside a zip)
 
 		var expected = new string[] { "Romeo and Juliet.docx" };
-		var options = new Searcher.FormsCliOptions {
+		var options = new FormsCliOptions {
 			Search = "it is the east",
 			Pattern = ["*.docx"],
 			InsideZips = true
@@ -146,7 +149,7 @@ public partial class SearchTests
 		// 3 results, this time we look inside zips for DOCX and TXT files
 
 		var expected = new string[] { "Romeo and Juliet.docx", "Macbeth and Romeo txt.zip", "Romeo and Juliet.txt" };
-		var options = new Searcher.FormsCliOptions {
+		var options = new FormsCliOptions {
 			Search = "it is the east",
 			Pattern = ["*.docx", "*.txt"],
 			InsideZips = true
@@ -164,7 +167,7 @@ public partial class SearchTests
 		// 1 result, the wrong case doesnt matter without -c
 
 		var expected = new string[] { "Romeo and Juliet.txt" };
-		var options = new Searcher.FormsCliOptions {
+		var options = new FormsCliOptions {
 			Search = "Having some BUSINESS",
 			Pattern = ["*.txt"],
 			CaseSensitive = false
@@ -182,7 +185,7 @@ public partial class SearchTests
 		// no result, the wrong case
 
 		//var expected = new string[] { };
-		var options = new Searcher.FormsCliOptions {
+		var options = new FormsCliOptions {
 			Search = "Having some BUSINESS",
 			Pattern = ["*.txt"],
 			CaseSensitive = true
@@ -200,7 +203,7 @@ public partial class SearchTests
 		// 1 result, we are using the correct case in this CS search
 
 		var expected = new string[] { "Romeo and Juliet.docx" };
-		var options = new Searcher.FormsCliOptions {
+		var options = new FormsCliOptions {
 			Search = "Having some business",
 			Pattern = ["*.docx"],
 			CaseSensitive = true
