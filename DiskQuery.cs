@@ -9,6 +9,7 @@ internal static class DiskQuery
 	/// </summary>
 	public static bool IsSSD(DirectoryInfo dir)
 	{
+#if WINDOWS
 		var driveLetter = dir.Root.FullName[..1];
 		try {
 			using var drive = new ManagementObject($"win32_logicaldisk.deviceid=\"{driveLetter}:\"");
@@ -17,8 +18,6 @@ internal static class DiskQuery
 			return mediatype switch {
 				uint n when n == 12 => true,
 				_ => false
-				// null => false,
-				//_ => throw new Exception($"Unknown media type: {mediatype}")
 			};
 		}
 		catch (ManagementException) {
@@ -28,5 +27,9 @@ internal static class DiskQuery
 			return true;
 #endif
 		}
+#else
+		return true;
+		//throw new PlatformNotSupportedException("IsSSD is only supported on Windows platforms.");
+#endif
 	}
 }

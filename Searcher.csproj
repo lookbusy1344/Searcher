@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 <Target Name="SetSourceRevisionId" BeforeTargets="InitializeSourceControlInformation">
     <Exec Command="git describe --long --always --dirty=+ --broken --exclude=* --abbrev=40" ConsoleToMSBuild="True" IgnoreExitCode="False">
@@ -20,6 +20,7 @@
     <Description>Recursively search for files containing text</Description>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -47,6 +48,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NoWarn />
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+  </PropertyGroup>
+
+  <Target Name="BlockNonWindowsBuild" BeforeTargets="Build">
+    <Error Condition=" '$(OS)' != 'Windows_NT' " Text="ERROR: Searcher.csproj can only be built on Windows (OS=$(OS))" />
+  </Target>
   
   <ItemGroup>
     <Compile Remove="TestDocs\**" />
