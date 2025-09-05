@@ -104,7 +104,7 @@ internal static partial class Helpers
 
 		return task.Result == null
 			? throw new Exception("Task result was null")
-			: [.. task.Result.Where(r => r.Result == SearcherApp::SearcherCore.SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
+			: [.. task.Result.Where(r => r.Result == SearcherCoreLib::SearcherCore.SearchResult.Found).Select(r => Path.GetFileName(r.Path))];
 	}
 
 	/// <summary>
