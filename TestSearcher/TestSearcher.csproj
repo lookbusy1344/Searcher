@@ -46,13 +46,11 @@
     </ProjectReference>
   </ItemGroup>
 
-  <!-- Windows-only references and files -->
+  <!-- Windows-only references -->
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
     <ProjectReference Include="..\Searcher.csproj">
       <Aliases>SearcherApp</Aliases>
     </ProjectReference>
-    <Compile Include="SearchTests.cs" />
-    <Compile Include="Helpers.cs" />
   </ItemGroup>
 
   <!-- Exclude Windows-only files on non-Windows platforms -->
