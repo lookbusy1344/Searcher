@@ -7,7 +7,8 @@
 </Target>
   
   <PropertyGroup>
-    <Version>1.9.0.0</Version> 
+    <Version>1.9.0.0</Version>
+    <AssemblyVersion>1.9.0.0</AssemblyVersion>
     <InformationalVersion>$(SourceRevisionId)</InformationalVersion> 
     <OutputType>WinExe</OutputType>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
@@ -18,7 +19,7 @@
     <Platforms>AnyCPU;x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Description>Recursively search for files containing text</Description>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
   </PropertyGroup>
