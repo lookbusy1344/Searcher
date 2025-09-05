@@ -10,7 +10,7 @@ using SearcherCoreLib::SearcherCore;
 
 internal static partial class Helpers
 {
-	private const string SearchPath = @"C:\Users\JohnT\Documents\Visual Studio\Projects\Searcher\TestDocs";
+	private const string SearchPath = @"C:\Users\johnsparrow\Documents\dev-windows\Searcher\TestDocs";
 
 	/// <summary>
 	/// Try the action, and assert that it throws the expected exception
