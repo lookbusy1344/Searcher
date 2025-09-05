@@ -61,7 +61,7 @@ public static class Program
 		var insideZips = pico.Contains("-z", "--inside-zips");
 		var oneThread = pico.Contains("-o", "--one-thread");
 		var caseSensitive = pico.Contains("-c", "--case-sensitive");
-		var hideErrors = pico.Contains("-h", "--hide-errors");
+		var hideErrors = pico.Contains("--hide-errors");
 		var raw = pico.Contains("-r", "--raw");
 
 		return new SearcherCore.CliOptions {
@@ -106,7 +106,7 @@ public static class Program
 	                                            --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
 	                                            --one-thread, -o                    Don't search files in parallel
 	                                            --case-sensitive, -c                Text is matched in a case-sensitive way
-	                                            --hide-errors, -h                   Hide errors from the output list
+	                                            --hide-errors                       Hide errors from the output list
 	                                            --raw, -r                           Suppress all non-error messages
 
 	                                          Examples. Search current folder for txt and Word files containing "hello world":
