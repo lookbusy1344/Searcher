@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <Description>Shared core library for Searcher applications</Description>
     <Version>1.9.0.0</Version>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyVersion>1.9.0.0</AssemblyVersion>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
