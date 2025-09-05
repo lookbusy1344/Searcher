@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Read(//Users/johnsparrow/Documents/dev/Searcher/**)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet format:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

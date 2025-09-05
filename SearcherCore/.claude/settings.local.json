@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/johnsparrow/Documents/dev/Searcher/**)",
+      "Bash(dotnet build)",
+      "Bash(dotnet format:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
