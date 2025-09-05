@@ -9,6 +9,12 @@ using DotNet.Globbing;
 /// </summary>
 public static class SearchFile
 {
+	private static readonly Dictionary<string, Func<string, string, IReadOnlyList<Glob>, StringComparison, CancellationToken, SearchResult>> FileHandlers = new(CliOptions.FilenameComparison)
+	{
+		{ ".docx", (path, text, _, comparer, _) => DocxContainsString(path, text, comparer) },
+		{ ".pdf", (path, text, _, comparer, token) => PdfCheck.CheckPdfFile(path, text, comparer, token) }
+	};
+
 	/// <summary>
 	/// Wrapper to pick the correct search function. Special cases for docx, pdf and zip files
 	/// </summary>
@@ -16,19 +22,23 @@ public static class SearchFile
 		CancellationToken token)
 	{
 		ArgumentNullException.ThrowIfNull(path);
-#pragma warning disable IDE0046 // Convert to conditional expression
-		if (path.EndsWith(".docx", CliOptions.FilenameComparison)) {
-			return DocxContainsString(path, text, comparer);
+		
+		var extension = Path.GetExtension(path);
+		
+		// Check for specialized handlers first
+		if (FileHandlers.TryGetValue(extension, out var handler))
+		{
+			return handler(path, text, innerpatterns, comparer, token);
 		}
-
-		if (path.EndsWith(".pdf", CliOptions.FilenameComparison)) {
-			return PdfCheck.CheckPdfFile(path, text, comparer, token);
+		
+		// Check for ZIP files (by extension or magic number)
+		if (string.Equals(extension, ".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path))
+		{
+			return CheckZipFile(path, text, innerpatterns, comparer, token);
 		}
-#pragma warning restore IDE0046 // Convert to conditional expression
-
-		return path.EndsWith(".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path)
-			? CheckZipFile(path, text, innerpatterns, comparer, token)
-			: FileContainsString(path, text, comparer);
+		
+		// Default to general text search
+		return FileContainsString(path, text, comparer);
 	}
 
 	/// <summary>

@@ -195,4 +195,53 @@ public static class Utils
 	/// </summary>
 	public static IReadOnlyList<Glob> ProcessInnerPatterns(IReadOnlyList<string> patterns) =>
 		[.. patterns.Where(pat => !pat.EndsWith(".zip", CliOptions.FilenameComparison)).Select(pat => Glob.Parse(pat))];
+
+	/// <summary>
+	/// Validates that a file path is safe and doesn't contain path traversal attacks
+	/// </summary>
+	public static bool IsValidFilePath(string path)
+	{
+		if (string.IsNullOrWhiteSpace(path))
+			return false;
+
+		try
+		{
+			// Check for path traversal attempts
+			var normalizedPath = Path.GetFullPath(path);
+			
+			// Check for dangerous path patterns
+			var fileName = Path.GetFileName(normalizedPath);
+			if (fileName.StartsWith("..") || fileName.Contains(".."))
+				return false;
+
+			// Check for reserved Windows names (even on other platforms for consistency)
+			var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+			string[] reservedNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"];
+			
+			return !reservedNames.Contains(nameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// Validates and normalizes a search folder path
+	/// </summary>
+	public static string? ValidateSearchPath(string path)
+	{
+		if (string.IsNullOrWhiteSpace(path))
+			return null;
+
+		try
+		{
+			var normalizedPath = Path.GetFullPath(path);
+			return Directory.Exists(normalizedPath) ? normalizedPath : null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
 }
