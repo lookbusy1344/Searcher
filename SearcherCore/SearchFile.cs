@@ -9,12 +9,12 @@ using DotNet.Globbing;
 /// </summary>
 public static class SearchFile
 {
-	private static readonly Dictionary<string, Func<string, string, IReadOnlyList<Glob>, StringComparison, CancellationToken, SearchResult>> FileHandlers = new(StringComparer.OrdinalIgnoreCase)
-	{
-		{ ".docx", (path, text, _, comparer, _) => DocxContainsString(path, text, comparer) },
-		{ ".pdf", (path, text, _, comparer, token) => PdfCheck.CheckPdfFile(path, text, comparer, token) },
-		{ ".zip", (path, text, innerpatterns, comparer, token) => CheckZipFile(path, text, innerpatterns, comparer, token) }
-	};
+	private static readonly Dictionary<string, Func<string, string, IReadOnlyList<Glob>, StringComparison, CancellationToken, SearchResult>>
+		FileHandlers = new(StringComparer.OrdinalIgnoreCase) {
+			{ ".docx", (path, text, _, comparer, _) => DocxContainsString(path, text, comparer) },
+			{ ".pdf", (path, text, _, comparer, token) => PdfCheck.CheckPdfFile(path, text, comparer, token) },
+			{ ".zip", (path, text, innerpatterns, comparer, token) => CheckZipFile(path, text, innerpatterns, comparer, token) }
+		};
 
 	/// <summary>
 	/// Wrapper to pick the correct search function. Special cases for docx, pdf and zip files
