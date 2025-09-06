@@ -9,7 +9,7 @@ using DotNet.Globbing;
 /// </summary>
 public static class SearchFile
 {
-	private static readonly Dictionary<string, Func<string, string, IReadOnlyList<Glob>, StringComparison, CancellationToken, SearchResult>> FileHandlers = new(CliOptions.FilenameComparison)
+	private static readonly Dictionary<string, Func<string, string, IReadOnlyList<Glob>, StringComparison, CancellationToken, SearchResult>> FileHandlers = new(StringComparer.OrdinalIgnoreCase)
 	{
 		{ ".docx", (path, text, _, comparer, _) => DocxContainsString(path, text, comparer) },
 		{ ".pdf", (path, text, _, comparer, token) => PdfCheck.CheckPdfFile(path, text, comparer, token) }
@@ -22,21 +22,19 @@ public static class SearchFile
 		CancellationToken token)
 	{
 		ArgumentNullException.ThrowIfNull(path);
-		
+
 		var extension = Path.GetExtension(path);
-		
+
 		// Check for specialized handlers first
-		if (FileHandlers.TryGetValue(extension, out var handler))
-		{
+		if (FileHandlers.TryGetValue(extension, out var handler)) {
 			return handler(path, text, innerpatterns, comparer, token);
 		}
-		
+
 		// Check for ZIP files (by extension or magic number)
-		if (string.Equals(extension, ".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path))
-		{
+		if (string.Equals(extension, ".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path)) {
 			return CheckZipFile(path, text, innerpatterns, comparer, token);
 		}
-		
+
 		// Default to general text search
 		return FileContainsString(path, text, comparer);
 	}

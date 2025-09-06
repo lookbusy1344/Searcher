@@ -24,7 +24,7 @@ public sealed partial class PdfCheck
 
 		var result = SearchPdfInternal(reader, content, strcomp, token);
 
-		return result == SearchResult.Error 
+		return result == SearchResult.Error
 			? throw new InvalidDataException($"Error reading PDF file from ZIP entry: {entry.FullName}")
 			: result == SearchResult.Found;
 	}

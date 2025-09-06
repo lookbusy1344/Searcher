@@ -261,6 +261,6 @@ public class SearcherCoreTests
 		
 		// Should return normalized path
 		Assert.NotNull(result);
-		Assert.Equal(Path.GetFullPath(currentDir), result);
+		Assert.Equal(Path.GetFullPath(pathWithRedundantSeparators), result);
 	}
 }

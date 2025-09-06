@@ -10,7 +10,9 @@
       "Bash(git commit:*)",
       "Bash(dotnet test:*)",
       "Bash(dir:*)",
-      "Bash(dotnet format:*)"
+      "Bash(dotnet format:*)",
+      "Read(//private/tmp/**)",
+      "Bash(dotnet run:*)"
     ],
     "deny": [],
     "ask": []

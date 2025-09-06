@@ -201,27 +201,32 @@ public static class Utils
 	/// </summary>
 	public static bool IsValidFilePath(string path)
 	{
-		if (string.IsNullOrWhiteSpace(path))
+		if (string.IsNullOrWhiteSpace(path)) {
 			return false;
+		}
 
-		try
-		{
+		try {
+			// Check for path traversal attempts in the original path
+			if (path.Contains("..")) {
+				return false;
+			}
+
 			// Check for path traversal attempts
 			var normalizedPath = Path.GetFullPath(path);
-			
+
 			// Check for dangerous path patterns
 			var fileName = Path.GetFileName(normalizedPath);
-			if (fileName.StartsWith("..") || fileName.Contains(".."))
+			if (fileName.StartsWith("..") || fileName.Contains("..")) {
 				return false;
+			}
 
 			// Check for reserved Windows names (even on other platforms for consistency)
 			var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
 			string[] reservedNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"];
-			
+
 			return !reservedNames.Contains(nameWithoutExtension, StringComparer.OrdinalIgnoreCase);
 		}
-		catch
-		{
+		catch {
 			return false;
 		}
 	}
@@ -231,16 +236,20 @@ public static class Utils
 	/// </summary>
 	public static string? ValidateSearchPath(string path)
 	{
-		if (string.IsNullOrWhiteSpace(path))
+		if (string.IsNullOrWhiteSpace(path)) {
 			return null;
-
-		try
-		{
-			var normalizedPath = Path.GetFullPath(path);
-			return Directory.Exists(normalizedPath) ? normalizedPath : null;
 		}
-		catch
-		{
+
+		try {
+			var normalizedPath = Path.GetFullPath(path);
+			if (!Directory.Exists(normalizedPath)) {
+				return null;
+			}
+
+			// Return normalized path as-is for consistency with Path.GetFullPath()
+			return normalizedPath;
+		}
+		catch {
 			return null;
 		}
 	}
