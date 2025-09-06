@@ -180,7 +180,7 @@ public class SearcherCoreTests
 	[InlineData("", false)]
 	[InlineData("   ", false)]
 	[InlineData(null, false)]
-	public void IsValidFilePath_EdgeCases(string path, bool expected)
+	public void IsValidFilePath_EdgeCases(string? path, bool expected)
 	{
 		var result = Utils.IsValidFilePath(path);
 		Assert.Equal(expected, result);
@@ -191,9 +191,8 @@ public class SearcherCoreTests
 	public void IsValidFilePath_AllReservedNames()
 	{
 		string[] reservedNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"];
-		
-		foreach (var reserved in reservedNames)
-		{
+
+		foreach (var reserved in reservedNames) {
 			// Test with and without extension
 			Assert.False(Utils.IsValidFilePath(reserved), $"Reserved name {reserved} should be invalid");
 			Assert.False(Utils.IsValidFilePath($"{reserved}.txt"), $"Reserved name {reserved}.txt should be invalid");
@@ -227,13 +226,11 @@ public class SearcherCoreTests
 
 		// Test with file instead of directory
 		var tempFile = Path.GetTempFileName();
-		try
-		{
+		try {
 			result = Utils.ValidateSearchPath(tempFile);
 			Assert.Null(result);
 		}
-		finally
-		{
+		finally {
 			File.Delete(tempFile);
 		}
 	}
@@ -243,7 +240,7 @@ public class SearcherCoreTests
 	[InlineData("")]
 	[InlineData("   ")]
 	[InlineData(null)]
-	public void ValidateSearchPath_EdgeCases(string path)
+	public void ValidateSearchPath_EdgeCases(string? path)
 	{
 		var result = Utils.ValidateSearchPath(path);
 		Assert.Null(result);
@@ -254,11 +251,11 @@ public class SearcherCoreTests
 	public void ValidateSearchPath_PathNormalization()
 	{
 		var currentDir = Directory.GetCurrentDirectory();
-		
+
 		// Test that paths are normalized (remove redundant separators, etc.)
 		var pathWithRedundantSeparators = currentDir + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar + "." + Path.DirectorySeparatorChar;
 		var result = Utils.ValidateSearchPath(pathWithRedundantSeparators);
-		
+
 		// Should return normalized path
 		Assert.NotNull(result);
 		Assert.Equal(Path.GetFullPath(pathWithRedundantSeparators), result);
