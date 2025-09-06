@@ -12,7 +12,11 @@
       "Bash(dir:*)",
       "Bash(dotnet format:*)",
       "Read(//private/tmp/**)",
-      "Bash(dotnet run:*)"
+      "Bash(dotnet run:*)",
+      "Bash(dotnet list package:*)",
+      "Bash(dotnet list:*)",
+      "Bash(dotnet add package:*)",
+      "Bash(dotnet add:*)"
     ],
     "deny": [],
     "ask": []
