@@ -42,7 +42,7 @@ public static class Program
 	/// <summary>
 	/// Wrap the call to PicoArgs in a using block, so it automatically throws if there are any errors
 	/// </summary>
-	private static SearcherCore.CliOptions ParseCommandLine(string[] args)
+	private static CliOptions ParseCommandLine(string[] args)
 	{
 		using var pico = new PicoArgsDisposable(args);
 
@@ -64,7 +64,7 @@ public static class Program
 		var hideErrors = pico.Contains("--hide-errors");
 		var raw = pico.Contains("-r", "--raw");
 
-		return new SearcherCore.CliOptions {
+		return new() {
 			Search = search,
 			Folder = new(folder),
 			Pattern = patterns.AsReadOnly(),
@@ -100,7 +100,7 @@ public static class Program
 
 	                                          Optional parameters:
 	                                            --folder <x>, -f <x>                Folder to search (default '.')
-	                                            --pattern <x, ...>, -p <x, ...>     File patterns to match eg '*.txt,*.docx' (default '*')
+	                                            --pattern <x>, -p <x>               File patterns to match eg '*.txt', can be repeated eg -p *.txt -p *.doc (default '*')
 	                                            --open-with <x>, -w <x>             Open files with this program instead of Notepad
 
 	                                            --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
