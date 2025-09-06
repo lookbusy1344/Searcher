@@ -9,10 +9,6 @@ internal sealed class MainSearch : IDisposable
 
 	public void Search(CliOptions config)
 	{
-		var parallelThreads = config.DegreeOfParallelism;
-		// var filesCount = 0;
-		// var modulo = 20;
-
 		CancellationToken.Token.ThrowIfCancellationRequested();
 
 		if (string.IsNullOrWhiteSpace(config.Search)) {
@@ -29,28 +25,19 @@ internal sealed class MainSearch : IDisposable
 
 		// Parallel routine for searching folders
 		var sw = Stopwatch.StartNew();
-		var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerPatterns, parallelThreads, null, CancellationToken.Token);
+		var files = GlobSearch.ParallelFindFiles(config.Folder.FullName, outerPatterns, config.DegreeOfParallelism, null, CancellationToken.Token);
 		Program.WriteMessage($"Found {files.Length} files matching pattern in {sw.ElapsedMilliseconds}ms. Searching content...");
 
-		// Work out a reasonable update frequency for the progress bar
-		// filesCount = files.Length;
-		// modulo = Utils.CalculateModulo(filesCount);
-
-		// var progressTimer = new ProgressTimer(filesCount);
-		// var counter = new SafeCounter();
-
 		// search the files in parallel
-		_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = parallelThreads, CancellationToken = CancellationToken.Token }, file => {
-			// Search the file for the search string
-			var found = SearchFile.FileContainsStringWrapper(file, config.Search, innerPatterns, config.StringComparison,
-				CancellationToken.Token);
-			if (found is SearchResult.Found or SearchResult.Error) {
-				ShowResult(new(file, found));
-			}
-
-			// when the task completes, update completed counter. This is thread safe
-			//var currentCount = counter.Increment();
-		});
+		_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = config.DegreeOfParallelism, CancellationToken = CancellationToken.Token },
+			file => {
+				// Search the file for the search string
+				var found = SearchFile.FileContainsStringWrapper(file, config.Search, innerPatterns, config.StringComparison,
+					CancellationToken.Token);
+				if (found is SearchResult.Found or SearchResult.Error) {
+					ShowResult(new(file, found));
+				}
+			});
 	}
 
 	/// <summary>
