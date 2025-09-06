@@ -57,7 +57,6 @@ public static class Program
 		var search = pico.GetParam("-s", "--search");
 		var folder = pico.GetParamOpt("-f", "--folder") ?? ".";
 		var patterns = pico.GetMultipleParams("-p", "--pattern");
-		var openWith = pico.GetParamOpt("-w", "--open-with");
 		var insideZips = pico.Contains("-z", "--inside-zips");
 		var oneThread = pico.Contains("-o", "--one-thread");
 		var caseSensitive = pico.Contains("-c", "--case-sensitive");
@@ -68,7 +67,6 @@ public static class Program
 			Search = search,
 			Folder = new(folder),
 			Pattern = patterns.AsReadOnly(),
-			OpenWith = openWith,
 			InsideZips = insideZips,
 			OneThread = oneThread,
 			CaseSensitive = caseSensitive,
@@ -101,7 +99,6 @@ public static class Program
 	                                          Optional parameters:
 	                                            --folder <x>, -f <x>                Folder to search (default '.')
 	                                            --pattern <x>, -p <x>               File patterns to match eg '*.txt', can be repeated eg -p *.txt -p *.doc (default '*')
-	                                            --open-with <x>, -w <x>             Open files with this program instead of Notepad
 
 	                                            --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
 	                                            --one-thread, -o                    Don't search files in parallel

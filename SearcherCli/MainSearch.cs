@@ -7,7 +7,7 @@ internal sealed class MainSearch : IDisposable
 {
 	public CancellationTokenSource CancellationToken { get; init; } = new();
 
-	public void Search(SearcherCore.CliOptions config)
+	public void Search(CliOptions config)
 	{
 		var parallelThreads = config.DegreeOfParallelism;
 		// var filesCount = 0;
