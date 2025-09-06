@@ -182,7 +182,7 @@ public class SearcherCoreTests
 	[InlineData(null, false)]
 	public void IsValidFilePath_EdgeCases(string? path, bool expected)
 	{
-		var result = Utils.IsValidFilePath(path);
+		var result = Utils.IsValidFilePath(path!);
 		Assert.Equal(expected, result);
 	}
 
@@ -242,7 +242,7 @@ public class SearcherCoreTests
 	[InlineData(null)]
 	public void ValidateSearchPath_EdgeCases(string? path)
 	{
-		var result = Utils.ValidateSearchPath(path);
+		var result = Utils.ValidateSearchPath(path!);
 		Assert.Null(result);
 	}
 
