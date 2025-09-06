@@ -15,7 +15,8 @@ public static class Program
 			raw = parsed.Raw;
 
 			if (!raw) {
-				Console.WriteLine("Searcher - recursively searching inside files, including zips and pdfs");
+				var git = GitVersion.VersionInfo.Get();
+				Console.WriteLine($"Searcher - recursively searching inside files, including zips and pdfs ({git.GetVersionHash(8)})");
 				Console.WriteLine(parsed.OneThread ? "Single thread mode" : "Multi-thread mode");
 			}
 
