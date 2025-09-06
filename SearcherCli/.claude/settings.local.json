@@ -3,7 +3,11 @@
     "allow": [
       "Bash(dotnet publish:*)",
       "Bash(dotnet test:*)",
-      "Bash(dotnet sln:*)"
+      "Bash(dotnet sln:*)",
+      "Read(//Users/johnsparrow/Documents/dev/Searcher/**)",
+      "Bash(dotnet build)",
+      "Bash(dotnet format:*)",
+      "Bash(dotnet run:*)"
     ],
     "deny": [],
     "ask": []

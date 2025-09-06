@@ -15,7 +15,7 @@ Searcher is a C# WinForms application that recursively searches for text inside 
 ## Build Commands
 
 ```bash
-# Build the entire solution
+# Build the entire solution (cross-platform compatible)
 dotnet build
 
 # Build for release (single-file bundle)
@@ -33,22 +33,20 @@ dotnet run --project SearcherCli -- --help
 
 ## Test Commands
 
-**Note**: The SearcherCli solution only includes SearcherCli and SearcherCore projects. TestSearcher is in the parent directory's solution.
+**Note**: The SearcherCli solution now includes SearcherCli, SearcherCore, and TestSearcher projects.
 
 ```bash
 # Run tests (Windows batch script)
 RunTests.cmd
 
-# Run tests using dotnet from SearcherCli directory
-dotnet test ../TestSearcher/
+# Run tests using dotnet (TestSearcher now included in solution)
+dotnet test
 
-# Run tests using dotnet (modern approach, from root directory)
-dotnet test TestSearcher/
+# Run tests with detailed output
+dotnet test --verbosity normal
 
 # Build and run tests
-dotnet build && dotnet test ../TestSearcher/
-
-# Note: 'dotnet test' in SearcherCli directory will find no test projects
+dotnet build && dotnet test
 ```
 
 ## Development Commands
@@ -76,23 +74,22 @@ dotnet publish SearcherCli.csproj -c Release -r osx-arm64 -p:PublishSingleFile=t
 
 ## Project Architecture
 
-### Main Application Components (Root Directory)
+### Main WinForms Application Components (Root Directory)
 
 - **Program.cs**: Entry point for WinForms application
 - **MainForm.cs/.Designer.cs**: Main UI form with search interface
-- **CliOptions.cs**: Shared configuration class with search parameters
-- **SearchFile.cs**: Core file content searching logic for different file types
-- **GlobSearch.cs**: Parallel file discovery using glob patterns
-- **Utils.cs**: Utility functions for pattern processing and file operations
-- **PdfCheck.cs**: PDF-specific search implementation using iText7
+- **FormsCliOptions.cs**: WinForms-specific configuration class extending SearcherCore's CliOptions
 - **DiskQuery.cs**: Hardware detection for performance optimization
 - **SafeCounter.cs**, **ProgressTimer.cs**, **MonotonicDateTime.cs**: Performance and threading utilities
+- **ListViewExtensions.cs**: UI helper extensions for ListView controls
+- **GitVersion.cs**: Git version information integration
 
 ### Console Application Components (SearcherCli/)
 
 - **Program.cs**: Console entry point with command line parsing
 - **MainSearch.cs**: Main search orchestrator for CLI version
 - **PicoArgs.cs**: Custom lightweight command line argument parser
+- **GitVersion.cs**: Git version information integration (copied from root)
 - References SearcherCore library for shared functionality
 
 ### Shared Library Components (SearcherCore/)
@@ -133,13 +130,21 @@ dotnet publish SearcherCli.csproj -c Release -r osx-arm64 -p:PublishSingleFile=t
 
 ## Dependencies
 
-Key NuGet packages:
-- **DotNet.Glob**: For file pattern matching
-- **itext7**: For PDF text extraction
-- **System.Management**: For hardware detection
-- **xunit**: For unit testing (TestSearcher only)
+### SearcherCli Project Dependencies
+- **SearcherCore**: Shared library containing core search functionality (project reference)
+- No external NuGet packages (uses custom `PicoArgs.cs` for command line parsing)
 
-**Note**: SearcherCli uses a custom lightweight command line parser (`PicoArgs.cs`) instead of external packages for argument parsing.
+### SearcherCore Dependencies (inherited by SearcherCli)
+- **DotNet.Glob**: File pattern matching and globbing
+- **itext7**: PDF text extraction and processing
+
+### Root WinForms Application Dependencies (separate)
+- **CommandLineParser**: Command line argument parsing (WinForms uses this for consistency)
+- **System.Management**: Hardware detection for performance optimization
+- **SearcherCore**: Shared library (project reference)
+
+### Test Dependencies
+- **xunit**: Unit testing framework (TestSearcher project only)
 
 ## Configuration
 

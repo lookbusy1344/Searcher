@@ -15,7 +15,7 @@ Searcher is a C# WinForms application for recursively searching text inside file
 ## Build Commands
 
 ```bash
-# Build the entire solution
+# Build the entire solution (Windows only - WinForms app has Windows-only build target)
 dotnet build
 
 # Build for release
@@ -60,10 +60,10 @@ RunTests.cmd
 ## Development Commands
 
 ```bash
-# Run the WinForms application
+# Run the WinForms application (Windows only)
 dotnet run
 
-# Run with specific configuration
+# Run with specific configuration (Windows only)
 dotnet run -c Debug
 
 # Check for vulnerabilities (Windows)
@@ -76,17 +76,20 @@ CheckVul.cmd
 
 - **Program.cs**: Application entry point with Windows Forms initialization
 - **MainForm.cs/.Designer.cs**: Primary UI form with search interface, results display, and file opening functionality
-- **CliOptions.cs**: Configuration class shared with SearcherCore for search parameters
+- **FormsCliOptions.cs**: WinForms-specific configuration class that extends CliOptions from SearcherCore
 - **ListViewExtensions.cs**: UI helper extensions for ListView controls
+- **DiskQuery.cs**: Hardware detection for SSD/HDD-based parallelism optimization
+- **SafeCounter.cs**, **ProgressTimer.cs**, **MonotonicDateTime.cs**: Performance and threading utilities
+- **GitVersion.cs**: Git version information integration
 
 ### Core Search Components (via SearcherCore reference)
 
+- **CliOptions.cs**: Base configuration class for search parameters (in SearcherCore)
 - **SearchFile.cs**: Main file content searching with format-specific handlers (.txt, .docx, .pdf, .zip)
 - **GlobSearch.cs**: Parallel file discovery using glob patterns with recursive directory traversal
 - **PdfCheck.cs**: PDF text extraction and searching using iText7 library
 - **Utils.cs**: File type detection, pattern processing, and utility functions
 - **SearchResult.cs**: Data structure for search results
-- **DiskQuery.cs**: Hardware detection for SSD/HDD-based parallelism optimization
 
 ### Key Architectural Patterns
 
@@ -100,7 +103,7 @@ CheckVul.cmd
 ### Search Workflow
 
 1. User enters search criteria in WinForms interface
-2. Parameters converted to `CliOptions` configuration object
+2. Parameters converted from `FormsCliOptions` to base `CliOptions` configuration object
 3. `GlobSearch.ParallelFindFiles()` discovers matching files using patterns
 4. `SearchFile.FileContainsStringWrapper()` performs parallel content search
 5. Results displayed in ListView with double-click to open files
@@ -117,17 +120,20 @@ CheckVul.cmd
 ## Dependencies
 
 Key NuGet packages:
-- **DotNet.Glob**: File pattern matching and globbing
-- **itext7**: PDF text extraction and processing
+- **SearcherCore**: Shared library containing core search functionality
 - **CommandLineParser**: Command line argument parsing (WinForms uses this for consistency)
 - **System.Management**: Hardware detection for performance optimization
+
+**SearcherCore dependencies:**
+- **DotNet.Glob**: File pattern matching and globbing
+- **itext7**: PDF text extraction and processing
 
 ## Code Analysis and Quality
 
 The project uses comprehensive static analysis:
 - **Analysis Modes**: All modes enabled (Design, Security, Performance, Reliability, Usage)
 - **Microsoft.VisualStudio.Threading.Analyzers**: Threading best practices
-- **Roslynator.Analyzers**: Code quality and style enforcement
+- **Roslynator.Analyzers**: Code quality and style enforcement (v4.13.1 in main app, v4.14.0 in SearcherCore and SearcherCli)
 - **lookbusy1344.RecordValueAnalyser**: Record type analysis
 
 ## Configuration
