@@ -16,6 +16,7 @@ public static class Utils
 	private static ReadOnlySpan<string> WordFileTypes => new string[] { ".docx", ".doc", ".rtf" };
 	private static readonly Lazy<string> pathToWord = new(GetWordPath);
 	private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acrobat.exe") ?? GetProgramPath("AcroRd32.exe") ?? string.Empty);
+	private static readonly string[] ReservedNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"];
 
 	/// <summary>
 	/// Calculate a reasonable update rate, from 1 to 201 items
@@ -206,15 +207,18 @@ public static class Utils
 		}
 
 		try {
-			// Check for path traversal attempts in the original path
-			if (path.Contains("..")) {
+			// Normalize the path first to handle all path traversal attempts
+			var normalizedPath = Path.GetFullPath(path);
+			var currentDirectory = Path.GetFullPath(Environment.CurrentDirectory);
+
+			// For relative paths, ensure they don't escape the current directory
+			// This handles cases like "..\..\system32" that could bypass simple ".." checks
+			if (!Path.IsPathRooted(path) &&
+				!normalizedPath.StartsWith(currentDirectory, StringComparison.OrdinalIgnoreCase)) {
 				return false;
 			}
 
-			// Check for path traversal attempts
-			var normalizedPath = Path.GetFullPath(path);
-
-			// Check for dangerous path patterns
+			// Check for dangerous path patterns in the filename
 			var fileName = Path.GetFileName(normalizedPath);
 			if (fileName.StartsWith("..") || fileName.Contains("..")) {
 				return false;
@@ -222,9 +226,8 @@ public static class Utils
 
 			// Check for reserved Windows names (even on other platforms for consistency)
 			var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-			string[] reservedNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"];
 
-			return !reservedNames.Contains(nameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+			return !ReservedNames.Contains(nameWithoutExtension, StringComparer.OrdinalIgnoreCase);
 		}
 		catch {
 			return false;
