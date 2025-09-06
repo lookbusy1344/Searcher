@@ -12,7 +12,8 @@ public static class SearchFile
 	private static readonly Dictionary<string, Func<string, string, IReadOnlyList<Glob>, StringComparison, CancellationToken, SearchResult>> FileHandlers = new(StringComparer.OrdinalIgnoreCase)
 	{
 		{ ".docx", (path, text, _, comparer, _) => DocxContainsString(path, text, comparer) },
-		{ ".pdf", (path, text, _, comparer, token) => PdfCheck.CheckPdfFile(path, text, comparer, token) }
+		{ ".pdf", (path, text, _, comparer, token) => PdfCheck.CheckPdfFile(path, text, comparer, token) },
+		{ ".zip", (path, text, innerpatterns, comparer, token) => CheckZipFile(path, text, innerpatterns, comparer, token) }
 	};
 
 	/// <summary>
@@ -30,8 +31,8 @@ public static class SearchFile
 			return handler(path, text, innerpatterns, comparer, token);
 		}
 
-		// Check for ZIP files (by extension or magic number)
-		if (string.Equals(extension, ".zip", CliOptions.FilenameComparison) || Utils.IsZipArchive(path)) {
+		// Check for ZIP files by magic number (when extension isn't .zip)
+		if (Utils.IsZipArchive(path)) {
 			return CheckZipFile(path, text, innerpatterns, comparer, token);
 		}
 
@@ -76,10 +77,6 @@ public static class SearchFile
 	{
 		if (string.IsNullOrEmpty(text)) {
 			return SearchResult.NotFound;
-		}
-
-		if (!path.EndsWith(".docx", CliOptions.FilenameComparison)) {
-			throw new("Not a docx file");
 		}
 
 		try {
