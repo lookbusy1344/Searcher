@@ -31,7 +31,8 @@ dotnet clean
 dotnet restore
 
 # Format code (critical - always run after changes)
-dotnet format
+dotnet format Searcher.sln
+dotnet format SearcherCli/SearcherCli.csproj
 
 # Publish single-file Windows executable
 dotnet publish Searcher.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
@@ -136,4 +137,4 @@ The project uses comprehensive static analysis:
 - **Unsafe Code**: Enabled for performance-critical operations
 - **Git Integration**: Automatic source revision ID embedding via git describe
 
-**Critical**: Always run `dotnet format` after code changes to maintain consistent formatting and style compliance.
+**Critical**: Always run `dotnet format Searcher.sln` and `dotnet format SearcherCli/SearcherCli.csproj` after code changes to maintain consistent formatting and style compliance.
