@@ -6,7 +6,7 @@ A high-performance command-line text search tool that recursively searches for t
 
 - **Multi-format support**: Search inside text files, PDFs, DOCX documents, and ZIP archives
 - **Recursive archive handling**: Supports nested ZIP files and archives containing other formats
-- **Parallel processing**: Hardware-aware performance optimization (SSD vs HDD detection)
+- **Parallel processing**: Efficient multi-threaded file searching
 - **Glob pattern matching**: Flexible file filtering with pattern support
 - **Cross-platform**: Built on .NET 9.0, supports Windows, macOS, and Linux
 
@@ -21,7 +21,7 @@ cd Searcher/SearcherCli
 dotnet build
 
 # Or build for release (single-file bundle)
-dotnet publish -r win-x64 -c Release -p:PublishSingleFile=true --self-contained true
+dotnet publish SearcherCli.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true -p:PublishAot=false --self-contained false
 ```
 
 ## Usage
@@ -55,7 +55,6 @@ SearcherCli --help
 |--------|-------------|
 | `--folder <x>`, `-f <x>` | Folder to search (default: current directory) |
 | `--pattern <x, ...>`, `-p <x, ...>` | File patterns to match, e.g., '*.txt,*.docx' (default: '*') |
-| `--open-with <x>`, `-w <x>` | Open files with this program instead of Notepad |
 | `--inside-zips`, `-z` | Always search inside zip files. Implies -p *.zip |
 | `--one-thread`, `-o` | Don't search files in parallel |
 | `--case-sensitive`, `-c` | Text is matched in a case-sensitive way |
@@ -73,7 +72,6 @@ SearcherCli --help
 ## Performance
 
 SearcherCli is optimized for performance:
-- **Automatic hardware detection**: Adjusts parallelism based on SSD vs HDD
 - **Parallel file discovery**: Custom parallel directory traversal
 - **Stream-based processing**: Efficient memory usage for large files
 - **Magic number detection**: Identifies file types regardless of extension
@@ -118,11 +116,13 @@ dotnet build
 dotnet build -c Release
 
 # Self-contained executable
-dotnet publish -r [runtime-id] -c Release -p:PublishSingleFile=true --self-contained true
+dotnet publish SearcherCli.csproj -c Release -r [runtime-id] -p:PublishSingleFile=true -p:PublishAot=false --self-contained false
 ```
+
+Note using AOT compilation is not supported due to dependencies in third-party libraries.
 
 ## Testing
 
 ```bash
-dotnet test ../TestSearcher/
+dotnet test
 ```

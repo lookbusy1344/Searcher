@@ -63,7 +63,7 @@ dotnet restore
 dotnet clean
 
 # Format code (relies on editorconfig settings)
-dotnet format
+dotnet format SearcherCli.csproj
 
 # IMPORTANT: Always run 'dotnet format' after making code changes to ensure consistent formatting
 
