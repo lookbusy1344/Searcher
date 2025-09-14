@@ -4,3 +4,5 @@ obj/
 /Properties/launchSettings.json
 .DS_Store
 *.bak
+copilot.data.migration.agent.xml
+copilot.data.migration.edit.xml
