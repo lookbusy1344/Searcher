@@ -19,7 +19,7 @@ Searcher is a C# WinForms application that recursively searches for text inside 
 dotnet build
 
 # Build for release (single-file bundle)
-Publish.cmd
+dotnet publish SearcherCli.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishAot=false --self-contained false
 
 # Build console version specifically
 dotnet build SearcherCli/SearcherCli.csproj
@@ -36,9 +36,6 @@ dotnet run --project SearcherCli -- --help
 **Note**: The SearcherCli solution now includes SearcherCli, SearcherCore, and TestSearcher projects.
 
 ```bash
-# Run tests (Windows batch script)
-RunTests.cmd
-
 # Run tests using dotnet (TestSearcher now included in solution)
 dotnet test
 
