@@ -5,16 +5,16 @@ using SearcherCore;
 
 public static class Program
 {
-	private static bool raw;
+	private static bool rawOutput;
 
 	private static int Main(string[] args)
 	{
 		try {
 			var parsed = ParseCommandLine(args);
 
-			raw = parsed.Raw;
+			rawOutput = parsed.Raw;
 
-			if (!raw) {
+			if (!rawOutput) {
 				var git = GitVersion.VersionInfo.Get();
 				Console.WriteLine($"Searcher - recursively searching inside files, including zips and pdfs ({git.GetVersionHash(8)})");
 				Console.WriteLine(parsed.OneThread ? "Single thread mode" : "Multi-thread mode");
@@ -81,7 +81,7 @@ public static class Program
 	/// </summary>
 	internal static void WriteMessage(string msg, bool blankLine = false)
 	{
-		if (raw) {
+		if (rawOutput) {
 			return;
 		}
 
@@ -92,33 +92,33 @@ public static class Program
 	}
 
 	private const string CommandLineMessage = """
-	                                          Recursively search for files containing text.
+											  Recursively search for files containing text.
 
-	                                          Mandatory parameters:
-	                                            --search <text>, -s <text>          Text to find
+											  Mandatory parameters:
+											    --search <text>, -s <text>          Text to find
 
-	                                          Optional parameters:
-	                                            --folder <x>, -f <x>                Folder to search (default '.')
-	                                            --pattern <x>, -p <x>               File patterns to match eg '*.txt', can be repeated eg -p *.txt -p *.doc (default '*')
+											  Optional parameters:
+											    --folder <x>, -f <x>                Folder to search (default '.')
+											    --pattern <x>, -p <x>               File patterns to match eg '*.txt', can be repeated eg -p *.txt -p *.doc (default '*')
 
-	                                            --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
-	                                            --one-thread, -o                    Don't search files in parallel
-	                                            --case-sensitive, -c                Text is matched in a case-sensitive way
-	                                            --hide-errors                       Hide errors from the output list
-	                                            --raw, -r                           Suppress all non-error messages
+											    --inside-zips, -z                   Always search inside zip files. Implies -p *.zip
+											    --one-thread, -o                    Don't search files in parallel
+											    --case-sensitive, -c                Text is matched in a case-sensitive way
+											    --hide-errors                       Hide errors from the output list
+											    --raw, -r                           Suppress all non-error messages
 
-	                                          Examples. Search current folder for txt and Word files containing "hello world":
-	                                            Searcher --folder . --pattern *.txt,*.docx --search "hello world"
+											  Examples. Search current folder for txt and Word files containing "hello world":
+											    Searcher --folder . --pattern *.txt,*.docx --search "hello world"
 
-	                                          Search just zip files for anything containing 'hello':
-	                                            Searcher -f . -p *.zip -s hello
+											  Search just zip files for anything containing 'hello':
+											    Searcher -f . -p *.zip -s hello
 
-	                                          Search txt files (including those in zips) for anything containing "hello":
-	                                            Searcher -z -f . -p *.txt -s hello
-	                                          Or..
-	                                            Searcher -f . -p *.txt,*.zip -s hello
+											  Search txt files (including those in zips) for anything containing "hello":
+											    Searcher -z -f . -p *.txt -s hello
+											  Or..
+											    Searcher -f . -p *.txt,*.zip -s hello
 
-	                                          Search txt files (excluding those in zips) for anything containing "hello":
-	                                            Searcher -f . -p *.txt -s hello
-	                                          """;
+											  Search txt files (excluding those in zips) for anything containing "hello":
+											    Searcher -f . -p *.txt -s hello
+											  """;
 }
