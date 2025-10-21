@@ -130,13 +130,20 @@ jobs:
         with:
           path: ./artifacts
 
+      - name: Debug artifacts structure
+        run: |
+          echo "Artifacts directory structure:"
+          ls -laR artifacts/
+
       - name: Flatten artifacts
         run: |
           cd artifacts
           # Move all binaries from subdirectories to root artifacts directory
-          find . -type f \( -name "*.exe" -o -executable \) -exec mv {} . \;
+          find . -mindepth 2 -type f \( -name "Searcher-*" -o -name "SearcherCli-*" \) -exec mv {} . \;
           # Remove empty subdirectories
           find . -type d -empty -delete
+          echo "After flattening:"
+          ls -la
 
       - name: Generate SHA256 checksums
         run: |
