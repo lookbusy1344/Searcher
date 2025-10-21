@@ -34,13 +34,16 @@ jobs:
         run: |
           dotnet publish Searcher.csproj -c Release -r ${{ matrix.runtime }} --self-contained false /p:PublishSingleFile=true /p:DebugType=None /p:DebugSymbols=false --no-build -o ./publish/${{ matrix.runtime }}
 
+      - name: Rename binary
+        shell: pwsh
+        run: |
+          Move-Item -Path "./publish/${{ matrix.runtime }}/Searcher.exe" -Destination "./publish/Searcher-${{ matrix.runtime }}.exe"
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: searcher-${{ matrix.runtime }}
-          path: |
-            ./publish/${{ matrix.runtime }}/*
-            !./publish/${{ matrix.runtime }}/*.pdb
+          path: ./publish/Searcher-${{ matrix.runtime }}.exe
           retention-days: 30
 
   build-searcher-cli:
@@ -83,13 +86,32 @@ jobs:
         run: |
           dotnet publish ${{ matrix.project-path }} -c Release -r ${{ matrix.runtime }} --self-contained false -p:PublishSingleFile=true -p:PublishAot=false /p:DebugType=None /p:DebugSymbols=false --no-build -o ./publish/${{ matrix.runtime }}
 
-      - name: Upload artifacts
+      - name: Rename binary (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Move-Item -Path "./publish/${{ matrix.runtime }}/SearcherCli.exe" -Destination "./publish/SearcherCli-${{ matrix.runtime }}.exe"
+
+      - name: Rename binary (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          mv "./publish/${{ matrix.runtime }}/SearcherCli" "./publish/SearcherCli-${{ matrix.runtime }}"
+          chmod +x "./publish/SearcherCli-${{ matrix.runtime }}"
+
+      - name: Upload artifacts (Windows)
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: searchercli-${{ matrix.runtime }}
-          path: |
-            ./publish/${{ matrix.runtime }}/*
-            !./publish/${{ matrix.runtime }}/*.pdb
+          path: ./publish/SearcherCli-${{ matrix.runtime }}.exe
+          retention-days: 30
+
+      - name: Upload artifacts (Unix)
+        if: runner.os != 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: searchercli-${{ matrix.runtime }}
+          path: ./publish/SearcherCli-${{ matrix.runtime }}
           retention-days: 30
 
   create-release:
@@ -108,35 +130,25 @@ jobs:
         with:
           path: ./artifacts
 
-      - name: Create release archives
+      - name: Flatten artifacts
         run: |
           cd artifacts
-          for dir in */; do
-            dirname="${dir%/}"
-            if [[ "$dirname" == searcher-win-* ]] || [[ "$dirname" == searchercli-win-* ]]; then
-              # Create ZIP for Windows artifacts
-              cd "$dirname"
-              zip -r "../${dirname}.zip" .
-              cd ..
-            else
-              # Create tar.gz for Linux/macOS artifacts
-              cd "$dirname"
-              tar -czf "../${dirname}.tar.gz" .
-              cd ..
-            fi
-          done
+          # Move all binaries from subdirectories to root artifacts directory
+          find . -type f \( -name "*.exe" -o -executable \) -exec mv {} . \;
+          # Remove empty subdirectories
+          find . -type d -empty -delete
 
       - name: Generate SHA256 checksums
         run: |
           cd artifacts
-          sha256sum *.zip *.tar.gz 2>/dev/null | tee SHA256SUMS.txt || true
+          sha256sum Searcher-* SearcherCli-* 2>/dev/null | tee SHA256SUMS.txt || true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/*.zip
-            artifacts/*.tar.gz
+            artifacts/Searcher-*
+            artifacts/SearcherCli-*
             artifacts/SHA256SUMS.txt
           draft: false
           prerelease: false
