@@ -32,13 +32,15 @@ jobs:
 
       - name: Publish Searcher ${{ matrix.runtime }}
         run: |
-          dotnet publish Searcher.csproj -c Release -r ${{ matrix.runtime }} --self-contained false /p:PublishSingleFile=true --no-build -o ./publish/${{ matrix.runtime }}
+          dotnet publish Searcher.csproj -c Release -r ${{ matrix.runtime }} --self-contained false /p:PublishSingleFile=true /p:DebugType=None /p:DebugSymbols=false --no-build -o ./publish/${{ matrix.runtime }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: searcher-${{ matrix.runtime }}
-          path: ./publish/${{ matrix.runtime }}/*
+          path: |
+            ./publish/${{ matrix.runtime }}/*
+            !./publish/${{ matrix.runtime }}/*.pdb
           retention-days: 30
 
   build-searcher-cli:
@@ -79,13 +81,15 @@ jobs:
 
       - name: Publish SearcherCli ${{ matrix.runtime }}
         run: |
-          dotnet publish ${{ matrix.project-path }} -c Release -r ${{ matrix.runtime }} --self-contained false -p:PublishSingleFile=true -p:PublishAot=false --no-build -o ./publish/${{ matrix.runtime }}
+          dotnet publish ${{ matrix.project-path }} -c Release -r ${{ matrix.runtime }} --self-contained false -p:PublishSingleFile=true -p:PublishAot=false /p:DebugType=None /p:DebugSymbols=false --no-build -o ./publish/${{ matrix.runtime }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: searchercli-${{ matrix.runtime }}
-          path: ./publish/${{ matrix.runtime }}/*
+          path: |
+            ./publish/${{ matrix.runtime }}/*
+            !./publish/${{ matrix.runtime }}/*.pdb
           retention-days: 30
 
   create-release:
