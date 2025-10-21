@@ -1,0 +1,133 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers on version tags like v1.0.0, v1.2.3, etc.
+
+jobs:
+  build-searcher-windows:
+    name: Build Searcher (WinForms) - Windows
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        runtime: [win-x64, win-arm64]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for git describe
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore Searcher.sln
+
+      - name: Build
+        run: dotnet build Searcher.sln -c Release --no-restore
+
+      - name: Publish Searcher ${{ matrix.runtime }}
+        run: |
+          dotnet publish Searcher.csproj -c Release -r ${{ matrix.runtime }} --self-contained false /p:PublishSingleFile=true --no-build -o ./publish/${{ matrix.runtime }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: searcher-${{ matrix.runtime }}
+          path: ./publish/${{ matrix.runtime }}/*
+          retention-days: 30
+
+  build-searcher-cli:
+    name: Build SearcherCli - Multi-platform
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            runtime: win-x64
+            project-path: SearcherCli/SearcherCli.csproj
+          - os: windows-latest
+            runtime: win-arm64
+            project-path: SearcherCli/SearcherCli.csproj
+          - os: ubuntu-latest
+            runtime: linux-x64
+            project-path: SearcherCli/SearcherCli.csproj
+          - os: macos-latest
+            runtime: osx-arm64
+            project-path: SearcherCli/SearcherCli.csproj
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for git describe
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ matrix.project-path }}
+
+      - name: Build
+        run: dotnet build ${{ matrix.project-path }} -c Release --no-restore
+
+      - name: Publish SearcherCli ${{ matrix.runtime }}
+        run: |
+          dotnet publish ${{ matrix.project-path }} -c Release -r ${{ matrix.runtime }} --self-contained false -p:PublishSingleFile=true -p:PublishAot=false --no-build -o ./publish/${{ matrix.runtime }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: searchercli-${{ matrix.runtime }}
+          path: ./publish/${{ matrix.runtime }}/*
+          retention-days: 30
+
+  create-release:
+    name: Create GitHub Release
+    needs: [build-searcher-windows, build-searcher-cli]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create release archives
+        run: |
+          cd artifacts
+          for dir in */; do
+            dirname="${dir%/}"
+            if [[ "$dirname" == searcher-win-* ]] || [[ "$dirname" == searchercli-win-* ]]; then
+              # Create ZIP for Windows artifacts
+              cd "$dirname"
+              zip -r "../${dirname}.zip" .
+              cd ..
+            else
+              # Create tar.gz for Linux/macOS artifacts
+              cd "$dirname"
+              tar -czf "../${dirname}.tar.gz" .
+              cd ..
+            fi
+          done
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*.{zip,tar.gz}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
