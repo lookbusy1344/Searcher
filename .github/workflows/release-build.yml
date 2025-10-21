@@ -122,12 +122,26 @@ jobs:
             fi
           done
 
+      - name: Generate SHA256 checksums
+        run: |
+          cd artifacts
+          sha256sum *.zip *.tar.gz 2>/dev/null | tee SHA256SUMS.txt || true
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/*.{zip,tar.gz}
+          files: |
+            artifacts/*.zip
+            artifacts/*.tar.gz
+            artifacts/SHA256SUMS.txt
           draft: false
           prerelease: false
           generate_release_notes: true
+          body: |
+            ## SHA256 Checksums
+
+            ```
+            $(cat artifacts/SHA256SUMS.txt)
+            ```
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
