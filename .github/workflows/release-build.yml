@@ -25,10 +25,10 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore Searcher.sln
+        run: dotnet restore Searcher.csproj -r ${{ matrix.runtime }}
 
       - name: Build
-        run: dotnet build Searcher.sln -c Release --no-restore
+        run: dotnet build Searcher.csproj -c Release -r ${{ matrix.runtime }} --no-restore
 
       - name: Publish Searcher ${{ matrix.runtime }}
         run: |
@@ -72,10 +72,10 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore ${{ matrix.project-path }}
+        run: dotnet restore ${{ matrix.project-path }} -r ${{ matrix.runtime }}
 
       - name: Build
-        run: dotnet build ${{ matrix.project-path }} -c Release --no-restore
+        run: dotnet build ${{ matrix.project-path }} -c Release -r ${{ matrix.runtime }} --no-restore
 
       - name: Publish SearcherCli ${{ matrix.runtime }}
         run: |
