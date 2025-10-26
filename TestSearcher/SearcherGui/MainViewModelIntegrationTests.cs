@@ -298,4 +298,131 @@ public class MainViewModelIntegrationTests
 			}
 		}
 	}
+
+	[Fact(DisplayName = "GUI Integration: Reproduces real-world search - SearcherCore for 'class'")]
+	[Trait("Category", "GUI-Integration")]
+	public async Task OnInitializedAsync_SearchSearcherCoreForClass_FindsMatches()
+	{
+		// This test reproduces the exact command: dotnet run -- --folder ../SearcherCore --pattern "*.cs" --search "class"
+		// Navigate from /path/to/Searcher/TestSearcher/bin/Debug/net9.0 to /path/to/Searcher/SearcherCore
+		var currentDir = Directory.GetCurrentDirectory();
+		var repoRoot = currentDir.Split(new[] { "TestSearcher" }, StringSplitOptions.None)[0];
+		var searcherCorePath = Path.Combine(repoRoot, "SearcherCore");
+
+		// This must exist for the test to be valid
+		Assert.True(Directory.Exists(searcherCorePath), $"SearcherCore path does not exist: {searcherCorePath}");
+
+		var options = new GuiCliOptions {
+			Folder = new DirectoryInfo(searcherCorePath),
+			Search = "class",
+			Pattern = new[] { "*.cs" }
+		};
+
+		var vm = new MainViewModel(options);
+		await vm.OnInitializedAsync();
+
+		Assert.False(vm.IsSearching);
+
+		// Core tests show CLI finds 8 files with "class"
+		// GUI should find the same
+		Assert.NotEmpty(vm.Results);
+		Assert.True(vm.FilesScanned >= 8, $"Expected at least 8 files scanned, got {vm.FilesScanned}");
+		Assert.True(vm.MatchesFound >= 1, $"Expected matches found, got {vm.MatchesFound}");
+		Assert.True(vm.Results.Count >= 6, $"Expected at least 6 result files, got {vm.Results.Count}");
+
+		// Verify we found expected files
+		var fileNames = vm.Results.Select(r => Path.GetFileName(r.FilePath)).ToList();
+		Assert.Contains(fileNames, fn => fn == "SearchFile.cs");
+		Assert.Contains(fileNames, fn => fn == "GlobSearch.cs");
+		Assert.Contains(fileNames, fn => fn == "Utils.cs");
+	}
+
+	[Fact(DisplayName = "GUI Integration: Verify result file paths are correct and accessible")]
+	[Trait("Category", "GUI-Integration")]
+	public async Task OnInitializedAsync_ResultPaths_AreValid()
+	{
+		var tempDir = Path.Combine(Path.GetTempPath(), $"searcher_test_{Guid.NewGuid()}");
+		Directory.CreateDirectory(tempDir);
+
+		try {
+			// Create test files with known paths
+			var file1 = Path.Combine(tempDir, "test1.txt");
+			var file2 = Path.Combine(tempDir, "test2.txt");
+			await File.WriteAllTextAsync(file1, "matching");
+			await File.WriteAllTextAsync(file2, "matching");
+
+			var options = new GuiCliOptions {
+				Folder = new DirectoryInfo(tempDir),
+				Search = "matching",
+				Pattern = new[] { "*.txt" }
+			};
+
+			var vm = new MainViewModel(options);
+			await vm.OnInitializedAsync();
+
+			Assert.NotEmpty(vm.Results);
+
+			// Verify each result points to an existing file
+			foreach (var result in vm.Results) {
+				Assert.NotNull(result.FilePath);
+				Assert.True(File.Exists(result.FilePath),
+					$"Result file path does not exist: {result.FilePath}");
+				Assert.NotNull(result.FileName);
+				Assert.True(result.FileName.EndsWith(".txt"),
+					$"Expected .txt file, got: {result.FileName}");
+			}
+		}
+		finally {
+			if (Directory.Exists(tempDir)) {
+				Directory.Delete(tempDir, true);
+			}
+		}
+	}
+
+	[Fact(DisplayName = "GUI Integration: Results are added to collection during search")]
+	[Trait("Category", "GUI-Integration")]
+	public async Task OnInitializedAsync_Results_ArePopulatedDurringSearch()
+	{
+		var tempDir = Path.Combine(Path.GetTempPath(), $"searcher_test_{Guid.NewGuid()}");
+		Directory.CreateDirectory(tempDir);
+
+		try {
+			// Create multiple files
+			for (int i = 0; i < 5; i++) {
+				await File.WriteAllTextAsync(
+					Path.Combine(tempDir, $"file{i}.txt"),
+					"findme"
+				);
+			}
+
+			var options = new GuiCliOptions {
+				Folder = new DirectoryInfo(tempDir),
+				Search = "findme",
+				Pattern = new[] { "*.txt" }
+			};
+
+			var vm = new MainViewModel(options);
+
+			// Track result additions
+			var resultAddedCount = 0;
+			vm.Results.CollectionChanged += (s, e) => {
+				if (e.NewItems != null) {
+					resultAddedCount += e.NewItems.Count;
+				}
+			};
+
+			await vm.OnInitializedAsync();
+
+			// Verify results were added to collection
+			Assert.True(resultAddedCount > 0, "No results were added to the Results collection");
+			Assert.Equal(5, vm.Results.Count);
+			Assert.Equal(5, vm.MatchesFound);
+			Assert.Equal(5, vm.FilesScanned);
+		}
+		finally {
+			if (Directory.Exists(tempDir)) {
+				Directory.Delete(tempDir, true);
+			}
+		}
+	}
 }
