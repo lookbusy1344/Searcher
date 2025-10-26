@@ -6,14 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Searcher is a cross-platform search application for recursively searching text inside files, including archives (ZIP), PDFs, and DOCX files. It targets .NET 9.0 and uses parallel processing for performance optimization.
 
-**Active Project Structure:**
+**Project Structure:**
 - **SearcherGui/**: Cross-platform Avalonia GUI application (primary focus)
 - **SearcherCore/**: Shared .NET library containing core search functionality
 - **SearcherCli/**: Console version of the application
 - **TestSearcher/**: Cross-platform xUnit test project (tests for SearcherGui and SearcherCore only, runs on Windows/Mac/Linux)
-
-**Deprecated/Obsolete:**
-- **Root directory (Searcher.csproj)**: Obsolete Windows Forms application (no longer maintained)
 
 ## Build Commands
 

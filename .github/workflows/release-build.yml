@@ -6,46 +6,6 @@ on:
       - 'v*.*.*'  # Triggers on version tags like v1.0.0, v1.2.3, etc.
 
 jobs:
-  build-searcher-windows:
-    name: Build Searcher (WinForms) - Windows
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        runtime: [win-x64, win-arm64]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Required for git describe
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore Searcher.csproj -r ${{ matrix.runtime }}
-
-      - name: Build
-        run: dotnet build Searcher.csproj -c Release -r ${{ matrix.runtime }} --no-restore
-
-      - name: Publish Searcher ${{ matrix.runtime }}
-        run: |
-          dotnet publish Searcher.csproj -c Release -r ${{ matrix.runtime }} --self-contained false /p:PublishSingleFile=true /p:DebugType=None /p:DebugSymbols=false --no-build -o ./publish/${{ matrix.runtime }}
-
-      - name: Rename binary
-        shell: pwsh
-        run: |
-          Move-Item -Path "./publish/${{ matrix.runtime }}/Searcher.exe" -Destination "./publish/Searcher-${{ matrix.runtime }}.exe"
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: searcher-${{ matrix.runtime }}
-          path: ./publish/Searcher-${{ matrix.runtime }}.exe
-          retention-days: 30
-
   build-searcher-cli:
     name: Build SearcherCli - Multi-platform
     runs-on: ${{ matrix.os }}
@@ -116,7 +76,7 @@ jobs:
 
   create-release:
     name: Create GitHub Release
-    needs: [build-searcher-windows, build-searcher-cli]
+    needs: [build-searcher-cli]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -139,7 +99,7 @@ jobs:
         run: |
           cd artifacts
           # Move all binaries from subdirectories to root artifacts directory
-          find . -mindepth 2 -type f \( -name "Searcher-*" -o -name "SearcherCli-*" \) -exec mv {} . \;
+          find . -mindepth 2 -type f -name "SearcherCli-*" -exec mv {} . \;
           # Remove empty subdirectories
           find . -type d -empty -delete
           echo "After flattening:"
@@ -148,13 +108,12 @@ jobs:
       - name: Generate SHA256 checksums
         run: |
           cd artifacts
-          sha256sum Searcher-* SearcherCli-* 2>/dev/null | tee SHA256SUMS.txt || true
+          sha256sum SearcherCli-* 2>/dev/null | tee SHA256SUMS.txt || true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/Searcher-*
             artifacts/SearcherCli-*
             artifacts/SHA256SUMS.txt
           draft: false
