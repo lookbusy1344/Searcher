@@ -67,7 +67,7 @@ public class SearcherCorePdfTests
 
 			var resultCaseSensitive = SearchFile.FileContainsStringWrapper(
 				tempFile,
-				"UPPERCASE",
+				"uppercase",
 				[],
 				StringComparison.Ordinal,
 				CancellationToken.None
