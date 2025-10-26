@@ -4,25 +4,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Searcher is a C# WinForms application for recursively searching text inside files, including archives (ZIP), PDFs, and DOCX files. It targets .NET 9.0 for Windows and uses parallel processing for performance optimization.
+Searcher is a cross-platform search application for recursively searching text inside files, including archives (ZIP), PDFs, and DOCX files. It targets .NET 9.0 and uses parallel processing for performance optimization.
 
-**Project Structure:**
-- **Root directory**: Main WinForms GUI application (Searcher.csproj)
+**Active Project Structure:**
+- **SearcherGui/**: Cross-platform Avalonia GUI application (primary focus)
 - **SearcherCore/**: Shared .NET library containing core search functionality
-- **TestSearcher/**: xUnit test project
-- **SearcherCli/**: Console version of the application (separate solution)
+- **SearcherCli/**: Console version of the application
+- **TestSearcher/**: xUnit test project (tests for SearcherGui and SearcherCli only)
+
+**Deprecated/Obsolete:**
+- **Root directory (Searcher.csproj)**: Obsolete Windows Forms application (no longer maintained)
 
 ## Build Commands
 
 ```bash
-# Build the entire solution (Windows only - WinForms app has Windows-only build target)
-dotnet build
+# Build SearcherGui (Avalonia) and SearcherCli
+dotnet build SearcherGui/SearcherGui.csproj
+dotnet build SearcherCli/SearcherCli.csproj
 
 # Build for release
-dotnet build -c Release
+dotnet build SearcherGui/SearcherGui.csproj -c Release
+dotnet build SearcherCli/SearcherCli.csproj -c Release
 
-# Build with specific platform
-dotnet build -c Release -p:Platform=x64
+# Build with specific platform (cross-platform)
+dotnet build SearcherGui/SearcherGui.csproj -c Release -r linux-x64
+dotnet build SearcherGui/SearcherGui.csproj -c Release -r osx-arm64
+dotnet build SearcherGui/SearcherGui.csproj -c Release -r win-x64
 
 # Clean build artifacts
 dotnet clean
@@ -31,20 +38,19 @@ dotnet clean
 dotnet restore
 
 # Format code (critical - always run after changes)
-dotnet format Searcher.sln
+dotnet format SearcherGui/SearcherGui.csproj
 dotnet format SearcherCli/SearcherCli.csproj
 
-# Publish single-file Windows executable
-dotnet publish Searcher.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
-
-# Alternative publish using batch script
-Publish.cmd
+# Publish SearcherGui as single-file executable
+dotnet publish SearcherGui/SearcherGui.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
+dotnet publish SearcherGui/SearcherGui.csproj -c Release -r linux-x64 --self-contained false /p:PublishSingleFile=true
+dotnet publish SearcherGui/SearcherGui.csproj -c Release -r osx-arm64 --self-contained false /p:PublishSingleFile=true
 ```
 
 ## Test Commands
 
 ```bash
-# Run tests using dotnet
+# Run tests for SearcherGui and SearcherCli
 dotnet test TestSearcher/
 
 # Run tests with detailed output
@@ -52,35 +58,37 @@ dotnet test TestSearcher/ --verbosity normal
 
 # Build then test
 dotnet build && dotnet test TestSearcher/
-
-# Run tests using Windows batch script (uses vstest.console.exe)
-RunTests.cmd
 ```
 
 ## Development Commands
 
 ```bash
-# Run the WinForms application (Windows only)
-dotnet run
+# Run SearcherGui (Avalonia application)
+dotnet run --project SearcherGui/SearcherGui.csproj
 
-# Run with specific configuration (Windows only)
-dotnet run -c Debug
+# Run with specific configuration
+dotnet run --project SearcherGui/SearcherGui.csproj -c Debug
 
-# Check for vulnerabilities (Windows)
-CheckVul.cmd
+# Run SearcherCli
+dotnet run --project SearcherCli/SearcherCli.csproj -- [options]
 ```
 
 ## Project Architecture
 
-### Main WinForms Application Components
+### SearcherGui (Avalonia) Components
 
-- **Program.cs**: Application entry point with Windows Forms initialization
-- **MainForm.cs/.Designer.cs**: Primary UI form with search interface, results display, and file opening functionality
-- **FormsCliOptions.cs**: WinForms-specific configuration class that extends CliOptions from SearcherCore
-- **ListViewExtensions.cs**: UI helper extensions for ListView controls
-- **DiskQuery.cs**: Hardware detection for SSD/HDD-based parallelism optimization
-- **SafeCounter.cs**, **ProgressTimer.cs**, **MonotonicDateTime.cs**: Performance and threading utilities
-- **GitVersion.cs**: Git version information integration
+- **Program.cs**: Application entry point with Avalonia initialization
+- **App.axaml/App.axaml.cs**: Application root and resource definitions
+- **MainWindow.axaml/MainWindow.xaml.cs**: Primary UI window with search interface and results display
+- **MainViewModel.cs**: MVVM ViewModel handling search logic and state management
+- **ViewModels/**: Other view models for UI components
+- **Views/**: Avalonia XAML-based UI components
+
+### SearcherCli (Console) Components
+
+- **Program.cs**: Console application entry point with argument parsing
+- **CliOptions.cs**: Command-line configuration class extending SearcherCore.CliOptions
+- **Console output handling**: Results formatted for terminal display
 
 ### Core Search Components (via SearcherCore reference)
 
@@ -93,20 +101,21 @@ CheckVul.cmd
 
 ### Key Architectural Patterns
 
-1. **Shared Core Architecture**: WinForms GUI uses SearcherCore library for all search logic
-2. **File Type Routing**: Different search strategies based on file extension and magic number detection
-3. **Parallel Processing**: Uses `Parallel.ForEach` with hardware-aware thread management
-4. **Stream-based Processing**: Memory-efficient handling of large files
-5. **Recursive Archive Support**: Handles nested ZIP files and mixed file types within archives
-6. **Hardware Optimization**: Automatic parallelism adjustment based on storage type (SSD vs HDD)
+1. **Shared Core Architecture**: Both SearcherGui and SearcherCli use SearcherCore library for all search logic
+2. **MVVM Pattern**: SearcherGui uses MVVM with ViewModels for UI state management
+3. **File Type Routing**: Different search strategies based on file extension and magic number detection
+4. **Parallel Processing**: Uses `Parallel.ForEach` with hardware-aware thread management
+5. **Stream-based Processing**: Memory-efficient handling of large files
+6. **Recursive Archive Support**: Handles nested ZIP files and mixed file types within archives
+7. **Hardware Optimization**: Automatic parallelism adjustment based on storage type (SSD vs HDD)
 
 ### Search Workflow
 
-1. User enters search criteria in WinForms interface
-2. Parameters converted from `FormsCliOptions` to base `CliOptions` configuration object
+1. User enters search criteria via SearcherGui Avalonia UI or SearcherCli command line
+2. Parameters converted to base `CliOptions` configuration object
 3. `GlobSearch.ParallelFindFiles()` discovers matching files using patterns
 4. `SearchFile.FileContainsStringWrapper()` performs parallel content search
-5. Results displayed in ListView with double-click to open files
+5. Results displayed in GUI ListView or console output
 6. Error handling for inaccessible files and unsupported formats
 
 ### Performance Features
@@ -119,28 +128,33 @@ CheckVul.cmd
 
 ## Dependencies
 
-Key NuGet packages:
-- **SearcherCore**: Shared library containing core search functionality
-- **CommandLineParser**: Command line argument parsing (WinForms uses this for consistency)
-- **System.Management**: Hardware detection for performance optimization
+### SearcherGui Dependencies
+- **Avalonia**: Cross-platform UI framework
+- **CommandLineParser**: Command line argument parsing
 
-**SearcherCore dependencies:**
+### SearcherCli Dependencies
+- **CommandLineParser**: Command line argument parsing
+
+### SearcherCore Dependencies
 - **DotNet.Glob**: File pattern matching and globbing
 - **itext7**: PDF text extraction and processing
+- **System.Management**: Hardware detection for performance optimization
 
 ## Code Analysis and Quality
 
 The project uses comprehensive static analysis:
 - **Analysis Modes**: All modes enabled (Design, Security, Performance, Reliability, Usage)
 - **Microsoft.VisualStudio.Threading.Analyzers**: Threading best practices
-- **Roslynator.Analyzers**: Code quality and style enforcement (v4.13.1 in main app, v4.14.0 in SearcherCore and SearcherCli)
+- **Roslynator.Analyzers**: Code quality and style enforcement
 - **lookbusy1344.RecordValueAnalyser**: Record type analysis
 
 ## Configuration
 
-- **Target Framework**: net9.0-windows10.0.26100.0 (Windows-specific)
+- **Target Framework**: net9.0 (cross-platform)
+- **SearcherGui**: Supports Windows, Linux, and macOS via Avalonia
+- **SearcherCli**: Cross-platform console application
 - **Code Style**: Enforced via comprehensive `.editorconfig` with specific C# formatting rules
-- **Unsafe Code**: Enabled for performance-critical operations
+- **Unsafe Code**: Enabled in SearcherCore for performance-critical operations
 - **Git Integration**: Automatic source revision ID embedding via git describe
 
-**Critical**: Always run `dotnet format Searcher.sln` and `dotnet format SearcherCli/SearcherCli.csproj` after code changes to maintain consistent formatting and style compliance.
+**Critical**: Always run `dotnet format SearcherGui/SearcherGui.csproj` and `dotnet format SearcherCli/SearcherCli.csproj` after code changes to maintain consistent formatting and style compliance.
