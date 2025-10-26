@@ -115,9 +115,13 @@ public class MainViewModel : ReactiveObject
 			var files = GlobSearch.ParallelFindFiles(_options.Folder.FullName, outerPatterns, _options.DegreeOfParallelism, null, ct);
 
 			// Update file count
-			Avalonia.Threading.Dispatcher.UIThread.Invoke(() => {
+			if (Avalonia.Threading.Dispatcher.UIThread != null) {
+				Avalonia.Threading.Dispatcher.UIThread.Invoke(() => {
+					FilesScanned = files.Length;
+				});
+			} else {
 				FilesScanned = files.Length;
-			});
+			}
 
 			// Search each file in parallel
 			_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = _options.DegreeOfParallelism, CancellationToken = ct },
@@ -133,19 +137,32 @@ public class MainViewModel : ReactiveObject
 						var singleResult = new SingleResult(file, result);
 						var display = SearchResultDisplay.FromSingleResult(singleResult);
 
-						Avalonia.Threading.Dispatcher.UIThread.Invoke(() => {
+						if (Avalonia.Threading.Dispatcher.UIThread != null) {
+							Avalonia.Threading.Dispatcher.UIThread.Invoke(() => {
+								Results.Add(display);
+								if (result == SearchResult.Found) {
+									MatchesFound++;
+								}
+							});
+						} else {
+							// No dispatcher available (e.g., during unit tests)
 							Results.Add(display);
 							if (result == SearchResult.Found) {
 								MatchesFound++;
 							}
-						});
+						}
 					}
 				});
 		}
 		catch (Exception ex) {
-			Avalonia.Threading.Dispatcher.UIThread.Invoke(() => {
-				StatusMessage = $"Error: {ex.Message}";
-			});
+			var message = $"Error: {ex.Message}";
+			if (Avalonia.Threading.Dispatcher.UIThread != null) {
+				Avalonia.Threading.Dispatcher.UIThread.Invoke(() => {
+					StatusMessage = message;
+				});
+			} else {
+				StatusMessage = message;
+			}
 		}
 	}
 
