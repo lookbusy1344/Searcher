@@ -9,8 +9,10 @@ namespace SearcherGui.Services;
 
 public static class ResultInteractionService
 {
-	public static bool OpenFile(string filePath)
+	public static bool OpenFile(string filePath, IProcessLauncher? processLauncher = null)
 	{
+		processLauncher ??= new RealProcessLauncher();
+
 		try {
 			if (!File.Exists(filePath)) {
 				Console.Error.WriteLine($"File not found: {filePath}");
@@ -18,7 +20,7 @@ public static class ResultInteractionService
 			}
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-				var process = Process.Start(new ProcessStartInfo {
+				var process = processLauncher.Start(new ProcessStartInfo {
 					FileName = filePath,
 					UseShellExecute = true
 				});
@@ -27,7 +29,7 @@ public static class ResultInteractionService
 					return false;
 				}
 			} else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
-				var process = Process.Start("open", filePath);
+				var process = processLauncher.Start("open", filePath);
 				if (process == null) {
 					Console.Error.WriteLine($"Failed to start 'open' command for file: {filePath}");
 					return false;
@@ -35,7 +37,7 @@ public static class ResultInteractionService
 			} else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
 				// Linux: use try-catch instead of checking return value
 				try {
-					Process.Start("xdg-open", filePath);
+					processLauncher.Start("xdg-open", filePath);
 				}
 				catch (Exception ex) {
 					Console.Error.WriteLine($"Failed to open file with xdg-open: {ex.Message}");
@@ -50,14 +52,16 @@ public static class ResultInteractionService
 		}
 	}
 
-	public static bool ShowInFolder(string filePath)
+	public static bool ShowInFolder(string filePath, IProcessLauncher? processLauncher = null)
 	{
+		processLauncher ??= new RealProcessLauncher();
+
 		try {
 			var folder = Path.GetDirectoryName(filePath) ?? filePath;
 
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				// Use array-based argument passing to properly escape paths with spaces
-				var process = Process.Start(new ProcessStartInfo {
+				var process = processLauncher.Start(new ProcessStartInfo {
 					FileName = "explorer.exe",
 					Arguments = $"/select,\"{filePath}\"",
 					UseShellExecute = false
@@ -67,7 +71,7 @@ public static class ResultInteractionService
 					return false;
 				}
 			} else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
-				var process = Process.Start("open", new[] { "-R", filePath });
+				var process = processLauncher.Start("open", new[] { "-R", filePath });
 				if (process == null) {
 					Console.Error.WriteLine($"Failed to start 'open -R' for file: {filePath}");
 					return false;
@@ -75,12 +79,12 @@ public static class ResultInteractionService
 			} else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
 				// Linux: use try-catch instead of checking return value
 				try {
-					Process.Start("nautilus", folder);
+					processLauncher.Start("nautilus", folder);
 				}
 				catch {
 					// Fallback to xdg-open
 					try {
-						Process.Start("xdg-open", folder);
+						processLauncher.Start("xdg-open", folder);
 					}
 					catch (Exception ex) {
 						Console.Error.WriteLine($"Failed to open folder with nautilus or xdg-open: {ex.Message}");
