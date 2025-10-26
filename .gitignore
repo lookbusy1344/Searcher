@@ -7,3 +7,4 @@ obj/
 copilotDiffState.xml
 copilot.data.*.xml
 *.sln.DotSettings.user
+*.csproj.user

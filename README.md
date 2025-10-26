@@ -2,11 +2,11 @@
 
 [![CodeQL](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql)
 
-Recursively search for files containing text. Built with C#, .NET 9 and WinForms
+Recursively search for files containing text. Built with C#, .NET 9 and Avalonia
 
 ## Available Versions
 
-- **Searcher** (this directory): WinForms GUI application for Windows
+- **SearcherGui** (`SearcherGui/` directory): Cross-platform Avalonia GUI application
 - **SearcherCli** (`SearcherCli/` directory): Command-line version that works on Windows, Mac, and Linux
 
 ## Parameters
@@ -31,18 +31,18 @@ Optional parameters:
 
 ```
 Search current folder for txt and Word files containing 'hello world':
-  Searcher.exe --folder . --pattern *.txt,*.docx --search "hello world"
-  
+  SearcherGui --folder . --pattern *.txt,*.docx --search "hello world"
+
 Search just zip files for anything containing 'hello':
-  Searcher.exe -f . -p *.zip -s hello
+  SearcherGui -f . -p *.zip -s hello
 
 Search txt files (including those in zips) for anything containing 'hello':
-  Searcher.exe -z -f . -p *.txt -s hello
+  SearcherGui -z -f . -p *.txt -s hello
 Or..
-  Searcher.exe -f . -p *.txt,*.zip -s hello
+  SearcherGui -f . -p *.txt,*.zip -s hello
 
 Search txt files (excluding those in zips) for anything containing 'hello':
-  Searcher.exe -f . -p *.txt -s hello
+  SearcherGui -f . -p *.txt -s hello
 
 ```
 
@@ -82,18 +82,18 @@ SearcherCli --help
 
 For detailed SearcherCli documentation, see `SearcherCli/README.md`.
 
-## Building (WinForms GUI)
+## Building SearcherGui (Avalonia GUI)
 
-Requires Visual Studio 2022, or .NET 9 SDK.
-
-```
-dotnet publish -c Release
-```
-
-Or to make a single-file bundle with necessary nuget packages:
+Requires .NET 9 SDK.
 
 ```
-publish.cmd
+# Build for current platform
+dotnet build SearcherGui/SearcherGui.csproj -c Release
+
+# Publish as single-file executable
+dotnet publish SearcherGui/SearcherGui.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true
+# For Mac: use -r osx-arm64 or -r osx-x64
+# For Linux: use -r linux-x64
 ```
 
 ## .NET version support

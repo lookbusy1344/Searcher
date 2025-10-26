@@ -40,7 +40,9 @@
       "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher diff 0d34215..835dd40dc1445ed4b04318bb3e5b271021a9ff30)",
       "Skill(superpowers:using-superpowers)",
       "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher add -A)",
-      "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher commit -m \"chore: delete obsolete Searcher WinForms application files\")"
+      "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher commit -m \"chore: delete obsolete Searcher WinForms application files\")",
+      "Bash(git show:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
