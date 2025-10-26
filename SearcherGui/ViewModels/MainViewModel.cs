@@ -12,7 +12,7 @@ using SearcherGui.Models;
 
 namespace SearcherGui.ViewModels;
 
-public class MainViewModel : ReactiveObject
+public class MainViewModel : ReactiveObject, IDisposable
 {
 	private readonly GuiCliOptions _options;
 	private readonly ObservableCollection<SearchResultDisplay> _results = new();
@@ -28,7 +28,7 @@ public class MainViewModel : ReactiveObject
 	{
 		_options = options;
 		StopCommand = ReactiveCommand.Create(Stop, this.WhenAnyValue(x => x.IsSearching));
-		
+
 		if (!string.IsNullOrEmpty(options.LogResultsFile)) {
 			try {
 				_logWriter = new StreamWriter(options.LogResultsFile, false);
@@ -153,7 +153,7 @@ public class MainViewModel : ReactiveObject
 			var uiUpdateTasks = new System.Collections.Concurrent.ConcurrentBag<Task>();
 			var collectedResults = new System.Collections.Concurrent.ConcurrentBag<(SearchResultDisplay display, SearchResult result)>();
 			var matchCount = 0;
-			
+
 			_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = _options.DegreeOfParallelism, CancellationToken = ct },
 				file => {
 					if (ct.IsCancellationRequested) {
@@ -166,7 +166,7 @@ public class MainViewModel : ReactiveObject
 					if (result is SearchResult.Found or SearchResult.Error) {
 						var singleResult = new SingleResult(file, result);
 						var display = SearchResultDisplay.FromSingleResult(singleResult);
-						
+
 						if (result == SearchResult.Found) {
 							Interlocked.Increment(ref matchCount);
 						}
@@ -186,18 +186,18 @@ public class MainViewModel : ReactiveObject
 						}
 					}
 				});
-			
+
 			// Add collected results to ObservableCollection (not thread-safe)
 			foreach (var (display, result) in collectedResults) {
 				Results.Add(display);
 				LogResult(display, result);
 			}
-			
+
 			// Wait for all UI updates to complete
-			if (uiUpdateTasks.Count > 0) {
+			if (!uiUpdateTasks.IsEmpty) {
 				await Task.WhenAll(uiUpdateTasks);
 			}
-			
+
 			// Update match count on UI thread
 			MatchesFound = matchCount;
 		}
@@ -215,8 +215,10 @@ public class MainViewModel : ReactiveObject
 
 	private void LogResult(SearchResultDisplay display, SearchResult result)
 	{
-		if (_logWriter == null) return;
-		
+		if (_logWriter == null) {
+			return;
+		}
+
 		try {
 			_logWriter.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {(result == SearchResult.Found ? "FOUND" : "ERROR")}: {display.FilePath}");
 			_logWriter.Flush();
@@ -236,7 +238,9 @@ public class MainViewModel : ReactiveObject
 
 	private void CloseLog()
 	{
-		if (_logWriter == null) return;
+		if (_logWriter == null) {
+			return;
+		}
 
 		try {
 			_logWriter.WriteLine();
@@ -251,5 +255,10 @@ public class MainViewModel : ReactiveObject
 		catch {
 			// Ignore logging errors
 		}
+	}
+
+	public void Dispose()
+	{
+		throw new NotImplementedException();
 	}
 }

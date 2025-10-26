@@ -31,11 +31,11 @@ public class GuiSystematicTests
 		// Determine the SearcherCore path relative to test execution
 		var currentDir = Directory.GetCurrentDirectory();
 		_output.WriteLine($"Current directory: {currentDir}");
-		
+
 		// Find the repo root by looking for SearcherCore
 		var searcherCorePath = FindSearcherCorePath(currentDir);
 		_output.WriteLine($"SearcherCore path: {searcherCorePath}");
-		
+
 		Assert.True(Directory.Exists(searcherCorePath), $"SearcherCore path does not exist: {searcherCorePath}");
 
 		// First, verify Core CLI behavior
@@ -93,7 +93,7 @@ public class GuiSystematicTests
 		Assert.Equal(files.Length, vm.FilesScanned); // Should scan same number of files
 		Assert.Equal(coreMatchCount, vm.Results.Count); // Should find same number of results
 		Assert.True(vm.MatchesFound > 0, "GUI should find matches");
-		
+
 		// Verify results have valid data
 		foreach (var result in vm.Results) {
 			Assert.NotNull(result.FilePath);
@@ -128,7 +128,7 @@ public class GuiSystematicTests
 
 			// Empty search returns NotFound per SearchFile logic, so no results expected
 			Assert.Equal(3, vm.FilesScanned);
-			Assert.Equal(0, vm.Results.Count);
+			Assert.Empty(vm.Results);
 		}
 		finally {
 			CleanupTempDir(tempDir);
@@ -305,7 +305,7 @@ public class GuiSystematicTests
 
 			foreach (var result in vm.Results) {
 				_output.WriteLine($"Checking result: FileName='{result.FileName}', FilePath='{result.FilePath}'");
-				
+
 				Assert.NotNull(result.FileName);
 				Assert.NotEmpty(result.FileName);
 				Assert.NotNull(result.FilePath);

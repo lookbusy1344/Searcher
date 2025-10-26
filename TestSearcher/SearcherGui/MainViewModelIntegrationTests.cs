@@ -298,6 +298,7 @@ public class MainViewModelIntegrationTests
 			}
 		}
 	}
+	private static readonly string[] separator = new[] { "TestSearcher" };
 
 	[Fact(DisplayName = "GUI Integration: Reproduces real-world search - SearcherCore for 'class'")]
 	[Trait("Category", "GUI-Integration")]
@@ -306,7 +307,7 @@ public class MainViewModelIntegrationTests
 		// This test reproduces the exact command: dotnet run -- --folder ../SearcherCore --pattern "*.cs" --search "class"
 		// Navigate from /path/to/Searcher/TestSearcher/bin/Debug/net9.0 to /path/to/Searcher/SearcherCore
 		var currentDir = Directory.GetCurrentDirectory();
-		var repoRoot = currentDir.Split(new[] { "TestSearcher" }, StringSplitOptions.None)[0];
+		var repoRoot = currentDir.Split(separator, StringSplitOptions.None)[0];
 		var searcherCorePath = Path.Combine(repoRoot, "SearcherCore");
 
 		// This must exist for the test to be valid
