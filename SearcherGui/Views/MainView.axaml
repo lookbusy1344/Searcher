@@ -1,0 +1,54 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SearcherGui.ViewModels"
+        x:Class="SearcherGui.Views.MainView"
+        x:DataType="vm:MainViewModel"
+        Title="Searcher"
+        Width="1000"
+        Height="600">
+  <DockPanel>
+    <!-- Top: Search Parameters -->
+    <StackPanel DockPanel.Dock="Top" Margin="10" Spacing="5">
+      <TextBlock FontWeight="Bold">Search Parameters</TextBlock>
+      <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" Margin="0,5">
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,10,0">Path:</TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SearchPath}" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,10,0">Pattern:</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SearchPattern}" />
+      </Grid>
+    </StackPanel>
+
+    <!-- Bottom: Status Bar -->
+    <StackPanel DockPanel.Dock="Bottom" Margin="10" Spacing="5">
+      <StackPanel Orientation="Horizontal" Spacing="10">
+        <TextBlock Text="{Binding StatusMessage}" />
+        <TextBlock Text="{Binding FilesScanned, StringFormat='Files: {0}'}" />
+        <TextBlock Text="{Binding MatchesFound, StringFormat='Matches: {0}'}" />
+        <Button Command="{Binding StopCommand}" IsEnabled="{Binding IsSearching}">Stop</Button>
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Middle: Results Grid -->
+    <DataGrid x:Name="ResultsGrid"
+              ItemsSource="{Binding Results}"
+              CanUserReorderColumns="True"
+              CanUserResizeColumns="True"
+              CanUserSortColumns="True"
+              IsReadOnly="True"
+              AutoGenerateColumns="False">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Filename" Binding="{Binding FileName}" Width="200" />
+        <DataGridTextColumn Header="Path" Binding="{Binding FilePath}" Width="*" />
+        <DataGridTextColumn Header="Matches" Binding="{Binding MatchCount}" Width="80" />
+      </DataGrid.Columns>
+      <DataGrid.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="Open" Click="OpenFile_Click" />
+          <MenuItem Header="Copy Path" Click="CopyPath_Click" />
+          <MenuItem Header="Show in Folder" Click="ShowInFolder_Click" />
+        </ContextMenu>
+      </DataGrid.ContextMenu>
+    </DataGrid>
+  </DockPanel>
+</Window>
