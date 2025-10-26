@@ -48,9 +48,9 @@ jobs:
       - name: Run tests
         run: |
           echo "::group::Run tests"
-          dotnet test TestSearcher/ -c Release --no-build --verbosity normal || \
+          dotnet test TestSearcher/ -c Release --verbosity normal || \
             (echo "::warning::Tests failed, retrying once..." && \
-             dotnet test TestSearcher/ -c Release --no-build --verbosity normal)
+             dotnet test TestSearcher/ -c Release --verbosity normal)
           echo "::endgroup::"
 
       - name: Upload test results
