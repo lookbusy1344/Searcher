@@ -1,8 +1,7 @@
 extern alias SearcherCoreLib;
-
 using System.Collections.Generic;
-using SearcherGui.Models;
 using SearcherCoreLib::SearcherCore;
+using SearcherGui.Models;
 
 namespace TestSearcher.SearcherGui;
 

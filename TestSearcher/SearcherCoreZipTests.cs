@@ -7,24 +7,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
-using Xunit;
 using SearcherCoreLib::SearcherCore;
+using Xunit;
 
 public class SearcherCoreZipTests
 {
-	private byte[] CreateTestZipWithFiles(Dictionary<string, string> files)
+	private static byte[] CreateTestZipWithFiles(Dictionary<string, string> files)
 	{
-		using (var ms = new MemoryStream()) {
-			using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true)) {
-				foreach (var kvp in files) {
-					var entry = zip.CreateEntry(kvp.Key);
-					using (var writer = new StreamWriter(entry.Open())) {
-						writer.Write(kvp.Value);
-					}
-				}
+		using var ms = new MemoryStream();
+		using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true)) {
+			foreach (var kvp in files) {
+				var entry = zip.CreateEntry(kvp.Key);
+				using var writer = new StreamWriter(entry.Open());
+				writer.Write(kvp.Value);
 			}
-			return ms.ToArray();
 		}
+		return ms.ToArray();
 	}
 
 	[Fact(DisplayName = "Core: ZIP search finds matching text in files")]
@@ -54,7 +52,9 @@ public class SearcherCoreZipTests
 			Assert.Equal(SearchResult.Found, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
@@ -85,7 +85,9 @@ public class SearcherCoreZipTests
 			Assert.Equal(SearchResult.Found, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
@@ -116,7 +118,9 @@ public class SearcherCoreZipTests
 			Assert.Equal(SearchResult.Found, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
@@ -145,7 +149,9 @@ public class SearcherCoreZipTests
 			Assert.Equal(SearchResult.NotFound, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
@@ -171,7 +177,9 @@ public class SearcherCoreZipTests
 			Assert.Equal(SearchResult.NotFound, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
@@ -202,7 +210,9 @@ public class SearcherCoreZipTests
 			Assert.Equal(SearchResult.Found, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 }

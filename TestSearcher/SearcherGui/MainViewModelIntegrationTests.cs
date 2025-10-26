@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 using SearcherGui;
 using SearcherGui.Models;
 using SearcherGui.ViewModels;
+using Xunit;
 
 namespace TestSearcher.SearcherGui;
 

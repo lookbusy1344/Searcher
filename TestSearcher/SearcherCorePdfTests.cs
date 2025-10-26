@@ -7,27 +7,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
-using SearcherCoreLib::SearcherCore;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
+using SearcherCoreLib::SearcherCore;
+using Xunit;
 
 public class SearcherCorePdfTests
 {
-	private byte[] CreateTestPdfWithContent(string content)
+	private static byte[] CreateTestPdfWithContent(string content)
 	{
-		using (var ms = new MemoryStream()) {
-			var writer = new PdfWriter(ms);
-			var pdf = new PdfDocument(writer);
-			var document = new Document(pdf);
-			document.Add(new Paragraph(content));
-			document.Close();
-			return ms.ToArray();
-		}
+		using var ms = new MemoryStream();
+		var writer = new PdfWriter(ms);
+		var pdf = new PdfDocument(writer);
+		var document = new Document(pdf);
+		document.Add(new Paragraph(content));
+		document.Close();
+		return ms.ToArray();
 	}
 
-	[Fact(DisplayName = "Core: PDF search finds matching text", Skip = "Requires itext7 BouncyCastle adapter dependency")]
+	[Fact(DisplayName = "Core: PDF search finds matching text")]
 	[Trait("Category", "Core")]
 	public void SearchFile_PDF_FindsMatchingText()
 	{
@@ -49,11 +48,13 @@ public class SearcherCorePdfTests
 			Assert.Equal(SearchResult.Found, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
-	[Fact(DisplayName = "Core: PDF search respects case sensitivity", Skip = "Requires itext7 BouncyCastle adapter dependency")]
+	[Fact(DisplayName = "Core: PDF search respects case sensitivity")]
 	[Trait("Category", "Core")]
 	public void SearchFile_PDF_RespectsCaseSensitivity()
 	{
@@ -84,11 +85,13 @@ public class SearcherCorePdfTests
 			Assert.Equal(SearchResult.Found, resultCaseInsensitive);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
-	[Fact(DisplayName = "Core: PDF search handles multiple pages", Skip = "Requires itext7 BouncyCastle adapter dependency")]
+	[Fact(DisplayName = "Core: PDF search handles multiple pages")]
 	[Trait("Category", "Core")]
 	public void SearchFile_PDF_SearchesAllPages()
 	{
@@ -122,11 +125,13 @@ public class SearcherCorePdfTests
 			Assert.Equal(SearchResult.Found, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
-	[Fact(DisplayName = "Core: PDF search returns NotFound for missing text", Skip = "Requires itext7 BouncyCastle adapter dependency")]
+	[Fact(DisplayName = "Core: PDF search returns NotFound for missing text")]
 	[Trait("Category", "Core")]
 	public void SearchFile_PDF_NotFoundForMissingText()
 	{
@@ -148,11 +153,13 @@ public class SearcherCorePdfTests
 			Assert.Equal(SearchResult.NotFound, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
-	[Fact(DisplayName = "Core: PDF search handles empty PDF", Skip = "Requires itext7 BouncyCastle adapter dependency")]
+	[Fact(DisplayName = "Core: PDF search handles empty PDF")]
 	[Trait("Category", "Core")]
 	public void SearchFile_PDF_HandlesEmptyPdf()
 	{
@@ -174,11 +181,13 @@ public class SearcherCorePdfTests
 			Assert.Equal(SearchResult.NotFound, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
-	[Fact(DisplayName = "Core: PDF search handles cancellation token", Skip = "Requires itext7 BouncyCastle adapter dependency")]
+	[Fact(DisplayName = "Core: PDF search handles cancellation token")]
 	[Trait("Category", "Core")]
 	public void SearchFile_PDF_HandlesCancellation()
 	{
@@ -204,7 +213,9 @@ public class SearcherCorePdfTests
 			Assert.True(result == SearchResult.Error || true); // Behavior depends on implementation
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 }

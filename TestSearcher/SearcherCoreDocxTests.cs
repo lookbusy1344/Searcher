@@ -5,46 +5,46 @@ namespace TestSearcher;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Threading;
 using System.Xml.Linq;
-using System.IO.Compression;
-using Xunit;
 using SearcherCoreLib::SearcherCore;
+using Xunit;
 
 public class SearcherCoreDocxTests
 {
-	private byte[] CreateTestDocxWithContent(string content)
+	private static byte[] CreateTestDocxWithContent(string content)
 	{
 		// DOCX is a ZIP file containing XML files
-		using (var ms = new MemoryStream()) {
-			using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true)) {
-				// Create [Content_Types].xml
-				var contentTypes = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+		using var ms = new MemoryStream();
+		using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true)) {
+			// Create [Content_Types].xml
+			var contentTypes = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <Types xmlns=""http://schemas.openxmlformats.org/package/2006/content-types"">
 	<Default Extension=""rels"" ContentType=""application/vnd.openxmlformats-package.relationships+xml""/>
 	<Default Extension=""xml"" ContentType=""application/xml""/>
 	<Override PartName=""/word/document.xml"" ContentType=""application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml""/>
 </Types>";
 
-				var ctEntry = zip.CreateEntry("[Content_Types].xml");
-				using (var writer = new StreamWriter(ctEntry.Open())) {
-					writer.Write(contentTypes);
-				}
+			var ctEntry = zip.CreateEntry("[Content_Types].xml");
+			using (var writer = new StreamWriter(ctEntry.Open())) {
+				writer.Write(contentTypes);
+			}
 
-				// Create _rels/.rels
-				var rels = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+			// Create _rels/.rels
+			var rels = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <Relationships xmlns=""http://schemas.openxmlformats.org/package/2006/relationships"">
 	<Relationship Id=""rId1"" Type=""http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"" Target=""word/document.xml""/>
 </Relationships>";
 
-				zip.CreateEntry("_rels/.rels");
-				var relsEntry = zip.CreateEntry("_rels/.rels");
-				using (var writer = new StreamWriter(relsEntry.Open())) {
-					writer.Write(rels);
-				}
+			zip.CreateEntry("_rels/.rels");
+			var relsEntry = zip.CreateEntry("_rels/.rels");
+			using (var writer = new StreamWriter(relsEntry.Open())) {
+				writer.Write(rels);
+			}
 
-				// Create word/document.xml with the actual content
-				var docXml = $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+			// Create word/document.xml with the actual content
+			var docXml = $@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
 <w:document xmlns:w=""http://schemas.openxmlformats.org/wordprocessingml/2006/main"">
 	<w:body>
 		<w:p>
@@ -55,13 +55,12 @@ public class SearcherCoreDocxTests
 	</w:body>
 </w:document>";
 
-				var docEntry = zip.CreateEntry("word/document.xml");
-				using (var writer = new StreamWriter(docEntry.Open())) {
-					writer.Write(docXml);
-				}
+			var docEntry = zip.CreateEntry("word/document.xml");
+			using (var writer = new StreamWriter(docEntry.Open())) {
+				writer.Write(docXml);
 			}
-			return ms.ToArray();
 		}
+		return ms.ToArray();
 	}
 
 	private static string XmlEscape(string text)
@@ -91,7 +90,9 @@ public class SearcherCoreDocxTests
 			Assert.Equal(SearchResult.Found, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
@@ -126,7 +127,9 @@ public class SearcherCoreDocxTests
 			Assert.Equal(SearchResult.Found, resultCaseInsensitive);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
@@ -152,7 +155,9 @@ public class SearcherCoreDocxTests
 			Assert.Equal(SearchResult.NotFound, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
@@ -178,7 +183,9 @@ public class SearcherCoreDocxTests
 			Assert.Equal(SearchResult.NotFound, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 
@@ -205,7 +212,9 @@ public class SearcherCoreDocxTests
 			Assert.Equal(SearchResult.Found, result);
 		}
 		finally {
-			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempFile)) {
+				File.Delete(tempFile);
+			}
 		}
 	}
 }

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Xunit;
-using SearcherGui.Services;
 using Avalonia.Input.Platform;
 using Moq;
+using SearcherGui.Services;
+using Xunit;
 
 namespace TestSearcher.SearcherGui;
 
@@ -43,7 +43,7 @@ public class ResultInteractionServiceTests
 		Assert.Null(result);
 	}
 
-	[Fact(DisplayName = "GUI: ShowInFolder with missing path returns gracefully", Skip = "Skipped to prevent opening file manager during tests")]
+	[Fact(DisplayName = "GUI: ShowInFolder with missing path returns gracefully")]
 	[Trait("Category", "GUI")]
 	public void ShowInFolder_WithValidPath_AttempsToOpen()
 	{
