@@ -4,6 +4,8 @@ using System.IO;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using ReactiveUI;
 using SearcherCore;
 using SearcherGui.Models;
@@ -94,7 +96,11 @@ public class MainViewModel : ReactiveObject
 		StatusMessage = $"Search completed in {elapsed.TotalSeconds:F2}s - Found {MatchesFound} matches in {Results.Count} files";
 
 		if (_options.AutoCloseOnCompletion) {
-			// Signal window close (will be handled by view)
+			await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
+				if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+					desktop.MainWindow?.Close();
+				}
+			});
 		}
 	}
 

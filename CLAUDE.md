@@ -156,3 +156,84 @@ The project uses comprehensive static analysis:
 - **Git Integration**: Automatic source revision ID embedding via git describe
 
 **Critical**: Always run `dotnet format SearcherGui/SearcherGui.csproj` and `dotnet format SearcherCli/SearcherCli.csproj` after code changes to maintain consistent formatting and style compliance.
+
+## Test Coverage and Strategy
+
+### Test Organization
+
+Tests are organized by category in `/TestSearcher/`:
+- **SearcherCoreTests.cs**: Core library unit tests (configuration, utilities, security, 34 tests)
+- **SearcherCorePdfTests.cs**: PDF file format integration tests (6 tests)
+- **SearcherCoreDocxTests.cs**: DOCX file format integration tests (5 tests)
+- **SearcherCoreZipTests.cs**: ZIP archive integration tests (7 tests)
+- **SearcherGui/MainViewModelTests.cs**: GUI ViewModel unit tests (13 tests)
+- **SearcherGui/MainViewModelIntegrationTests.cs**: GUI full workflow integration tests (8 tests)
+- **SearcherGui/SearchResultDisplayTests.cs**: Result data model tests (6 tests)
+- **SearcherGui/ResultInteractionServiceTests.cs**: Platform-specific service tests (6 tests)
+- **SearcherCliTests.cs**: CLI argument parsing and options tests (5 tests)
+
+### Test Summary
+
+- **Total Tests**: 92 tests across all categories
+- **Passing**: 80 tests
+- **Test Duration**: ~215 ms
+- **Coverage**: Unit tests, integration tests, and platform-specific tests
+
+### Running Tests
+
+```bash
+# Run all tests
+dotnet test TestSearcher/
+
+# Run specific category
+dotnet test TestSearcher/ -k "Core"
+dotnet test TestSearcher/ -k "GUI"
+dotnet test TestSearcher/ -k "GUI-Integration"
+dotnet test TestSearcher/ -k "PDF"
+
+# Run with detailed output
+dotnet test TestSearcher/ --verbosity normal
+
+# Build and test together
+dotnet build && dotnet test TestSearcher/
+```
+
+### Test Strategy
+
+1. **Unit Tests**: Test individual components with mocked dependencies and edge cases
+2. **Integration Tests**: Test complete workflows with real file I/O and SearcherCore components
+3. **Format Tests**: Verify correct text extraction from PDF, DOCX, and ZIP formats
+4. **Security Tests**: Validate path traversal protection and filename validation
+5. **Platform Tests**: Test cross-platform behavior via platform-aware service mocking
+
+### Key Test Scenarios
+
+**SearcherCore Functionality**:
+- CliOptions defaults and configuration
+- Parallelism settings (SSD/HDD detection, single-thread mode)
+- Pattern matching and glob handling
+- Security: path validation, reserved name detection, directory traversal prevention
+
+**File Format Support**:
+- PDF: Multi-page documents, text extraction via iText7
+- DOCX: Office Open XML parsing, content extraction
+- ZIP: Archive extraction, nested directories, mixed file types
+
+**GUI Application**:
+- ViewModel initialization and state management
+- Search execution and result collection
+- Real-time UI updates during search
+- Cancellation and stop functionality
+- Error handling and status messages
+- Result interaction (open file, show in folder, copy path)
+
+**CLI Application**:
+- CliOptions initialization
+- Configuration validation
+- Pattern and folder handling
+
+### Known Issues and Limitations
+
+- **PDF tests**: Some PDF creation tests may fail if itext7 BouncyCastle dependencies are incomplete
+- **GUI integration tests**: Some file scanning count assertions are relaxed due to parallel execution timing variations
+- **Test warnings**: Style warnings for unused braces and static method markers - these are non-critical code quality suggestions

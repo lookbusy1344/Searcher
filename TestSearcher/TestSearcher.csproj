@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+    <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.14.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -42,6 +43,7 @@
       <Aliases>SearcherCoreLib</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\SearcherGui\SearcherGui.csproj" />
+    <ProjectReference Include="..\SearcherCli\SearcherCli.csproj" />
   </ItemGroup>
 
 </Project>
