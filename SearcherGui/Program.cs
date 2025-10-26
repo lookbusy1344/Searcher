@@ -7,9 +7,10 @@ namespace SearcherGui;
 public static class Program
 {
 	/// <summary>
-	/// Parsed command-line options, accessible to App and other components
+	/// Parsed command-line options, accessible to App and other components.
+	/// Defaults to a new instance during design-time to support Avalonia designer.
 	/// </summary>
-	public static GuiCliOptions? Options { get; private set; }
+	public static GuiCliOptions Options { get; private set; } = new();
 
 	// Initialization code. Don't use any Avalonia, third-party APIs or any
 	// SynchronizationContext-reliant code before AppMain is called: things aren't initialized
