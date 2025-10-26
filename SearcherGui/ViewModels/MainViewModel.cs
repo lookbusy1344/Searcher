@@ -106,7 +106,7 @@ public class MainViewModel : ReactiveObject
 		_cancellationTokenSource = cts;
 
 		try {
-			await Task.Run(() => PerformSearch(cts.Token));
+			await PerformSearch(cts.Token);
 		}
 		finally {
 			cts?.Dispose();
@@ -130,7 +130,7 @@ public class MainViewModel : ReactiveObject
 		}
 	}
 
-	private void PerformSearch(CancellationToken ct)
+	private async Task PerformSearch(CancellationToken ct)
 	{
 		try {
 			// Process patterns for outer and inner searches
@@ -149,7 +149,9 @@ public class MainViewModel : ReactiveObject
 				FilesScanned = files.Length;
 			}
 
-			// Search each file in parallel
+			// Search each file in parallel and collect UI update tasks
+			var uiUpdateTasks = new System.Collections.Concurrent.ConcurrentBag<Task>();
+			
 			_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = _options.DegreeOfParallelism, CancellationToken = ct },
 				file => {
 					if (ct.IsCancellationRequested) {
@@ -163,16 +165,20 @@ public class MainViewModel : ReactiveObject
 						var singleResult = new SingleResult(file, result);
 						var display = SearchResultDisplay.FromSingleResult(singleResult);
 
-						if (Avalonia.Threading.Dispatcher.UIThread != null) {
-							Avalonia.Threading.Dispatcher.UIThread.Invoke(() => {
+						// Check if we're on UI thread already
+						var dispatcher = Avalonia.Threading.Dispatcher.UIThread;
+						if (dispatcher != null && !dispatcher.CheckAccess()) {
+							// Not on UI thread, need to marshal - collect the task
+							var task = dispatcher.InvokeAsync(() => {
 								Results.Add(display);
 								if (result == SearchResult.Found) {
 									MatchesFound++;
 								}
 								LogResult(display, result);
-							});
+							}).GetTask();
+							uiUpdateTasks.Add(task);
 						} else {
-							// No dispatcher available (e.g., during unit tests)
+							// Already on UI thread or no dispatcher (tests)
 							Results.Add(display);
 							if (result == SearchResult.Found) {
 								MatchesFound++;
@@ -181,6 +187,11 @@ public class MainViewModel : ReactiveObject
 						}
 					}
 				});
+			
+			// Wait for all UI updates to complete
+			if (uiUpdateTasks.Count > 0) {
+				await Task.WhenAll(uiUpdateTasks);
+			}
 		}
 		catch (Exception ex) {
 			var message = $"Error: {ex.Message}";
