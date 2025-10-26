@@ -4,13 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Searcher is a C# WinForms application that recursively searches for text inside files, including archives (ZIP), PDFs, and DOCX files. It uses .NET 9.0 targeting Windows and supports parallel processing for performance.
+Searcher is a cross-platform application that recursively searches for text inside files, including archives (ZIP), PDFs, and DOCX files. It uses .NET 9.0 and supports parallel processing for performance.
 
 **Project Structure:**
-- **Root directory**: Contains the main WinForms application
-- **SearcherCli/**: Console version of the application
+- **SearcherGui/**: Cross-platform Avalonia GUI application
+- **SearcherCli/**: Console version of the application (this project)
 - **SearcherCore/**: Shared .NET library containing core search functionality
 - **TestSearcher/**: xUnit test project
+- **Root directory**: Deprecated Windows Forms application (obsolete, no longer maintained)
 
 ## Build Commands
 
@@ -71,15 +72,14 @@ dotnet publish SearcherCli.csproj -c Release -r osx-arm64 -p:PublishSingleFile=t
 
 ## Project Architecture
 
-### Main WinForms Application Components (Root Directory)
+### SearcherGui Application Components (SearcherGui/)
 
-- **Program.cs**: Entry point for WinForms application
-- **MainForm.cs/.Designer.cs**: Main UI form with search interface
-- **FormsCliOptions.cs**: WinForms-specific configuration class extending SearcherCore's CliOptions
-- **DiskQuery.cs**: Hardware detection for performance optimization
-- **SafeCounter.cs**, **ProgressTimer.cs**, **MonotonicDateTime.cs**: Performance and threading utilities
-- **ListViewExtensions.cs**: UI helper extensions for ListView controls
-- **GitVersion.cs**: Git version information integration
+- **Program.cs**: Entry point for Avalonia application
+- **App.axaml/App.axaml.cs**: Application root and resource definitions
+- **MainWindow.axaml/MainWindow.xaml.cs**: Main UI window with search interface and results display
+- **MainViewModel.cs**: MVVM ViewModel handling search logic and state management
+- **ViewModels/**: Other view models for UI components
+- **Views/**: Avalonia XAML-based UI components
 
 ### Console Application Components (SearcherCli/)
 
@@ -101,7 +101,7 @@ dotnet publish SearcherCli.csproj -c Release -r osx-arm64 -p:PublishSingleFile=t
 
 ### Key Architectural Patterns
 
-1. **Dual Interface Architecture**: Both WinForms GUI and Console CLI share core search logic via SearcherCore library
+1. **Dual Interface Architecture**: Both SearcherGui (Avalonia) and Console CLI share core search logic via SearcherCore library
 2. **File Type Routing**: Different search strategies based on file extension (.txt, .docx, .pdf, .zip)
 3. **Parallel Processing**: Uses `Parallel.ForEach` for both file discovery and content searching
 4. **Recursive ZIP Handling**: Supports nested ZIP files and archives containing other formats
@@ -135,9 +135,9 @@ dotnet publish SearcherCli.csproj -c Release -r osx-arm64 -p:PublishSingleFile=t
 - **DotNet.Glob**: File pattern matching and globbing
 - **itext7**: PDF text extraction and processing
 
-### Root WinForms Application Dependencies (separate)
-- **CommandLineParser**: Command line argument parsing (WinForms uses this for consistency)
-- **System.Management**: Hardware detection for performance optimization
+### SearcherGui Application Dependencies (separate)
+- **Avalonia**: Cross-platform UI framework
+- **CommandLineParser**: Command line argument parsing
 - **SearcherCore**: Shared library (project reference)
 
 ### Test Dependencies

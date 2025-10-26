@@ -5,8 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Structure
 
 SearcherCore is a shared .NET 9.0 library that provides core functionality for Searcher applications. It's part of a larger solution that includes:
-- Main Searcher WinForms application
-- SearcherCli command-line application  
+- SearcherGui Avalonia application (cross-platform GUI)
+- SearcherCli command-line application (cross-platform CLI)
 - TestSearcher unit test project
 
 ## Core Architecture
