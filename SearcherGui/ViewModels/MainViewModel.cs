@@ -1,13 +1,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNet.Globbing;
 using ReactiveUI;
 using SearcherCore;
 using SearcherGui.Models;
@@ -17,7 +13,8 @@ namespace SearcherGui.ViewModels;
 public class MainViewModel : ReactiveObject
 {
 	private readonly GuiCliOptions _options;
-	private SearchState _searchState = new();
+	private readonly ObservableCollection<SearchResultDisplay> _results = new();
+	private CancellationTokenSource? _cancellationTokenSource;
 	private int _filesScanned;
 	private int _matchesFound;
 	private bool _isSearching;
@@ -30,7 +27,7 @@ public class MainViewModel : ReactiveObject
 		StopCommand = ReactiveCommand.Create(Stop, this.WhenAnyValue(x => x.IsSearching));
 	}
 
-	public ObservableCollection<SearchResultDisplay> Results => _searchState.Results;
+	public ObservableCollection<SearchResultDisplay> Results => _results;
 
 	public int FilesScanned
 	{
@@ -63,6 +60,11 @@ public class MainViewModel : ReactiveObject
 
 	public async Task OnInitializedAsync()
 	{
+		// Guard against race condition
+		if (IsSearching) {
+			return;
+		}
+
 		// Validate search path
 		if (!Directory.Exists(_options.Folder.FullName)) {
 			StatusMessage = $"Error: Path does not exist: {_options.Folder.FullName}";
@@ -77,9 +79,15 @@ public class MainViewModel : ReactiveObject
 		Results.Clear();
 
 		var cts = new CancellationTokenSource();
-		_searchState.CancellationTokenSource = cts;
+		_cancellationTokenSource = cts;
 
-		await Task.Run(() => PerformSearch(cts.Token));
+		try {
+			await Task.Run(() => PerformSearch(cts.Token));
+		}
+		finally {
+			cts?.Dispose();
+			_cancellationTokenSource = null;
+		}
 
 		IsSearching = false;
 		var elapsed = DateTime.UtcNow - _startTime;
@@ -137,7 +145,7 @@ public class MainViewModel : ReactiveObject
 
 	private void Stop()
 	{
-		_searchState.CancellationTokenSource?.Cancel();
+		_cancellationTokenSource?.Cancel();
 		IsSearching = false;
 		StatusMessage = "Search cancelled";
 	}
