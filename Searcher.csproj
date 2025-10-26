@@ -63,14 +63,17 @@
     <Compile Remove="TestSearcher\**" />
     <Compile Remove="SearcherCli\**" />
     <Compile Remove="SearcherCore\**" />
+    <Compile Remove="SearcherGui\**" />
     <EmbeddedResource Remove="TestDocs\**" />
     <EmbeddedResource Remove="TestSearcher\**" />
     <EmbeddedResource Remove="SearcherCli\**" />
     <EmbeddedResource Remove="SearcherCore\**" />
+    <EmbeddedResource Remove="SearcherGui\**" />
     <None Remove="TestDocs\**" />
     <None Remove="TestSearcher\**" />
     <None Remove="SearcherCli\**" />
     <None Remove="SearcherCore\**" />
+    <None Remove="SearcherGui\**" />
   </ItemGroup>
 
   <ItemGroup>
