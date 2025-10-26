@@ -34,7 +34,7 @@ SearcherCore is the foundational library that powers file content searching acro
 ## Usage
 
 This library is designed to be consumed by:
-- Searcher WinForms application
+- SearcherGui Avalonia application
 - SearcherCli command-line tool
 - TestSearcher unit test project
 

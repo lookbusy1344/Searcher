@@ -47,11 +47,7 @@
       "Bash(timeout 60 dotnet test:*)",
       "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher add:*)",
       "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher commit -m \"$(cat <<''EOF''\nfix: handle missing Avalonia dispatcher in MainViewModel for test environments\n\nThe GUI was not displaying search results in unit tests because it relied on \nAvalonia.Threading.Dispatcher.UIThread being initialized, which is not available \nin non-GUI test environments. Added null checks to fall back to direct collection \nupdates when the dispatcher is unavailable.\n\nThis fixes the issue where the GUI command returned no matches - the problem was \nthat the test suite couldn''t detect the issue because there was no test coverage \nfor the actual UI search flow.\n\n🤖 Generated with Claude Code\nEOF\n)\")",
-      "Skill(superpowers:test-driven-development)",
-      "Skill(superpowers:systematic-debugging)",
-      "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher diff)",
-      "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher log -5 --oneline)",
-      "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher commit -m \"$(cat <<''EOF''\nfix: prevent Finder from opening during tests\n\nAdded dependency injection for process launching in ResultInteractionService to\nenable test mocking. Tests were calling Process.Start(\"open\", \"-R\", filePath) on\nmacOS, which opened Finder windows at /private/var/folders during test execution.\n\nCreated IProcessLauncher interface and RealProcessLauncher implementation. Updated\nOpenFile() and ShowInFolder() to accept optional IProcessLauncher parameter with\ndefault real implementation. Tests now inject MockProcessLauncher that doesn''t\nstart actual processes.\n\nAll 104 tests pass without opening Finder.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Skill(superpowers:test-driven-development)"
     ],
     "deny": [],
     "ask": []

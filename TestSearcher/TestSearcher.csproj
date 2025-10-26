@@ -1,14 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <OutputType>WinExe</OutputType>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -22,7 +20,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="itext7" Version="9.3.0" />
+    <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.3.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+    <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.14.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -37,26 +38,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="CommandLineParser" Version="2.9.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SearcherCore\SearcherCore.csproj">
       <Aliases>SearcherCoreLib</Aliases>
     </ProjectReference>
-  </ItemGroup>
-
-  <!-- Windows-only references -->
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
-    <ProjectReference Include="..\Searcher.csproj">
-      <Aliases>SearcherApp</Aliases>
-    </ProjectReference>
-  </ItemGroup>
-
-  <!-- Exclude Windows-only files on non-Windows platforms -->
-  <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('Windows'))">
-    <Compile Remove="SearchTests.cs" />
-    <Compile Remove="Helpers.cs" />
+    <ProjectReference Include="..\SearcherGui\SearcherGui.csproj" />
+    <ProjectReference Include="..\SearcherCli\SearcherCli.csproj" />
   </ItemGroup>
 
 </Project>
