@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Searcher is a cross-platform search application for recursively searching text inside files, including archives (ZIP), PDFs, and DOCX files. It targets .NET 9.0 and uses parallel processing for performance optimization.
+Searcher is a fully cross-platform (Windows, macOS, Linux) search application for recursively searching text inside files, including archives (ZIP), PDFs, and DOCX files. It targets .NET 9.0 and uses parallel processing for performance optimization. The project uses only cross-platform technologies and has no platform-specific implementations.
 
 **Project Structure:**
-- **SearcherGui/**: Cross-platform Avalonia GUI application (primary focus)
+- **SearcherGui/**: Cross-platform Avalonia GUI application (primary focus) - runs on Windows, macOS, and Linux
 - **SearcherCore/**: Shared .NET library containing core search functionality
-- **SearcherCli/**: Console version of the application
-- **TestSearcher/**: Cross-platform xUnit test project (tests for SearcherGui and SearcherCore only, runs on Windows/Mac/Linux)
+- **SearcherCli/**: Cross-platform console version of the application
+- **TestSearcher/**: Cross-platform xUnit test project (tests SearcherGui and SearcherCore, runs on Windows/macOS/Linux)
 
 ## Build Commands
 
@@ -147,9 +147,10 @@ The project uses comprehensive static analysis:
 
 ## Configuration
 
-- **Target Framework**: net9.0 (cross-platform)
-- **SearcherGui**: Supports Windows, Linux, and macOS via Avalonia
-- **SearcherCli**: Cross-platform console application
+- **Target Framework**: net9.0 (fully cross-platform)
+- **SearcherGui**: Windows, macOS, and Linux via Avalonia (no platform-specific code)
+- **SearcherCli**: Cross-platform console application (all platforms)
+- **TestSearcher**: Cross-platform test suite (Windows/macOS/Linux)
 - **Code Style**: Enforced via comprehensive `.editorconfig` with specific C# formatting rules
 - **Unsafe Code**: Enabled in SearcherCore for performance-critical operations
 - **Git Integration**: Automatic source revision ID embedding via git describe
