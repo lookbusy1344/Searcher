@@ -44,6 +44,7 @@
     <ProjectReference Include="..\SearcherCore\SearcherCore.csproj">
       <Aliases>SearcherCoreLib</Aliases>
     </ProjectReference>
+    <ProjectReference Include="..\SearcherGui\SearcherGui.csproj" />
   </ItemGroup>
 
   <!-- Windows-only references -->
