@@ -1,14 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <OutputType>WinExe</OutputType>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -37,7 +35,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="CommandLineParser" Version="2.9.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,19 +42,6 @@
       <Aliases>SearcherCoreLib</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\SearcherGui\SearcherGui.csproj" />
-  </ItemGroup>
-
-  <!-- Windows-only references -->
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
-    <ProjectReference Include="..\Searcher.csproj">
-      <Aliases>SearcherApp</Aliases>
-    </ProjectReference>
-  </ItemGroup>
-
-  <!-- Exclude Windows-only files on non-Windows platforms -->
-  <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('Windows'))">
-    <Compile Remove="SearchTests.cs" />
-    <Compile Remove="Helpers.cs" />
   </ItemGroup>
 
 </Project>

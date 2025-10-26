@@ -10,7 +10,7 @@ Searcher is a cross-platform search application for recursively searching text i
 - **SearcherGui/**: Cross-platform Avalonia GUI application (primary focus)
 - **SearcherCore/**: Shared .NET library containing core search functionality
 - **SearcherCli/**: Console version of the application
-- **TestSearcher/**: xUnit test project (tests for SearcherGui and SearcherCli only)
+- **TestSearcher/**: Cross-platform xUnit test project (tests for SearcherGui and SearcherCore only, runs on Windows/Mac/Linux)
 
 **Deprecated/Obsolete:**
 - **Root directory (Searcher.csproj)**: Obsolete Windows Forms application (no longer maintained)

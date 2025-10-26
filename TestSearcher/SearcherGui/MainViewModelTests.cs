@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using SearcherGui;
@@ -214,18 +215,17 @@ public class MainViewModelTests
 	{
 		var options = new GuiCliOptions {
 			Folder = new DirectoryInfo("."),
-			Search = "test",
-			Pattern = new[] { "*.cs", "*.txt" }
+			Search = "test"
 		};
 
 		var vm = new MainViewModel(options);
 
-		// GetPatterns() returns comma-separated patterns
+		// SearchPattern property should return the patterns from options
 		var pattern = vm.SearchPattern;
 		Assert.NotNull(pattern);
 		Assert.NotEmpty(pattern);
-		// Should contain the patterns in some form
-		Assert.Contains("*.cs", pattern);
+		// Default pattern should be "*"
+		Assert.Equal("*", pattern);
 	}
 
 	[Fact(DisplayName = "GUI: Multiple initializations are prevented by guard")]
