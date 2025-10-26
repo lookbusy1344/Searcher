@@ -64,9 +64,15 @@ public static class Program
 		var hideErrors = pico.Contains("--hide-errors");
 		var raw = pico.Contains("-r", "--raw");
 
+		// Validate the folder path
+		var validatedFolder = Utils.ValidateSearchPath(folder);
+		if (validatedFolder == null) {
+			throw new ArgumentException($"Invalid or inaccessible folder path: {folder}");
+		}
+
 		return new() {
 			Search = search,
-			Folder = new(folder),
+			Folder = new(validatedFolder),
 			Pattern = patterns.AsReadOnly(),
 			InsideZips = insideZips,
 			OneThread = oneThread,

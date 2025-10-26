@@ -259,6 +259,9 @@ public class MainViewModel : ReactiveObject, IDisposable
 
 	public void Dispose()
 	{
-		throw new NotImplementedException();
+		_cancellationTokenSource?.Cancel();
+		_cancellationTokenSource?.Dispose();
+		_logWriter?.Dispose();
+		GC.SuppressFinalize(this);
 	}
 }

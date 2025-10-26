@@ -11,6 +11,11 @@ public static class GlobSearch
 	private static readonly EnumerationOptions diroptions = new() { IgnoreInaccessible = true };
 
 	/// <summary>
+	/// Initial capacity for file match lists - estimated matches per directory
+	/// </summary>
+	private const int EstimatedMatchesPerDirectory = 10;
+
+	/// <summary>
 	/// Use globs to find files recursively
 	/// </summary>
 	public static string[] FindFiles(string path, IReadOnlyList<Glob> globs, CancellationToken token)
@@ -84,7 +89,7 @@ public static class GlobSearch
 					List<string>? found = null;
 					foreach (var c in candidates) {
 						cancellationtoken.ThrowIfCancellationRequested();
-						var size = candidates.Length > 10 ? 10 : candidates.Length;
+						var size = candidates.Length > EstimatedMatchesPerDirectory ? EstimatedMatchesPerDirectory : candidates.Length;
 
 						var filename = Path.GetFileName(c);
 						foreach (var g in globs) {
@@ -120,31 +125,4 @@ public static class GlobSearch
 		];
 	}
 
-	/// <summary>
-	/// OLD AND SIMPLE ROUTINE. Search for files matching the given patterns (in parallel) in the given folder
-	/// </summary>
-	public static string[] RecursiveFindFiles(string path, IReadOnlyList<string> outerpatterns, int parallelthreads, CancellationToken token)
-	{
-		var searchoptions = new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true };
-		var results = new ConcurrentBag<string[]>();
-
-		_ = Parallel.ForEach(outerpatterns, new() { MaxDegreeOfParallelism = parallelthreads, CancellationToken = token }, pattern => {
-			if (string.IsNullOrEmpty(pattern)) {
-				return;
-			}
-
-			var files = Directory.GetFiles(path, pattern, searchoptions);
-			if (files.Length > 0) {
-				results.Add(files);
-			}
-		});
-
-		// merge the results from each task into single sorted array
-		return [
-			.. results
-				.SelectMany(x => x)
-				.Order()
-				.Distinct()
-		];
-	}
 }

@@ -62,8 +62,9 @@ public static class SearchFile
 				}
 			}
 		}
-		catch {
-			// exceptions are not thrown by my code here, but potentially by the StreamReader
+		catch (Exception ex) {
+			// Log exception for debugging - exceptions from StreamReader (IOException, UnauthorizedAccessException, etc.)
+			System.Diagnostics.Debug.WriteLine($"Error reading file {path}: {ex.GetType().Name} - {ex.Message}");
 			return SearchResult.Error;
 		}
 
@@ -95,8 +96,9 @@ public static class SearchFile
 				}
 			}
 		}
-		catch {
-			// exceptions are not thrown by my code here, but potentially by libraries
+		catch (Exception ex) {
+			// Log exception for debugging - exceptions from ZIP/XML libraries
+			System.Diagnostics.Debug.WriteLine($"Error reading DOCX file {path}: {ex.GetType().Name} - {ex.Message}");
 			return SearchResult.Error;
 		}
 
@@ -123,7 +125,9 @@ public static class SearchFile
 			// this is thrown when the user cancels the search
 			return SearchResult.NotFound;
 		}
-		catch {
+		catch (Exception ex) {
+			// Log exception for debugging - exceptions from ZIP library
+			System.Diagnostics.Debug.WriteLine($"Error reading ZIP file {path}: {ex.GetType().Name} - {ex.Message}");
 			return SearchResult.Error;
 		}
 	}
@@ -166,8 +170,6 @@ public static class ZipInternals
 				continue;
 			} else {
 				// this is an actual file, not a nested zip
-				//Debug.WriteLine($"Checking {nestedEntry.Name}");
-
 				// This fails when using FullName, because the '/' separator screws up the globbing
 				if (innerpatterns.Count == 0 || innerpatterns.Any(p => p.IsMatch(nestedEntry.Name))) {
 					found = GeneralContainsString(nestedEntry, text, comparer, token);
