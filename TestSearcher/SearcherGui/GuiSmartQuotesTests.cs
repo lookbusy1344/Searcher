@@ -27,7 +27,6 @@ public class GuiSmartQuotesTests
 		Assert.True(vm.Results.Count > 0);
 		Assert.True(vm.MatchesFound > 0);
 	}
-	private static readonly string[] options = new[] { "*.cs" };
 
 	[Fact(DisplayName = "GUI Systematic: Smart quote U+201D causes zero matches (diagnostic)")]
 	[Trait("Category", "GUI-Systematic")]

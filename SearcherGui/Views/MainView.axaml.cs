@@ -51,4 +51,12 @@ public partial class MainView : Window
 			ResultInteractionService.ShowInFolder(selected.FilePath);
 		}
 	}
+
+	private void OnResultDoubleClick(object? sender, RoutedEventArgs e)
+	{
+		var grid = this.FindControl<DataGrid>("ResultsGrid");
+		if (grid?.SelectedItem is SearchResultDisplay selected) {
+			ResultInteractionService.OpenFile(selected.FilePath);
+		}
+	}
 }

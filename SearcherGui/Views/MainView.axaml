@@ -36,7 +36,8 @@
               CanUserResizeColumns="True"
               CanUserSortColumns="True"
               IsReadOnly="True"
-              AutoGenerateColumns="False">
+              AutoGenerateColumns="False"
+              DoubleTapped="OnResultDoubleClick">
       <DataGrid.Columns>
         <DataGridTextColumn Header="Filename" Binding="{Binding FileName}" Width="200" />
         <DataGridTextColumn Header="Path" Binding="{Binding FilePath}" Width="*" />

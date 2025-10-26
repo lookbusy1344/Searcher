@@ -46,7 +46,8 @@
       "Bash(xargs:*)",
       "Bash(timeout 60 dotnet test:*)",
       "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher add:*)",
-      "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher commit -m \"$(cat <<''EOF''\nfix: handle missing Avalonia dispatcher in MainViewModel for test environments\n\nThe GUI was not displaying search results in unit tests because it relied on \nAvalonia.Threading.Dispatcher.UIThread being initialized, which is not available \nin non-GUI test environments. Added null checks to fall back to direct collection \nupdates when the dispatcher is unavailable.\n\nThis fixes the issue where the GUI command returned no matches - the problem was \nthat the test suite couldn''t detect the issue because there was no test coverage \nfor the actual UI search flow.\n\n🤖 Generated with Claude Code\nEOF\n)\")"
+      "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher commit -m \"$(cat <<''EOF''\nfix: handle missing Avalonia dispatcher in MainViewModel for test environments\n\nThe GUI was not displaying search results in unit tests because it relied on \nAvalonia.Threading.Dispatcher.UIThread being initialized, which is not available \nin non-GUI test environments. Added null checks to fall back to direct collection \nupdates when the dispatcher is unavailable.\n\nThis fixes the issue where the GUI command returned no matches - the problem was \nthat the test suite couldn''t detect the issue because there was no test coverage \nfor the actual UI search flow.\n\n🤖 Generated with Claude Code\nEOF\n)\")",
+      "Skill(superpowers:test-driven-development)"
     ],
     "deny": [],
     "ask": []
