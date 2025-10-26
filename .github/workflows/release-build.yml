@@ -76,9 +76,79 @@ jobs:
           path: ./publish/SearcherCli-${{ matrix.runtime }}
           retention-days: 30
 
+  build-searcher-gui:
+    name: Build SearcherGui - Multi-platform
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            runtime: win-x64
+            project-path: SearcherGui/SearcherGui.csproj
+          - os: windows-latest
+            runtime: win-arm64
+            project-path: SearcherGui/SearcherGui.csproj
+          - os: ubuntu-latest
+            runtime: linux-x64
+            project-path: SearcherGui/SearcherGui.csproj
+          - os: macos-latest
+            runtime: osx-arm64
+            project-path: SearcherGui/SearcherGui.csproj
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for git describe
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ matrix.project-path }} -r ${{ matrix.runtime }}
+
+      - name: Build
+        run: dotnet build ${{ matrix.project-path }} -c Release -r ${{ matrix.runtime }} --no-restore
+
+      - name: Publish SearcherGui ${{ matrix.runtime }}
+        run: |
+          dotnet publish ${{ matrix.project-path }} -c Release -r ${{ matrix.runtime }} --self-contained false -p:PublishSingleFile=true -p:PublishAot=false /p:DebugType=None /p:DebugSymbols=false --no-build -o ./publish/${{ matrix.runtime }}
+
+      - name: Rename binary (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Move-Item -Path "./publish/${{ matrix.runtime }}/SearcherGui.exe" -Destination "./publish/SearcherGui-${{ matrix.runtime }}.exe"
+
+      - name: Rename binary (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          mv "./publish/${{ matrix.runtime }}/SearcherGui" "./publish/SearcherGui-${{ matrix.runtime }}"
+          chmod +x "./publish/SearcherGui-${{ matrix.runtime }}"
+
+      - name: Upload artifacts (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: searchergui-${{ matrix.runtime }}
+          path: ./publish/SearcherGui-${{ matrix.runtime }}.exe
+          retention-days: 30
+
+      - name: Upload artifacts (Unix)
+        if: runner.os != 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: searchergui-${{ matrix.runtime }}
+          path: ./publish/SearcherGui-${{ matrix.runtime }}
+          retention-days: 30
+
   create-release:
     name: Create GitHub Release
-    needs: [build-searcher-cli]
+    needs: [build-searcher-cli, build-searcher-gui]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -101,7 +171,7 @@ jobs:
         run: |
           cd artifacts
           # Move all binaries from subdirectories to root artifacts directory
-          find . -mindepth 2 -type f -name "SearcherCli-*" -exec mv {} . \;
+          find . -mindepth 2 -type f \( -name "SearcherCli-*" -o -name "SearcherGui-*" \) -exec mv {} . \;
           # Remove empty subdirectories
           find . -type d -empty -delete
           echo "After flattening:"
@@ -110,13 +180,14 @@ jobs:
       - name: Generate SHA256 checksums
         run: |
           cd artifacts
-          sha256sum SearcherCli-* 2>/dev/null | tee SHA256SUMS.txt || true
+          sha256sum Searcher{Cli,Gui}-* 2>/dev/null | tee SHA256SUMS.txt || true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             artifacts/SearcherCli-*
+            artifacts/SearcherGui-*
             artifacts/SHA256SUMS.txt
           draft: false
           prerelease: false
