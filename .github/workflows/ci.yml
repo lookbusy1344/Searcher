@@ -1,0 +1,62 @@
+name: CI Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for git describe version embedding
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: |
+          echo "::group::Restore dependencies"
+          dotnet restore
+          echo "::endgroup::"
+
+      - name: Build SearcherGui
+        run: |
+          echo "::group::Build SearcherGui"
+          dotnet build SearcherGui/SearcherGui.csproj -c Release --no-restore
+          echo "::endgroup::"
+
+      - name: Build SearcherCli
+        run: |
+          echo "::group::Build SearcherCli"
+          dotnet build SearcherCli/SearcherCli.csproj -c Release --no-restore
+          echo "::endgroup::"
+
+      - name: Run tests
+        run: |
+          echo "::group::Run tests"
+          dotnet test TestSearcher/ -c Release --no-build --verbosity normal || \
+            (echo "::warning::Tests failed, retrying once..." && \
+             dotnet test TestSearcher/ -c Release --no-build --verbosity normal)
+          echo "::endgroup::"
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestSearcher/TestResults/
+          retention-days: 7
