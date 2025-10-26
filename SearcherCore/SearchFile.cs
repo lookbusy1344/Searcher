@@ -64,7 +64,9 @@ public static class SearchFile
 		}
 		catch (Exception ex) {
 			// Log exception for debugging - exceptions from StreamReader (IOException, UnauthorizedAccessException, etc.)
+#if DEBUG
 			System.Diagnostics.Debug.WriteLine($"Error reading file {path}: {ex.GetType().Name} - {ex.Message}");
+#endif
 			return SearchResult.Error;
 		}
 
@@ -98,7 +100,9 @@ public static class SearchFile
 		}
 		catch (Exception ex) {
 			// Log exception for debugging - exceptions from ZIP/XML libraries
+#if DEBUG
 			System.Diagnostics.Debug.WriteLine($"Error reading DOCX file {path}: {ex.GetType().Name} - {ex.Message}");
+#endif
 			return SearchResult.Error;
 		}
 
@@ -127,7 +131,9 @@ public static class SearchFile
 		}
 		catch (Exception ex) {
 			// Log exception for debugging - exceptions from ZIP library
+#if DEBUG
 			System.Diagnostics.Debug.WriteLine($"Error reading ZIP file {path}: {ex.GetType().Name} - {ex.Message}");
+#endif
 			return SearchResult.Error;
 		}
 	}

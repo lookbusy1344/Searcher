@@ -89,7 +89,7 @@ public static class GlobSearch
 					List<string>? found = null;
 					foreach (var c in candidates) {
 						cancellationtoken.ThrowIfCancellationRequested();
-						var size = candidates.Length > EstimatedMatchesPerDirectory ? EstimatedMatchesPerDirectory : candidates.Length;
+						var size = Math.Min(candidates.Length, EstimatedMatchesPerDirectory);
 
 						var filename = Path.GetFileName(c);
 						foreach (var g in globs) {
