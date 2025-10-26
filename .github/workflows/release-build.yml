@@ -49,6 +49,8 @@ jobs:
   build-searcher-cli:
     name: Build SearcherCli - Multi-platform
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     strategy:
       matrix:
         include:
