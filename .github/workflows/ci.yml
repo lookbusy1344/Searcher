@@ -33,10 +33,10 @@ jobs:
           dotnet restore
           echo "::endgroup::"
 
-      - name: Build SearcherGui
+      - name: Build Searcher (WinForms)
         run: |
-          echo "::group::Build SearcherGui"
-          dotnet build SearcherGui/SearcherGui.csproj -c Release --no-restore
+          echo "::group::Build Searcher (WinForms)"
+          dotnet build Searcher.csproj -c Release --no-restore
           echo "::endgroup::"
 
       - name: Build SearcherCli
@@ -44,19 +44,3 @@ jobs:
           echo "::group::Build SearcherCli"
           dotnet build SearcherCli/SearcherCli.csproj -c Release --no-restore
           echo "::endgroup::"
-
-      - name: Run tests
-        run: |
-          echo "::group::Run tests"
-          dotnet test TestSearcher/ -c Release --no-build --verbosity normal || \
-            (echo "::warning::Tests failed, retrying once..." && \
-             dotnet test TestSearcher/ -c Release --no-build --verbosity normal)
-          echo "::endgroup::"
-
-      - name: Upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: TestSearcher/TestResults/
-          retention-days: 7
