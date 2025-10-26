@@ -151,6 +151,8 @@ public class MainViewModel : ReactiveObject
 
 			// Search each file in parallel and collect UI update tasks
 			var uiUpdateTasks = new System.Collections.Concurrent.ConcurrentBag<Task>();
+			var collectedResults = new System.Collections.Concurrent.ConcurrentBag<(SearchResultDisplay display, SearchResult result)>();
+			var matchCount = 0;
 			
 			_ = Parallel.ForEach(files, new() { MaxDegreeOfParallelism = _options.DegreeOfParallelism, CancellationToken = ct },
 				file => {
@@ -164,6 +166,10 @@ public class MainViewModel : ReactiveObject
 					if (result is SearchResult.Found or SearchResult.Error) {
 						var singleResult = new SingleResult(file, result);
 						var display = SearchResultDisplay.FromSingleResult(singleResult);
+						
+						if (result == SearchResult.Found) {
+							Interlocked.Increment(ref matchCount);
+						}
 
 						// Check if we're on UI thread already
 						var dispatcher = Avalonia.Threading.Dispatcher.UIThread;
@@ -171,27 +177,29 @@ public class MainViewModel : ReactiveObject
 							// Not on UI thread, need to marshal - collect the task
 							var task = dispatcher.InvokeAsync(() => {
 								Results.Add(display);
-								if (result == SearchResult.Found) {
-									MatchesFound++;
-								}
 								LogResult(display, result);
 							}).GetTask();
 							uiUpdateTasks.Add(task);
 						} else {
-							// Already on UI thread or no dispatcher (tests)
-							Results.Add(display);
-							if (result == SearchResult.Found) {
-								MatchesFound++;
-							}
-							LogResult(display, result);
+							// Already on UI thread or no dispatcher (tests) - collect for later
+							collectedResults.Add((display, result));
 						}
 					}
 				});
+			
+			// Add collected results to ObservableCollection (not thread-safe)
+			foreach (var (display, result) in collectedResults) {
+				Results.Add(display);
+				LogResult(display, result);
+			}
 			
 			// Wait for all UI updates to complete
 			if (uiUpdateTasks.Count > 0) {
 				await Task.WhenAll(uiUpdateTasks);
 			}
+			
+			// Update match count on UI thread
+			MatchesFound = matchCount;
 		}
 		catch (Exception ex) {
 			var message = $"Error: {ex.Message}";

@@ -331,7 +331,7 @@ public class MainViewModelIntegrationTests
 		Assert.True(vm.Results.Count >= 6, $"Expected at least 6 result files, got {vm.Results.Count}");
 
 		// Verify we found expected files
-		var fileNames = vm.Results.Select(r => Path.GetFileName(r.FilePath)).ToList();
+		var fileNames = vm.Results.Where(r => r?.FilePath != null).Select(r => Path.GetFileName(r.FilePath)).ToList();
 		Assert.Contains(fileNames, fn => fn == "SearchFile.cs");
 		Assert.Contains(fileNames, fn => fn == "GlobSearch.cs");
 		Assert.Contains(fileNames, fn => fn == "Utils.cs");
