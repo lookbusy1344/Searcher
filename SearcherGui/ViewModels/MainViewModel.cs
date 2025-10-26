@@ -17,6 +17,7 @@ public class MainViewModel : ReactiveObject
 	private readonly GuiCliOptions _options;
 	private readonly ObservableCollection<SearchResultDisplay> _results = new();
 	private CancellationTokenSource? _cancellationTokenSource;
+	private StreamWriter? _logWriter;
 	private int _filesScanned;
 	private int _matchesFound;
 	private bool _isSearching;
@@ -27,6 +28,27 @@ public class MainViewModel : ReactiveObject
 	{
 		_options = options;
 		StopCommand = ReactiveCommand.Create(Stop, this.WhenAnyValue(x => x.IsSearching));
+		
+		if (!string.IsNullOrEmpty(options.LogResultsFile)) {
+			try {
+				_logWriter = new StreamWriter(options.LogResultsFile, false);
+				_logWriter.WriteLine($"=== GUI Search Results Log ===");
+				_logWriter.WriteLine($"Started: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+				_logWriter.WriteLine($"Folder: {options.Folder.FullName}");
+				_logWriter.WriteLine($"Pattern count: {options.Pattern.Count}");
+				for (int i = 0; i < options.Pattern.Count; i++) {
+					_logWriter.WriteLine($"  Pattern[{i}]: '{options.Pattern[i]}'");
+				}
+				_logWriter.WriteLine($"Pattern (formatted): {options.GetPatterns()}");
+				_logWriter.WriteLine($"Search: {options.Search}");
+				_logWriter.WriteLine($"Case Sensitive: {options.CaseSensitive}");
+				_logWriter.WriteLine();
+				_logWriter.Flush();
+			}
+			catch (Exception ex) {
+				Console.Error.WriteLine($"Failed to create log file: {ex.Message}");
+			}
+		}
 	}
 
 	public ObservableCollection<SearchResultDisplay> Results => _results;
@@ -94,8 +116,12 @@ public class MainViewModel : ReactiveObject
 		IsSearching = false;
 		var elapsed = DateTime.UtcNow - _startTime;
 		StatusMessage = $"Search completed in {elapsed.TotalSeconds:F2}s - Found {MatchesFound} matches in {Results.Count} files";
+		CloseLog();
 
-		if (_options.AutoCloseOnCompletion) {
+		if (_options.AutoCloseOnCompletion || !string.IsNullOrEmpty(_options.LogResultsFile)) {
+			// Close after delay when logging or auto-close enabled
+			var delayMs = !string.IsNullOrEmpty(_options.LogResultsFile) ? 10000 : 0;
+			await Task.Delay(delayMs);
 			await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
 				if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 					desktop.MainWindow?.Close();
@@ -143,6 +169,7 @@ public class MainViewModel : ReactiveObject
 								if (result == SearchResult.Found) {
 									MatchesFound++;
 								}
+								LogResult(display, result);
 							});
 						} else {
 							// No dispatcher available (e.g., during unit tests)
@@ -150,6 +177,7 @@ public class MainViewModel : ReactiveObject
 							if (result == SearchResult.Found) {
 								MatchesFound++;
 							}
+							LogResult(display, result);
 						}
 					}
 				});
@@ -166,10 +194,43 @@ public class MainViewModel : ReactiveObject
 		}
 	}
 
+	private void LogResult(SearchResultDisplay display, SearchResult result)
+	{
+		if (_logWriter == null) return;
+		
+		try {
+			_logWriter.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {(result == SearchResult.Found ? "FOUND" : "ERROR")}: {display.FilePath}");
+			_logWriter.Flush();
+		}
+		catch {
+			// Ignore logging errors
+		}
+	}
+
 	private void Stop()
 	{
 		_cancellationTokenSource?.Cancel();
 		IsSearching = false;
 		StatusMessage = "Search cancelled";
+		CloseLog();
+	}
+
+	private void CloseLog()
+	{
+		if (_logWriter == null) return;
+
+		try {
+			_logWriter.WriteLine();
+			_logWriter.WriteLine($"=== Search Completed ===");
+			_logWriter.WriteLine($"Total Results: {Results.Count}");
+			_logWriter.WriteLine($"Files Scanned: {FilesScanned}");
+			_logWriter.WriteLine($"Matches Found: {MatchesFound}");
+			_logWriter.WriteLine($"Finished: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+			_logWriter.Close();
+			_logWriter = null;
+		}
+		catch {
+			// Ignore logging errors
+		}
 	}
 }

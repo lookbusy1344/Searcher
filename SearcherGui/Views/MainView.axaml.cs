@@ -20,9 +20,9 @@ public partial class MainView : Window
 		AvaloniaXamlLoader.Load(this);
 	}
 
-	protected override void OnInitialized()
+	protected override void OnOpened(EventArgs e)
 	{
-		base.OnInitialized();
+		base.OnOpened(e);
 		if (DataContext is MainViewModel vm) {
 			_ = vm.OnInitializedAsync();
 		}
