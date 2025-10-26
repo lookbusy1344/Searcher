@@ -16,6 +16,8 @@ public class MainViewModel : ReactiveObject, IDisposable
 {
 	private readonly GuiCliOptions _options;
 	private readonly ObservableCollection<SearchResultDisplay> _results = new();
+	// CA2213: Not disposed in Dispose() to avoid race condition - OnInitializedAsync handles disposal
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Disposed by OnInitializedAsync to avoid race condition")]
 	private CancellationTokenSource? _cancellationTokenSource;
 	private StreamWriter? _logWriter;
 	private int _filesScanned;
@@ -259,8 +261,9 @@ public class MainViewModel : ReactiveObject, IDisposable
 
 	public void Dispose()
 	{
+		// Only cancel the CTS, don't dispose it - let OnInitializedAsync handle disposal
+		// to avoid race condition if Dispose() is called while search is running
 		_cancellationTokenSource?.Cancel();
-		_cancellationTokenSource?.Dispose();
 		_logWriter?.Dispose();
 		GC.SuppressFinalize(this);
 	}
