@@ -153,8 +153,9 @@ SearcherGui/
 - **Avalonia.Controls.DataGrid 11.3.8**: Data grid controls
 - **Avalonia.Themes.Fluent 11.3.8**: Fluent design theme
 - **Avalonia.ReactiveUI 11.3.8**: ReactiveUI integration
-- **CommandLineParser 2.9.1**: Command-line argument parsing
-- **SearcherCore**: Internal reference for search functionality
+- **SearcherCore**: Internal reference for search functionality (includes PicoArgs)
+
+**Note:** CommandLineParser has been removed. SearcherGui now uses PicoArgs from SearcherCore for command-line parsing, matching SearcherCli's approach.
 
 ## Code Style & Quality
 
