@@ -1,6 +1,5 @@
 namespace SearcherCli;
 
-using PicoArgs_dotnet;
 using SearcherCore;
 
 public static class Program
