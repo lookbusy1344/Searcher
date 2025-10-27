@@ -1,4 +1,4 @@
-namespace PicoArgs_dotnet;
+namespace SearcherCore;
 
 /*  PICOARGS_DOTNET - a tiny command line argument parser for .NET
 	https://github.com/lookbusy1344/PicoArgs-dotnet
