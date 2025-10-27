@@ -17,7 +17,7 @@ public class GuiSmartQuotesTests
 	public async Task AsciiQuotes_FindResults()
 	{
 		var searcherCorePath = FindSearcherCorePath(Directory.GetCurrentDirectory());
-		var vm = new MainViewModel(new GuiCliOptions {
+		using var vm = new MainViewModel(new GuiCliOptions {
 			Folder = new DirectoryInfo(searcherCorePath),
 			Pattern = options,
 			Search = "class"
@@ -33,7 +33,7 @@ public class GuiSmartQuotesTests
 	public async Task SmartQuote_YieldsNoMatches()
 	{
 		var searcherCorePath = FindSearcherCorePath(Directory.GetCurrentDirectory());
-		var vm = new MainViewModel(new GuiCliOptions {
+		using var vm = new MainViewModel(new GuiCliOptions {
 			Folder = new DirectoryInfo(searcherCorePath),
 			Pattern = options,
 			Search = "class\u201D" // trailing right double smart quote

@@ -74,7 +74,7 @@ public class GuiSystematicTests
 			Pattern = new[] { "*.cs" }
 		};
 
-		var vm = new MainViewModel(guiOptions);
+		using var vm = new MainViewModel(guiOptions);
 		await vm.OnInitializedAsync();
 
 		_output.WriteLine($"GUI: IsSearching = {vm.IsSearching}");
@@ -121,7 +121,7 @@ public class GuiSystematicTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			_output.WriteLine($"Empty search: FilesScanned = {vm.FilesScanned}, Results = {vm.Results.Count}");
@@ -153,7 +153,7 @@ public class GuiSystematicTests
 				Pattern = new[] { "*.cs" } // Only C# files
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			_output.WriteLine($"Pattern *.cs: FilesScanned = {vm.FilesScanned}, Results = {vm.Results.Count}");
@@ -187,7 +187,7 @@ public class GuiSystematicTests
 				CaseSensitive = false
 			};
 
-			var vmInsensitive = new MainViewModel(insensitiveOptions);
+			using var vmInsensitive = new MainViewModel(insensitiveOptions);
 			await vmInsensitive.OnInitializedAsync();
 
 			_output.WriteLine($"Case insensitive: Results = {vmInsensitive.Results.Count}");
@@ -201,7 +201,7 @@ public class GuiSystematicTests
 				CaseSensitive = true
 			};
 
-			var vmSensitive = new MainViewModel(sensitiveOptions);
+			using var vmSensitive = new MainViewModel(sensitiveOptions);
 			await vmSensitive.OnInitializedAsync();
 
 			_output.WriteLine($"Case sensitive: Results = {vmSensitive.Results.Count}");
@@ -229,7 +229,7 @@ public class GuiSystematicTests
 				Pattern = new[] { "*.cs", "*.txt", "*.md" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			_output.WriteLine($"Multiple patterns: FilesScanned = {vm.FilesScanned}, Results = {vm.Results.Count}");
@@ -266,7 +266,7 @@ public class GuiSystematicTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			_output.WriteLine($"Recursive search: FilesScanned = {vm.FilesScanned}, Results = {vm.Results.Count}");
@@ -298,7 +298,7 @@ public class GuiSystematicTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			Assert.Equal(2, vm.Results.Count);

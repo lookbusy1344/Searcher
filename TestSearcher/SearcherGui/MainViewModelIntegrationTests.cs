@@ -31,7 +31,7 @@ public class MainViewModelIntegrationTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			Assert.False(vm.IsSearching);
@@ -63,7 +63,7 @@ public class MainViewModelIntegrationTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			Assert.False(vm.IsSearching);
@@ -95,7 +95,7 @@ public class MainViewModelIntegrationTests
 				CaseSensitive = true
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			Assert.False(vm.IsSearching);
@@ -128,7 +128,7 @@ public class MainViewModelIntegrationTests
 				Pattern = new[] { "*.txt", "*.md", "*.log" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			Assert.Equal(3, vm.Results.Count); // Only txt, md, log files match
@@ -160,7 +160,7 @@ public class MainViewModelIntegrationTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			Assert.Equal(2, vm.Results.Count);
@@ -195,7 +195,7 @@ public class MainViewModelIntegrationTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 
 			// Start search and capture state changes
 			var searchTask = vm.OnInitializedAsync();
@@ -242,7 +242,7 @@ public class MainViewModelIntegrationTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 
 			// Track if any exceptions occur during property updates
 			int propertyChangedCount = 0;
@@ -285,7 +285,7 @@ public class MainViewModelIntegrationTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			Assert.Equal(10, vm.Results.Count);
@@ -319,7 +319,7 @@ public class MainViewModelIntegrationTests
 			Pattern = new[] { "*.cs" }
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 		await vm.OnInitializedAsync();
 
 		Assert.False(vm.IsSearching);
@@ -358,7 +358,7 @@ public class MainViewModelIntegrationTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 			await vm.OnInitializedAsync();
 
 			Assert.NotEmpty(vm.Results);
@@ -402,7 +402,7 @@ public class MainViewModelIntegrationTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 
 			// Track result additions
 			var resultAddedCount = 0;

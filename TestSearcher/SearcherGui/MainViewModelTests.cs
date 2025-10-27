@@ -20,7 +20,7 @@ public class MainViewModelTests
 			Pattern = new[] { "*.cs" }
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 
 		Assert.NotNull(vm);
 		Assert.NotNull(vm.StopCommand);
@@ -35,7 +35,7 @@ public class MainViewModelTests
 			Search = "test"
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 
 		Assert.Empty(vm.Results);
 	}
@@ -49,7 +49,7 @@ public class MainViewModelTests
 			Search = "test"
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 
 		Assert.Equal(0, vm.FilesScanned);
 	}
@@ -63,7 +63,7 @@ public class MainViewModelTests
 			Search = "test"
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 
 		Assert.Equal(0, vm.MatchesFound);
 	}
@@ -77,7 +77,7 @@ public class MainViewModelTests
 			Search = "test"
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 
 		Assert.False(vm.IsSearching);
 	}
@@ -91,7 +91,7 @@ public class MainViewModelTests
 			Search = "test"
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 
 		Assert.Equal("Ready", vm.StatusMessage);
 	}
@@ -105,7 +105,7 @@ public class MainViewModelTests
 			Search = "test"
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 		await vm.OnInitializedAsync();
 
 		Assert.Contains("Error", vm.StatusMessage);
@@ -131,7 +131,7 @@ public class MainViewModelTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 
 			// Track state changes
 			var searchingStates = new List<bool>();
@@ -172,7 +172,7 @@ public class MainViewModelTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 
 			// Start the search in background
 			var searchTask = vm.OnInitializedAsync();
@@ -204,7 +204,7 @@ public class MainViewModelTests
 			Search = "test"
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 
 		Assert.Equal(testPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
 					 vm.SearchPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
@@ -219,7 +219,7 @@ public class MainViewModelTests
 			Search = "test"
 		};
 
-		var vm = new MainViewModel(options);
+		using var vm = new MainViewModel(options);
 
 		// SearchPattern property should return the patterns from options
 		var pattern = vm.SearchPattern;
@@ -243,7 +243,7 @@ public class MainViewModelTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 
 			// Start first search
 			var task1 = vm.OnInitializedAsync();
@@ -283,7 +283,7 @@ public class MainViewModelTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 
 			// First search
 			await vm.OnInitializedAsync();
@@ -395,7 +395,7 @@ public class MainViewModelTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 
 			// Start search in background
 			var searchTask = Task.Run(async () => await vm.OnInitializedAsync());
@@ -435,7 +435,7 @@ public class MainViewModelTests
 				Pattern = new[] { "*.txt" }
 			};
 
-			var vm = new MainViewModel(options);
+			using var vm = new MainViewModel(options);
 
 			// Complete a search
 			await vm.OnInitializedAsync();

@@ -18,9 +18,9 @@ public class SearcherCorePdfTests
 	private static byte[] CreateTestPdfWithContent(string content)
 	{
 		using var ms = new MemoryStream();
-		var writer = new PdfWriter(ms);
-		var pdf = new PdfDocument(writer);
-		var document = new Document(pdf);
+		using var writer = new PdfWriter(ms);
+		using var pdf = new PdfDocument(writer);
+		using var document = new Document(pdf);
 		document.Add(new Paragraph(content));
 		document.Close();
 		return ms.ToArray();
@@ -100,9 +100,9 @@ public class SearcherCorePdfTests
 
 		try {
 			using (var ms = new MemoryStream()) {
-				var writer = new PdfWriter(ms);
-				var pdf = new PdfDocument(writer);
-				var document = new Document(pdf);
+				using var writer = new PdfWriter(ms);
+				using var pdf = new PdfDocument(writer);
+				using var document = new Document(pdf);
 
 				document.Add(new Paragraph("Page 1 content"));
 				document.Add(new AreaBreak());
@@ -198,7 +198,7 @@ public class SearcherCorePdfTests
 			var pdfContent = CreateTestPdfWithContent("Content to search");
 			File.WriteAllBytes(tempFile, pdfContent);
 
-			var cts = new CancellationTokenSource();
+			using var cts = new CancellationTokenSource();
 			cts.Cancel();
 
 			var result = SearchFile.FileContainsStringWrapper(
