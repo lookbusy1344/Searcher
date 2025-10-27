@@ -28,7 +28,6 @@ public static class Program
 				if (validatedFolder == null) {
 					Console.Error.WriteLine($"Invalid or inaccessible folder path: {folderPath}");
 					Environment.Exit(1);
-					return;
 				}
 				opts.Folder = new System.IO.DirectoryInfo(validatedFolder);
 

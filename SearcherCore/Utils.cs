@@ -84,7 +84,6 @@ public static class Utils
 			StartAcrobat(path);
 		} else {
 			// Open file using default program
-			//_ = Process.Start(path);
 			_ = Process.Start(opener, path);
 		}
 	}
