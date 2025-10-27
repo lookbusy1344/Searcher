@@ -7,7 +7,7 @@ Recursively search for files containing text. Built with C#, .NET 9 and Avalonia
 ## Available Versions
 
 - **SearcherGui** (`SearcherGui/` directory): Cross-platform Avalonia GUI application
-- **SearcherCli** (`SearcherCli/` directory): Command-line version that works on Windows, Mac, and Linux
+- **SearcherCli** (`SearcherCli/` directory): Command-line version that works on Windows, Mac, and Linux (has its own SearcherCli.sln)
 
 ## Parameters
 
@@ -102,8 +102,12 @@ dotnet publish SearcherGui/SearcherGui.csproj -c Release -r win-x64 --self-conta
 
 ## Testing
 
-xUnit is used for testing. They can be run from Test Explorer in Visual Studio, or by running:
+xUnit is used for testing with 109 tests covering core functionality, GUI components, and CLI options. Tests can be run from Test Explorer in Visual Studio, or by running:
 
-```
-RunTests.cmd
+```bash
+# Run all tests (from repository root)
+dotnet test TestSearcher/
+
+# Run with detailed output
+dotnet test TestSearcher/ --verbosity normal
 ```

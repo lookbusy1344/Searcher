@@ -9,7 +9,7 @@ Searcher is a fully cross-platform (Windows, macOS, Linux) search application fo
 **Project Structure:**
 - **SearcherGui/**: Cross-platform Avalonia GUI application (primary focus) - runs on Windows, macOS, and Linux
 - **SearcherCore/**: Shared .NET library containing core search functionality
-- **SearcherCli/**: Cross-platform console version of the application
+- **SearcherCli/**: Cross-platform console version of the application (has its own SearcherCli.sln separate from main Searcher.sln)
 - **TestSearcher/**: Cross-platform xUnit test project (tests SearcherGui and SearcherCore, runs on Windows/macOS/Linux)
 
 ## Build Commands
@@ -162,21 +162,15 @@ The project uses comprehensive static analysis:
 ### Test Organization
 
 Tests are organized by category in `/TestSearcher/`:
-- **SearcherCoreTests.cs**: Core library unit tests (configuration, utilities, security, 34 tests)
-- **SearcherCorePdfTests.cs**: PDF file format integration tests (6 tests)
-- **SearcherCoreDocxTests.cs**: DOCX file format integration tests (5 tests)
-- **SearcherCoreZipTests.cs**: ZIP archive integration tests (7 tests)
-- **SearcherGui/MainViewModelTests.cs**: GUI ViewModel unit tests (13 tests)
-- **SearcherGui/MainViewModelIntegrationTests.cs**: GUI full workflow integration tests (8 tests)
-- **SearcherGui/SearchResultDisplayTests.cs**: Result data model tests (6 tests)
-- **SearcherGui/ResultInteractionServiceTests.cs**: Platform-specific service tests (6 tests)
-- **SearcherCliTests.cs**: CLI argument parsing and options tests (5 tests)
+- **Core Tests**: Library unit tests covering configuration, utilities, security, file format support (PDF, DOCX, ZIP)
+- **GUI Tests**: ViewModel unit tests, integration tests, systematic tests, and UI component tests
+- **CLI Tests**: Command-line argument parsing and options validation tests
 
 ### Test Summary
 
-- **Total Tests**: 92 tests across all categories
-- **Passing**: 80 tests
-- **Test Duration**: ~215 ms
+- **Total Tests**: 109 tests across all categories
+- **Passing**: 109 tests (all passing)
+- **Test Duration**: ~237 ms
 - **Coverage**: Unit tests, integration tests, and platform-specific tests
 
 ### Running Tests
@@ -232,8 +226,3 @@ dotnet build && dotnet test TestSearcher/
 - Configuration validation
 - Pattern and folder handling
 
-### Known Issues and Limitations
-
-- **PDF tests**: Some PDF creation tests may fail if itext7 BouncyCastle dependencies are incomplete
-- **GUI integration tests**: Some file scanning count assertions are relaxed due to parallel execution timing variations
-- **Test warnings**: Style warnings for unused braces and static method markers - these are non-critical code quality suggestions

@@ -167,16 +167,16 @@ SearcherGui/
 
 ## Running Tests
 
-Tests for SearcherGui are located in `TestSearcher/` at the repository root:
+Tests for SearcherGui are located in `TestSearcher/` at the repository root. The main Searcher.sln includes SearcherGui, SearcherCore, and TestSearcher.
 
 ```bash
-# Run all tests (SearcherGui + SearcherCli)
+# Run all tests from repository root (109 tests total)
 dotnet test TestSearcher/
 
 # Run with verbose output
 dotnet test TestSearcher/ --verbosity normal
 
-# Filter tests by class
+# Filter tests by category
 dotnet test TestSearcher/ --filter "FullyQualifiedName~SearcherGui"
 ```
 

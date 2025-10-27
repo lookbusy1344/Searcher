@@ -103,8 +103,8 @@ SearcherCli -f . -p "*.txt" -s "hello"
 ## Dependencies
 
 - .NET 9.0 Runtime
-- iText7 (for PDF processing)
-- DotNet.Glob (for pattern matching)
+- SearcherCore (project reference - provides all core search functionality)
+  - Inherits: iText7 (PDF processing), DotNet.Glob (pattern matching)
 
 ## Building
 
@@ -123,6 +123,12 @@ Note using AOT compilation is not supported due to dependencies in third-party l
 
 ## Testing
 
+SearcherCli has its own solution file (SearcherCli.sln) that includes TestSearcher for testing.
+
 ```bash
+# From SearcherCli directory
 dotnet test
+
+# Or from repository root
+dotnet test TestSearcher/
 ```
