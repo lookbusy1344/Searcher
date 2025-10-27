@@ -386,7 +386,7 @@ public class MainViewModelTests
 
 			// Create many files to ensure search takes some time
 			for (int i = 0; i < 100; i++) {
-				File.WriteAllText(Path.Combine(tempDir, $"file{i}.txt"), "test content here");
+				await File.WriteAllTextAsync(Path.Combine(tempDir, $"file{i}.txt"), "test content here", CancellationToken.None);
 			}
 
 			var options = new GuiCliOptions {
@@ -427,7 +427,7 @@ public class MainViewModelTests
 
 		try {
 			Directory.CreateDirectory(tempDir);
-			File.WriteAllText(Path.Combine(tempDir, "test.txt"), "search term");
+			await File.WriteAllTextAsync(Path.Combine(tempDir, "test.txt"), "search term", CancellationToken.None);
 
 			var options = new GuiCliOptions {
 				Folder = new DirectoryInfo(tempDir),
