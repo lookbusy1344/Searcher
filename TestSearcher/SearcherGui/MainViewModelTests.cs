@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -303,6 +304,154 @@ public class MainViewModelTests
 		}
 		finally {
 			// Cleanup
+			if (Directory.Exists(tempDir)) {
+				Directory.Delete(tempDir, true);
+			}
+		}
+	}
+
+	[Fact(DisplayName = "GUI: Dispose can be called without errors")]
+	[Trait("Category", "GUI")]
+	public void Dispose_CanBeCalledWithoutErrors()
+	{
+		var options = new GuiCliOptions {
+			Folder = new DirectoryInfo("."),
+			Search = "test"
+		};
+
+		var vm = new MainViewModel(options);
+
+		// Should not throw
+		vm.Dispose();
+	}
+
+	[Fact(DisplayName = "GUI: Dispose can be called multiple times (idempotent)")]
+	[Trait("Category", "GUI")]
+	public void Dispose_IsIdempotent()
+	{
+		var options = new GuiCliOptions {
+			Folder = new DirectoryInfo("."),
+			Search = "test"
+		};
+
+		var vm = new MainViewModel(options);
+
+		// Should not throw on multiple calls
+		vm.Dispose();
+		vm.Dispose();
+		vm.Dispose();
+	}
+
+	[Fact(DisplayName = "GUI: Dispose disposes log writer when present")]
+	[Trait("Category", "GUI")]
+	public void Dispose_DisposesLogWriter()
+	{
+		var logPath = Path.Combine(Path.GetTempPath(), $"test_dispose_log_{Guid.NewGuid()}.txt");
+
+		try {
+			var options = new GuiCliOptions {
+				Folder = new DirectoryInfo("."),
+				Search = "test",
+				LogResultsFile = logPath
+			};
+
+			var vm = new MainViewModel(options);
+
+			// Log file should be created
+			Assert.True(File.Exists(logPath));
+
+			// Dispose should close the log writer
+			vm.Dispose();
+
+			// After dispose, we should be able to delete the file
+			// (which wouldn't be possible if the writer was still open)
+			File.Delete(logPath);
+			Assert.False(File.Exists(logPath));
+		}
+		finally {
+			if (File.Exists(logPath)) {
+				File.Delete(logPath);
+			}
+		}
+	}
+
+	[Fact(DisplayName = "GUI: Dispose during search cancels operation")]
+	[Trait("Category", "GUI-Integration")]
+	public async Task Dispose_DuringSearch_CancelsOperation()
+	{
+		var tempDir = Path.Combine(Path.GetTempPath(), $"searcher_test_{Guid.NewGuid()}");
+
+		try {
+			Directory.CreateDirectory(tempDir);
+
+			// Create many files to ensure search takes some time
+			for (int i = 0; i < 100; i++) {
+				File.WriteAllText(Path.Combine(tempDir, $"file{i}.txt"), "test content here");
+			}
+
+			var options = new GuiCliOptions {
+				Folder = new DirectoryInfo(tempDir),
+				Search = "content",
+				Pattern = new[] { "*.txt" }
+			};
+
+			var vm = new MainViewModel(options);
+
+			// Start search in background
+			var searchTask = Task.Run(async () => await vm.OnInitializedAsync());
+
+			// Give it a moment to start
+			await Task.Delay(50);
+
+			// Dispose should cancel the search
+			vm.Dispose();
+
+			// Wait for search to complete (should be cancelled)
+			await searchTask;
+
+			// Verify search was stopped (status should indicate completion/cancellation)
+			Assert.False(vm.IsSearching);
+		}
+		finally {
+			if (Directory.Exists(tempDir)) {
+				Directory.Delete(tempDir, true);
+			}
+		}
+	}
+
+	[Fact(DisplayName = "GUI: Dispose after completed search works correctly")]
+	[Trait("Category", "GUI-Integration")]
+	public async Task Dispose_AfterCompletedSearch_WorksCorrectly()
+	{
+		var tempDir = Path.Combine(Path.GetTempPath(), $"searcher_test_{Guid.NewGuid()}");
+
+		try {
+			Directory.CreateDirectory(tempDir);
+			File.WriteAllText(Path.Combine(tempDir, "test.txt"), "search term");
+
+			var options = new GuiCliOptions {
+				Folder = new DirectoryInfo(tempDir),
+				Search = "search",
+				Pattern = new[] { "*.txt" }
+			};
+
+			var vm = new MainViewModel(options);
+
+			// Complete a search
+			await vm.OnInitializedAsync();
+
+			// Wait for completion
+			while (vm.IsSearching) {
+				await Task.Delay(10);
+			}
+
+			// Dispose after search completes
+			vm.Dispose();
+
+			// Should complete without errors
+			Assert.False(vm.IsSearching);
+		}
+		finally {
 			if (Directory.Exists(tempDir)) {
 				Directory.Delete(tempDir, true);
 			}
