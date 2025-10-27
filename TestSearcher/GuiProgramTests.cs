@@ -72,4 +72,79 @@ public class GuiProgramTests
 
 		Assert.IsAssignableFrom<CliOptions>(opts);
 	}
+
+	[Fact]
+	[Trait("Category", "GUI-Integration")]
+	public void Program_WithValidArgs_ParsesCorrectly()
+	{
+		// Test that Program.Options gets populated correctly
+		// This requires launching the actual program, which is complex for GUI apps
+		// Instead, we'll test PicoArgs parsing directly
+
+		var args = new[] { "-s", "test", "-f", ".", "-p", "*.txt", "--width", "800" };
+		var pico = new PicoArgs(args);
+
+		var search = pico.GetParamOpt("-s", "--search");
+		var folder = pico.GetParamOpt("-f", "--folder");
+		var patterns = pico.GetMultipleParams("-p", "--pattern");
+		var width = pico.GetParamOpt("--width");
+
+		Assert.Equal("test", search);
+		Assert.Equal(".", folder);
+		Assert.Single(patterns);
+		Assert.Equal("*.txt", patterns[0]);
+		Assert.Equal("800", width);
+
+		pico.Finished(); // Should not throw
+	}
+
+	[Fact]
+	[Trait("Category", "GUI-Integration")]
+	public void Program_WithUnknownArg_ThrowsPicoArgsException()
+	{
+		var args = new[] { "--unknown-arg", "value" };
+		var pico = new PicoArgs(args);
+
+		var ex = Assert.Throws<PicoArgsException>(() => pico.Finished());
+		Assert.Contains("Unrecognised parameter", ex.Message);
+	}
+
+	[Fact]
+	[Trait("Category", "GUI-Integration")]
+	public void Program_WithMultiplePatterns_ParsesAll()
+	{
+		var args = new[] { "-p", "*.txt", "-p", "*.md", "-p", "*.doc" };
+		var pico = new PicoArgs(args);
+
+		var patterns = pico.GetMultipleParams("-p", "--pattern");
+
+		Assert.Equal(3, patterns.Count);
+		Assert.Equal("*.txt", patterns[0]);
+		Assert.Equal("*.md", patterns[1]);
+		Assert.Equal("*.doc", patterns[2]);
+
+		pico.Finished();
+	}
+
+	[Fact]
+	[Trait("Category", "GUI-Integration")]
+	public void Program_WithBoolFlags_ParsesCorrectly()
+	{
+		var args = new[] { "-z", "-c", "-o", "--hide-errors", "--auto-close" };
+		var pico = new PicoArgs(args);
+
+		var insideZips = pico.Contains("-z", "--inside-zips");
+		var caseSensitive = pico.Contains("-c", "--case-sensitive");
+		var oneThread = pico.Contains("-o", "--one-thread");
+		var hideErrors = pico.Contains("--hide-errors");
+		var autoClose = pico.Contains("--auto-close");
+
+		Assert.True(insideZips);
+		Assert.True(caseSensitive);
+		Assert.True(oneThread);
+		Assert.True(hideErrors);
+		Assert.True(autoClose);
+
+		pico.Finished();
+	}
 }
