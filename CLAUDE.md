@@ -134,7 +134,9 @@ dotnet run --project SearcherCli/SearcherCli.csproj -- [options]
 **Note:** Previously used CommandLineParser, now uses PicoArgs from SearcherCore for consistency with SearcherCli.
 
 ### SearcherCli Dependencies
-- **CommandLineParser**: Command line argument parsing
+- **SearcherCore**: Shared library (includes PicoArgs parser)
+
+**Note:** Previously used CommandLineParser, now uses PicoArgs from SearcherCore.
 
 ### SearcherCore Dependencies
 - **DotNet.Glob**: File pattern matching and globbing
