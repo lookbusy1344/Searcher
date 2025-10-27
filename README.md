@@ -7,7 +7,9 @@ Recursively search for files containing text. Built with C#, .NET 9 and Avalonia
 ## Available Versions
 
 - **SearcherGui** (`SearcherGui/` directory): Cross-platform Avalonia GUI application
-- **SearcherCli** (`SearcherCli/` directory): Command-line version that works on Windows, Mac, and Linux (has its own SearcherCli.sln)
+- **SearcherCli** (`SearcherCli/` directory): Command-line version that works on Windows, Mac, and Linux
+
+Both versions are included in the main Searcher.sln solution file.
 
 ## Parameters
 

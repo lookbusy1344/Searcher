@@ -9,8 +9,10 @@ Searcher is a fully cross-platform (Windows, macOS, Linux) search application fo
 **Project Structure:**
 - **SearcherGui/**: Cross-platform Avalonia GUI application (primary focus) - runs on Windows, macOS, and Linux
 - **SearcherCore/**: Shared .NET library containing core search functionality
-- **SearcherCli/**: Cross-platform console version of the application (has its own SearcherCli.sln separate from main Searcher.sln)
-- **TestSearcher/**: Cross-platform xUnit test project (tests SearcherGui and SearcherCore, runs on Windows/macOS/Linux)
+- **SearcherCli/**: Cross-platform console version of the application
+- **TestSearcher/**: Cross-platform xUnit test project (tests all projects, runs on Windows/macOS/Linux)
+
+All projects are in the main Searcher.sln solution file.
 
 ## Build Commands
 

@@ -7,12 +7,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Searcher is a cross-platform application that recursively searches for text inside files, including archives (ZIP), PDFs, and DOCX files. It uses .NET 9.0 and supports parallel processing for performance.
 
 **Project Structure:**
-- **SearcherCli/**: Console version of the application (this project) - has its own SearcherCli.sln
+- **SearcherCli/**: Console version of the application (this project)
 - **SearcherCore/**: Shared .NET library containing core search functionality
-- **TestSearcher/**: xUnit test project (included in SearcherCli.sln for testing)
-- **SearcherGui/**: Cross-platform Avalonia GUI application (in main Searcher.sln)
+- **SearcherGui/**: Cross-platform Avalonia GUI application
+- **TestSearcher/**: xUnit test project (tests all projects)
 
-**Note**: SearcherCli has its own solution file (SearcherCli.sln) separate from the main Searcher.sln, which contains SearcherGui, SearcherCore, and TestSearcher.
+All projects are included in the main Searcher.sln solution file.
 
 ## Build Commands
 
@@ -35,17 +35,15 @@ dotnet run --project SearcherCli -- --help
 
 ## Test Commands
 
-**Note**: SearcherCli.sln includes SearcherCore and TestSearcher for comprehensive testing.
-
 ```bash
-# Run tests from SearcherCli directory (uses SearcherCli.sln)
-dotnet test
-
 # Run tests from repository root
 dotnet test TestSearcher/
 
+# Run all tests via solution file
+dotnet test Searcher.sln
+
 # Run tests with detailed output
-dotnet test --verbosity normal
+dotnet test TestSearcher/ --verbosity normal
 
 # Build and run tests
 dotnet build && dotnet test

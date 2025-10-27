@@ -123,12 +123,12 @@ Note using AOT compilation is not supported due to dependencies in third-party l
 
 ## Testing
 
-SearcherCli has its own solution file (SearcherCli.sln) that includes TestSearcher for testing.
+SearcherCli is included in the main Searcher.sln along with all other projects.
 
 ```bash
-# From SearcherCli directory
-dotnet test
-
-# Or from repository root
+# Run tests from repository root
 dotnet test TestSearcher/
+
+# Or test entire solution
+dotnet test Searcher.sln
 ```
