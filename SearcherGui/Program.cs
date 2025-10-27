@@ -1,6 +1,6 @@
 using System;
 using Avalonia;
-using CommandLine;
+using SearcherCore;
 
 namespace SearcherGui;
 
