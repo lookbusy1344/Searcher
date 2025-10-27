@@ -99,6 +99,56 @@ public static class Program
 		};
 	}
 
+	/// <summary>
+	/// Show error message to user (console fallback since Avalonia not initialized)
+	/// </summary>
+	private static void ShowErrorDialog(string message)
+	{
+		Console.Error.WriteLine(message);
+		Console.Error.WriteLine();
+		Console.Error.WriteLine("Press any key to exit...");
+		try {
+			Console.ReadKey();
+		}
+		catch {
+			// ReadKey might fail in non-interactive environments
+		}
+	}
+
+	/// <summary>
+	/// Display command-line help
+	/// </summary>
+	private static void ShowHelp()
+	{
+		Console.WriteLine("SearcherGui - Cross-platform text search application");
+		Console.WriteLine();
+		Console.WriteLine("Usage: SearcherGui [options]");
+		Console.WriteLine();
+		Console.WriteLine("Core Options:");
+		Console.WriteLine("  -s, --search <text>        Text to search for (optional, can enter in GUI)");
+		Console.WriteLine("  -f, --folder <path>        Folder to search (default: current directory)");
+		Console.WriteLine("  -p, --pattern <pattern>    File patterns (can repeat: -p *.txt -p *.doc)");
+		Console.WriteLine("  -z, --inside-zips          Search inside ZIP archives");
+		Console.WriteLine("  -c, --case-sensitive       Case-sensitive search");
+		Console.WriteLine("  -o, --one-thread           Single-threaded mode");
+		Console.WriteLine("  --hide-errors              Hide error messages");
+		Console.WriteLine("  -r, --raw                  Raw output mode");
+		Console.WriteLine();
+		Console.WriteLine("GUI Options:");
+		Console.WriteLine("  --width <pixels>           Initial window width (default: 1000)");
+		Console.WriteLine("  --height <pixels>          Initial window height (default: 600)");
+		Console.WriteLine("  --auto-close               Close window after search completes");
+		Console.WriteLine("  --log-results <file>       Log results to file");
+		Console.WriteLine();
+		Console.WriteLine("Help:");
+		Console.WriteLine("  -h, -?, --help             Show this help message");
+		Console.WriteLine();
+		Console.WriteLine("Examples:");
+		Console.WriteLine("  SearcherGui");
+		Console.WriteLine("  SearcherGui -f /documents -s \"hello world\"");
+		Console.WriteLine("  SearcherGui -f . -p *.txt -p *.md -c -s Error");
+	}
+
 	// Avalonia configuration, don't remove; also used by visual designer.
 	public static AppBuilder BuildAvaloniaApp()
 		=> AppBuilder.Configure<App>()
