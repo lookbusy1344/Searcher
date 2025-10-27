@@ -22,6 +22,15 @@ public static class Program
 
 		result
 			.WithParsed(opts => {
+				// Validate the folder path if provided
+				var folderPath = opts.Folder?.FullName ?? ".";
+				var validatedFolder = SearcherCore.Utils.ValidateSearchPath(folderPath);
+				if (validatedFolder == null) {
+					Console.Error.WriteLine($"Invalid or inaccessible folder path: {folderPath}");
+					Environment.Exit(1);
+				}
+				opts.Folder = new System.IO.DirectoryInfo(validatedFolder);
+
 				Options = opts;
 				BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 			})

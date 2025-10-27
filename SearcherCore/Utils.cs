@@ -84,7 +84,6 @@ public static class Utils
 			StartAcrobat(path);
 		} else {
 			// Open file using default program
-			//_ = Process.Start(path);
 			_ = Process.Start(opener, path);
 		}
 	}
@@ -169,31 +168,6 @@ public static class Utils
 		return results;
 	}
 
-	/// <summary>
-	/// take the provided patterns, and add *.zip if needed. This is used for searching for files outside zips
-	/// </summary>
-	public static IReadOnlyList<string> ProcessOuterPatternsOld(IList<string> p, bool includezips)
-	{
-		ArgumentNullException.ThrowIfNull(p);
-		// *.doc, *.txt => *.doc, *.txt, *.zip
-
-		var haszip = false;
-		// duplicate the list of patterns
-		var copyPatterns = new List<string>(p.Count + 1);
-		foreach (var pattern in p) {
-			copyPatterns.Add(pattern);
-			if (string.Equals(pattern, "*.zip", CliOptions.FilenameComparison)) {
-				haszip = true;
-			}
-		}
-
-		// if we need to, add the zip pattern
-		if (includezips && !haszip) {
-			copyPatterns.Add("*.zip");
-		}
-
-		return copyPatterns;
-	}
 
 	/// <summary>
 	/// This is used for searching for files inside zips, and returns globs

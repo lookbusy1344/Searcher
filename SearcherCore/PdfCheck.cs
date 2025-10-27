@@ -42,7 +42,11 @@ public sealed partial class PdfCheck
 		catch (OperationCanceledException) {
 			return SearchResult.NotFound;
 		}
-		catch {
+		catch (Exception ex) {
+			// Log exception for debugging - exceptions from iText7 PDF library
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine($"Error reading PDF file {path}: {ex.GetType().Name} - {ex.Message}");
+#endif
 			return SearchResult.Error;
 		}
 	}

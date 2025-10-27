@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Searcher is a fully cross-platform (Windows, macOS, Linux) search application for recursively searching text inside files, including archives (ZIP), PDFs, and DOCX files. It targets .NET 9.0 and uses parallel processing for performance optimization. The project uses only cross-platform technologies and has no platform-specific implementations.
+Searcher is a fully cross-platform (Windows, macOS, Linux) search application for recursively searching text inside files, including archives (ZIP), PDFs, and DOCX files. It targets .NET 9.0 and uses parallel processing for performance optimization. The project uses primarily cross-platform technologies, with some Windows-specific utilities in SearcherCore/Utils.cs (file opening, registry access) that gracefully degrade on other platforms.
 
 **Project Structure:**
 - **SearcherGui/**: Cross-platform Avalonia GUI application (primary focus) - runs on Windows, macOS, and Linux
