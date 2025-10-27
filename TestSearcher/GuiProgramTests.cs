@@ -1,7 +1,6 @@
 extern alias SearcherCoreLib;
-
-using SearcherGui;
 using SearcherCoreLib::SearcherCore;
+using SearcherGui;
 using Xunit;
 
 namespace TestSearcher;

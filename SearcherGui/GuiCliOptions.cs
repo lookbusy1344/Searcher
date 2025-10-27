@@ -34,7 +34,7 @@ public class GuiCliOptions : CliOptions
 	/// <summary>
 	/// Close window after search completes
 	/// </summary>
-	public bool AutoCloseOnCompletion { get; set; } = false;
+	public bool AutoCloseOnCompletion { get; set; }
 
 	/// <summary>
 	/// Log results to specified file for diagnostics
