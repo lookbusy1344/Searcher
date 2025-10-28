@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Avalonia;
+using PicoArgs_dotnet;
 using SearcherCore;
 
 namespace SearcherGui;
@@ -70,6 +71,7 @@ public static class Program
 		if (!int.TryParse(widthStr, out var width) || width <= 0) {
 			throw new ArgumentException($"Invalid width value: {widthStr}");
 		}
+
 		if (!int.TryParse(heightStr, out var height) || height <= 0) {
 			throw new ArgumentException($"Invalid height value: {heightStr}");
 		}
@@ -83,9 +85,9 @@ public static class Program
 		// Check for unexpected arguments
 		pico.Finished();
 
-		return new GuiCliOptions {
+		return new() {
 			Search = search,
-			Folder = new DirectoryInfo(validatedFolder),
+			Folder = new(validatedFolder),
 			Pattern = patterns.AsReadOnly(),
 			InsideZips = insideZips,
 			OneThread = oneThread,

@@ -1,4 +1,5 @@
 extern alias SearcherCoreLib;
+using SearcherCoreLib::PicoArgs_dotnet;
 using SearcherCoreLib::SearcherCore;
 using SearcherGui;
 using Xunit;

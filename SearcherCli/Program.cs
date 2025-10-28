@@ -44,7 +44,7 @@ public static class Program
 	/// </summary>
 	private static CliOptions ParseCommandLine(string[] args)
 	{
-		using var pico = new PicoArgsDisposable(args);
+		using var pico = new PicoArgs_dotnet.PicoArgsDisposable(args);
 
 		var help = pico.Contains("-h", "-?", "--help");
 		if (help) {
