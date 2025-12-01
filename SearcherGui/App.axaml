@@ -1,7 +1,8 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="SearcherGui.App"
-             RequestedThemeVariant="Dark">
+             RequestedThemeVariant="Default">
+             <!-- "Default" follows system theme. "Dark" or "Light" forces a specific theme. -->
 
     <Application.Styles>
         <FluentTheme />
@@ -9,52 +10,76 @@
     </Application.Styles>
 
     <Application.Resources>
-        <!-- Color Palette: Technical Command Center -->
-        <Color x:Key="BackgroundDeep">#0F1419</Color>
-        <Color x:Key="BackgroundCard">#1A1F26</Color>
-        <Color x:Key="BackgroundElevated">#252A33</Color>
-        <Color x:Key="AccentCyan">#00D9FF</Color>
-        <Color x:Key="AccentTeal">#00FFB3</Color>
-        <Color x:Key="AccentAmber">#FFB800</Color>
-        <Color x:Key="TextPrimary">#E8EAED</Color>
-        <Color x:Key="TextSecondary">#9AA0A6</Color>
-        <Color x:Key="TextTertiary">#5F6368</Color>
-        <Color x:Key="BorderSubtle">#2D333D</Color>
-        <Color x:Key="BorderAccent">#00D9FF</Color>
-        <Color x:Key="StatusSuccess">#00FFB3</Color>
-        <Color x:Key="StatusError">#FF5370</Color>
+        <!-- Dark Theme Colors -->
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <!-- Color Palette: Technical Command Center (Dark) -->
+                    <Color x:Key="BackgroundDeep">#0F1419</Color>
+                    <Color x:Key="BackgroundCard">#1A1F26</Color>
+                    <Color x:Key="BackgroundElevated">#252A33</Color>
+                    <Color x:Key="AccentCyan">#00D9FF</Color>
+                    <Color x:Key="AccentTeal">#00FFB3</Color>
+                    <Color x:Key="AccentAmber">#FFB800</Color>
+                    <Color x:Key="TextPrimary">#E8EAED</Color>
+                    <Color x:Key="TextSecondary">#9AA0A6</Color>
+                    <Color x:Key="TextTertiary">#5F6368</Color>
+                    <Color x:Key="BorderSubtle">#2D333D</Color>
+                    <Color x:Key="BorderAccent">#00D9FF</Color>
+                    <Color x:Key="StatusSuccess">#00FFB3</Color>
+                    <Color x:Key="StatusError">#FF5370</Color>
+                </ResourceDictionary>
 
-        <!-- Brushes -->
-        <SolidColorBrush x:Key="BackgroundDeepBrush" Color="{StaticResource BackgroundDeep}" />
-        <SolidColorBrush x:Key="BackgroundCardBrush" Color="{StaticResource BackgroundCard}" />
-        <SolidColorBrush x:Key="BackgroundElevatedBrush" Color="{StaticResource BackgroundElevated}" />
-        <SolidColorBrush x:Key="AccentCyanBrush" Color="{StaticResource AccentCyan}" />
-        <SolidColorBrush x:Key="AccentTealBrush" Color="{StaticResource AccentTeal}" />
-        <SolidColorBrush x:Key="AccentAmberBrush" Color="{StaticResource AccentAmber}" />
-        <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
-        <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
-        <SolidColorBrush x:Key="TextTertiaryBrush" Color="{StaticResource TextTertiary}" />
-        <SolidColorBrush x:Key="BorderSubtleBrush" Color="{StaticResource BorderSubtle}" />
-        <SolidColorBrush x:Key="BorderAccentBrush" Color="{StaticResource BorderAccent}" />
-        <SolidColorBrush x:Key="StatusSuccessBrush" Color="{StaticResource StatusSuccess}" />
-        <SolidColorBrush x:Key="StatusErrorBrush" Color="{StaticResource StatusError}" />
+                <ResourceDictionary x:Key="Light">
+                    <!-- Color Palette: Technical Command Center (Light) -->
+                    <Color x:Key="BackgroundDeep">#F8F9FA</Color>
+                    <Color x:Key="BackgroundCard">#FFFFFF</Color>
+                    <Color x:Key="BackgroundElevated">#F0F2F5</Color>
+                    <Color x:Key="AccentCyan">#0099CC</Color>
+                    <Color x:Key="AccentTeal">#00B386</Color>
+                    <Color x:Key="AccentAmber">#E69500</Color>
+                    <Color x:Key="TextPrimary">#1C1E21</Color>
+                    <Color x:Key="TextSecondary">#5F6368</Color>
+                    <Color x:Key="TextTertiary">#9AA0A6</Color>
+                    <Color x:Key="BorderSubtle">#D5D8DC</Color>
+                    <Color x:Key="BorderAccent">#0099CC</Color>
+                    <Color x:Key="StatusSuccess">#00A878</Color>
+                    <Color x:Key="StatusError">#DC3545</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
 
-        <!-- Gradient Brushes -->
-        <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
-            <GradientStop Color="{StaticResource AccentCyan}" Offset="0" />
-            <GradientStop Color="{StaticResource AccentTeal}" Offset="1" />
-        </LinearGradientBrush>
+            <!-- Brushes (Dynamic - respond to theme changes) -->
+            <SolidColorBrush x:Key="BackgroundDeepBrush" Color="{DynamicResource BackgroundDeep}" />
+            <SolidColorBrush x:Key="BackgroundCardBrush" Color="{DynamicResource BackgroundCard}" />
+            <SolidColorBrush x:Key="BackgroundElevatedBrush" Color="{DynamicResource BackgroundElevated}" />
+            <SolidColorBrush x:Key="AccentCyanBrush" Color="{DynamicResource AccentCyan}" />
+            <SolidColorBrush x:Key="AccentTealBrush" Color="{DynamicResource AccentTeal}" />
+            <SolidColorBrush x:Key="AccentAmberBrush" Color="{DynamicResource AccentAmber}" />
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="{DynamicResource TextPrimary}" />
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="{DynamicResource TextSecondary}" />
+            <SolidColorBrush x:Key="TextTertiaryBrush" Color="{DynamicResource TextTertiary}" />
+            <SolidColorBrush x:Key="BorderSubtleBrush" Color="{DynamicResource BorderSubtle}" />
+            <SolidColorBrush x:Key="BorderAccentBrush" Color="{DynamicResource BorderAccent}" />
+            <SolidColorBrush x:Key="StatusSuccessBrush" Color="{DynamicResource StatusSuccess}" />
+            <SolidColorBrush x:Key="StatusErrorBrush" Color="{DynamicResource StatusError}" />
 
-        <!-- Typography -->
-        <FontFamily x:Key="MonospaceFont">JetBrains Mono, Consolas, Menlo, Monaco, Courier New, monospace</FontFamily>
-        <FontFamily x:Key="UIFont">-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif</FontFamily>
+            <!-- Gradient Brushes (Dynamic) -->
+            <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="{DynamicResource AccentCyan}" Offset="0" />
+                <GradientStop Color="{DynamicResource AccentTeal}" Offset="1" />
+            </LinearGradientBrush>
 
-        <!-- Spacing -->
-        <Thickness x:Key="SpacingSmall">8</Thickness>
-        <Thickness x:Key="SpacingMedium">16</Thickness>
-        <Thickness x:Key="SpacingLarge">24</Thickness>
-        <CornerRadius x:Key="CornerRadiusSmall">4</CornerRadius>
-        <CornerRadius x:Key="CornerRadiusMedium">8</CornerRadius>
-        <CornerRadius x:Key="CornerRadiusLarge">12</CornerRadius>
+            <!-- Typography (Static - same for both themes) -->
+            <FontFamily x:Key="MonospaceFont">JetBrains Mono, Consolas, Menlo, Monaco, Courier New, monospace</FontFamily>
+            <FontFamily x:Key="UIFont">-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif</FontFamily>
+
+            <!-- Spacing (Static - same for both themes) -->
+            <Thickness x:Key="SpacingSmall">8</Thickness>
+            <Thickness x:Key="SpacingMedium">16</Thickness>
+            <Thickness x:Key="SpacingLarge">24</Thickness>
+            <CornerRadius x:Key="CornerRadiusSmall">4</CornerRadius>
+            <CornerRadius x:Key="CornerRadiusMedium">8</CornerRadius>
+            <CornerRadius x:Key="CornerRadiusLarge">12</CornerRadius>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
