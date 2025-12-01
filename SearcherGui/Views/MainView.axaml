@@ -4,52 +4,337 @@
         x:Class="SearcherGui.Views.MainView"
         x:DataType="vm:MainViewModel"
         Title="Searcher"
-        Width="1000"
-        Height="600">
-  <DockPanel>
-    <!-- Top: Search Parameters -->
-    <StackPanel DockPanel.Dock="Top" Margin="10" Spacing="5">
-      <TextBlock FontWeight="Bold">Search Parameters</TextBlock>
-      <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" Margin="0,5">
-        <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,10,0">Path:</TextBlock>
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SearchPath}" />
+        Width="1200"
+        Height="700"
+        Background="{StaticResource BackgroundDeepBrush}"
+        TransparencyLevelHint="AcrylicBlur"
+        ExtendClientAreaToDecorationsHint="True">
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,10,0">Pattern:</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SearchPattern}" />
+  <Window.Styles>
+    <!-- DataGrid Custom Styling -->
+    <Style Selector="DataGrid">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="RowBackground" Value="{StaticResource BackgroundCardBrush}" />
+      <Setter Property="GridLinesVisibility" Value="None" />
+      <Setter Property="HeadersVisibility" Value="Column" />
+      <Setter Property="FontFamily" Value="{StaticResource UIFont}" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader">
+      <Setter Property="Background" Value="{StaticResource BackgroundElevatedBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Padding" Value="16,12" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
+      <Setter Property="BorderBrush" Value="{StaticResource BorderSubtleBrush}" />
+    </Style>
+
+    <Style Selector="DataGridRow">
+      <Setter Property="Height" Value="44" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
+      <Setter Property="BorderBrush" Value="{StaticResource BorderSubtleBrush}" />
+    </Style>
+
+    <Style Selector="DataGridRow:pointerover /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="{StaticResource BackgroundElevatedBrush}" />
+      <Setter Property="Opacity" Value="0.8" />
+    </Style>
+
+    <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="{StaticResource BackgroundElevatedBrush}" />
+      <Setter Property="Opacity" Value="1.0" />
+    </Style>
+
+    <Style Selector="DataGridCell">
+      <Setter Property="Padding" Value="16,0" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- Button Styling -->
+    <Style Selector="Button.stop-button">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{StaticResource AccentCyanBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{StaticResource AccentCyanBrush}" />
+      <Setter Property="Padding" Value="20,8" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.stop-button:pointerover">
+      <Setter Property="Background" Value="{StaticResource AccentCyanBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource BackgroundDeepBrush}" />
+    </Style>
+
+    <Style Selector="Button.stop-button:disabled">
+      <Setter Property="Opacity" Value="0.3" />
+      <Setter Property="Cursor" Value="Arrow" />
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="0">
+    <!-- Header with Accent Bar -->
+    <Border Grid.Row="0"
+            Background="{StaticResource BackgroundCardBrush}"
+            BorderThickness="0,0,0,2"
+            BorderBrush="{StaticResource AccentGradientBrush}"
+            Padding="24,20">
+      <Grid ColumnDefinitions="Auto,*">
+        <StackPanel Grid.Column="0" Spacing="4">
+          <TextBlock Text="SEARCHER"
+                     FontFamily="{StaticResource UIFont}"
+                     FontSize="24"
+                     FontWeight="Bold"
+                     Foreground="{StaticResource TextPrimaryBrush}"
+                     LetterSpacing="1" />
+          <TextBlock Text="File Content Search"
+                     FontFamily="{StaticResource UIFont}"
+                     FontSize="12"
+                     Foreground="{StaticResource TextSecondaryBrush}" />
+        </StackPanel>
       </Grid>
-    </StackPanel>
+    </Border>
 
-    <!-- Bottom: Status Bar -->
-    <StackPanel DockPanel.Dock="Bottom" Margin="10" Spacing="5">
-      <StackPanel Orientation="Horizontal" Spacing="10">
-        <TextBlock Text="{Binding StatusMessage}" />
-        <TextBlock Text="{Binding FilesScanned, StringFormat='Files: {0}'}" />
-        <TextBlock Text="{Binding MatchesFound, StringFormat='Matches: {0}'}" />
-        <Button Command="{Binding StopCommand}" IsEnabled="{Binding IsSearching}">Stop</Button>
+    <!-- Search Parameters Card -->
+    <Border Grid.Row="1"
+            Background="{StaticResource BackgroundCardBrush}"
+            Margin="24,16,24,0"
+            Padding="24,20"
+            CornerRadius="{StaticResource CornerRadiusMedium}"
+            BorderThickness="1"
+            BorderBrush="{StaticResource BorderSubtleBrush}">
+      <Border.Effect>
+        <DropShadowEffect Color="#000000" Opacity="0.3" BlurRadius="20" OffsetX="0" OffsetY="4" />
+      </Border.Effect>
+
+      <StackPanel Spacing="16">
+        <TextBlock Text="SEARCH PARAMETERS"
+                   FontFamily="{StaticResource UIFont}"
+                   FontSize="11"
+                   FontWeight="SemiBold"
+                   Foreground="{StaticResource TextTertiaryBrush}"
+                   LetterSpacing="1" />
+
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+          <!-- Path -->
+          <TextBlock Grid.Row="0" Grid.Column="0"
+                     Text="PATH"
+                     FontFamily="{StaticResource UIFont}"
+                     FontSize="12"
+                     FontWeight="Medium"
+                     Foreground="{StaticResource TextSecondaryBrush}"
+                     VerticalAlignment="Center"
+                     Margin="0,0,24,0" />
+          <Border Grid.Row="0" Grid.Column="1"
+                  Background="{StaticResource BackgroundElevatedBrush}"
+                  Padding="12,8"
+                  Margin="0,0,0,12"
+                  CornerRadius="4"
+                  BorderThickness="1"
+                  BorderBrush="{StaticResource BorderSubtleBrush}">
+            <TextBlock Text="{Binding SearchPath}"
+                       FontFamily="{StaticResource MonospaceFont}"
+                       FontSize="12"
+                       Foreground="{StaticResource AccentTealBrush}"
+                       TextTrimming="CharacterEllipsis" />
+          </Border>
+
+          <!-- Pattern -->
+          <TextBlock Grid.Row="1" Grid.Column="0"
+                     Text="PATTERN"
+                     FontFamily="{StaticResource UIFont}"
+                     FontSize="12"
+                     FontWeight="Medium"
+                     Foreground="{StaticResource TextSecondaryBrush}"
+                     VerticalAlignment="Center"
+                     Margin="0,0,24,0" />
+          <Border Grid.Row="1" Grid.Column="1"
+                  Background="{StaticResource BackgroundElevatedBrush}"
+                  Padding="12,8"
+                  CornerRadius="4"
+                  BorderThickness="1"
+                  BorderBrush="{StaticResource BorderSubtleBrush}">
+            <TextBlock Text="{Binding SearchPattern}"
+                       FontFamily="{StaticResource MonospaceFont}"
+                       FontSize="12"
+                       Foreground="{StaticResource AccentTealBrush}" />
+          </Border>
+        </Grid>
       </StackPanel>
-    </StackPanel>
+    </Border>
 
-    <!-- Middle: Results Grid -->
-    <DataGrid x:Name="ResultsGrid"
-              ItemsSource="{Binding Results}"
-              CanUserReorderColumns="True"
-              CanUserResizeColumns="True"
-              CanUserSortColumns="True"
-              IsReadOnly="True"
-              AutoGenerateColumns="False"
-              DoubleTapped="OnResultDoubleClick">
-      <DataGrid.Columns>
-        <DataGridTextColumn Header="Filename" Binding="{Binding FileName}" Width="200" />
-        <DataGridTextColumn Header="Path" Binding="{Binding FilePath}" Width="*" />
-        <DataGridTextColumn Header="Matches" Binding="{Binding MatchCount}" Width="80" />
-      </DataGrid.Columns>
-      <DataGrid.ContextMenu>
-        <ContextMenu>
-          <MenuItem Header="Open" Click="OpenFile_Click" />
-          <MenuItem Header="Copy Path" Click="CopyPath_Click" />
-          <MenuItem Header="Show in Folder" Click="ShowInFolder_Click" />
-        </ContextMenu>
-      </DataGrid.ContextMenu>
-    </DataGrid>
-  </DockPanel>
+    <!-- Results Section -->
+    <Border Grid.Row="2"
+            Background="{StaticResource BackgroundCardBrush}"
+            Margin="24,16,24,16"
+            CornerRadius="{StaticResource CornerRadiusMedium}"
+            BorderThickness="1"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            Padding="0"
+            ClipToBounds="True">
+      <Border.Effect>
+        <DropShadowEffect Color="#000000" Opacity="0.3" BlurRadius="20" OffsetX="0" OffsetY="4" />
+      </Border.Effect>
+
+      <Grid RowDefinitions="Auto,*">
+        <!-- Results Header -->
+        <Border Grid.Row="0"
+                Background="{StaticResource BackgroundElevatedBrush}"
+                Padding="24,16"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{StaticResource BorderSubtleBrush}">
+          <TextBlock Text="RESULTS"
+                     FontFamily="{StaticResource UIFont}"
+                     FontSize="11"
+                     FontWeight="SemiBold"
+                     Foreground="{StaticResource TextTertiaryBrush}"
+                     LetterSpacing="1" />
+        </Border>
+
+        <!-- DataGrid -->
+        <DataGrid Grid.Row="1"
+                  x:Name="ResultsGrid"
+                  ItemsSource="{Binding Results}"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  IsReadOnly="True"
+                  AutoGenerateColumns="False"
+                  DoubleTapped="OnResultDoubleClick"
+                  Margin="0">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="FILENAME"
+                                Binding="{Binding FileName}"
+                                Width="250" />
+            <DataGridTextColumn Header="PATH"
+                                Binding="{Binding FilePath}"
+                                Width="*"
+                                FontFamily="{StaticResource MonospaceFont}"
+                                FontSize="12" />
+            <DataGridTextColumn Header="MATCHES"
+                                Binding="{Binding MatchCount}"
+                                Width="100" />
+          </DataGrid.Columns>
+          <DataGrid.ContextMenu>
+            <ContextMenu>
+              <MenuItem Header="Open" Click="OpenFile_Click" />
+              <MenuItem Header="Copy Path" Click="CopyPath_Click" />
+              <MenuItem Header="Show in Folder" Click="ShowInFolder_Click" />
+            </ContextMenu>
+          </DataGrid.ContextMenu>
+        </DataGrid>
+      </Grid>
+    </Border>
+
+    <!-- Status Bar -->
+    <Border Grid.Row="3"
+            Background="{StaticResource BackgroundCardBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            Padding="24,16">
+      <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+        <!-- Status Message -->
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+          <Border Width="8"
+                  Height="8"
+                  CornerRadius="4"
+                  Background="{StaticResource StatusSuccessBrush}"
+                  VerticalAlignment="Center"
+                  IsVisible="{Binding !IsSearching}" />
+          <Border Width="8"
+                  Height="8"
+                  CornerRadius="4"
+                  Background="{StaticResource AccentCyanBrush}"
+                  VerticalAlignment="Center"
+                  IsVisible="{Binding IsSearching}">
+            <Border.Styles>
+              <Style Selector="Border">
+                <Style.Animations>
+                  <Animation Duration="0:0:1" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                      <Setter Property="Opacity" Value="1.0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                      <Setter Property="Opacity" Value="0.3"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                      <Setter Property="Opacity" Value="1.0"/>
+                    </KeyFrame>
+                  </Animation>
+                </Style.Animations>
+              </Style>
+            </Border.Styles>
+          </Border>
+          <TextBlock Text="{Binding StatusMessage}"
+                     FontFamily="{StaticResource UIFont}"
+                     FontSize="13"
+                     Foreground="{StaticResource TextPrimaryBrush}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Counters -->
+        <Border Grid.Column="1"
+                Background="{StaticResource BackgroundElevatedBrush}"
+                Padding="16,8"
+                CornerRadius="4"
+                Margin="12,0,0,0"
+                BorderThickness="1"
+                BorderBrush="{StaticResource BorderSubtleBrush}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="FILES"
+                       FontFamily="{StaticResource UIFont}"
+                       FontSize="11"
+                       FontWeight="Medium"
+                       Foreground="{StaticResource TextTertiaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="{Binding FilesScanned}"
+                       FontFamily="{StaticResource MonospaceFont}"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource AccentAmberBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="2"
+                Background="{StaticResource BackgroundElevatedBrush}"
+                Padding="16,8"
+                CornerRadius="4"
+                Margin="12,0,0,0"
+                BorderThickness="1"
+                BorderBrush="{StaticResource BorderSubtleBrush}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="MATCHES"
+                       FontFamily="{StaticResource UIFont}"
+                       FontSize="11"
+                       FontWeight="Medium"
+                       Foreground="{StaticResource TextTertiaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="{Binding MatchesFound}"
+                       FontFamily="{StaticResource MonospaceFont}"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource StatusSuccessBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- Stop Button -->
+        <Button Grid.Column="3"
+                Classes="stop-button"
+                Command="{Binding StopCommand}"
+                IsEnabled="{Binding IsSearching}"
+                Margin="12,0,0,0">
+          <TextBlock Text="STOP" LetterSpacing="1" />
+        </Button>
+      </Grid>
+    </Border>
+  </Grid>
 </Window>

@@ -1,11 +1,60 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="SearcherGui.App"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Dark">
 
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
     </Application.Styles>
+
+    <Application.Resources>
+        <!-- Color Palette: Technical Command Center -->
+        <Color x:Key="BackgroundDeep">#0F1419</Color>
+        <Color x:Key="BackgroundCard">#1A1F26</Color>
+        <Color x:Key="BackgroundElevated">#252A33</Color>
+        <Color x:Key="AccentCyan">#00D9FF</Color>
+        <Color x:Key="AccentTeal">#00FFB3</Color>
+        <Color x:Key="AccentAmber">#FFB800</Color>
+        <Color x:Key="TextPrimary">#E8EAED</Color>
+        <Color x:Key="TextSecondary">#9AA0A6</Color>
+        <Color x:Key="TextTertiary">#5F6368</Color>
+        <Color x:Key="BorderSubtle">#2D333D</Color>
+        <Color x:Key="BorderAccent">#00D9FF</Color>
+        <Color x:Key="StatusSuccess">#00FFB3</Color>
+        <Color x:Key="StatusError">#FF5370</Color>
+
+        <!-- Brushes -->
+        <SolidColorBrush x:Key="BackgroundDeepBrush" Color="{StaticResource BackgroundDeep}" />
+        <SolidColorBrush x:Key="BackgroundCardBrush" Color="{StaticResource BackgroundCard}" />
+        <SolidColorBrush x:Key="BackgroundElevatedBrush" Color="{StaticResource BackgroundElevated}" />
+        <SolidColorBrush x:Key="AccentCyanBrush" Color="{StaticResource AccentCyan}" />
+        <SolidColorBrush x:Key="AccentTealBrush" Color="{StaticResource AccentTeal}" />
+        <SolidColorBrush x:Key="AccentAmberBrush" Color="{StaticResource AccentAmber}" />
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
+        <SolidColorBrush x:Key="TextTertiaryBrush" Color="{StaticResource TextTertiary}" />
+        <SolidColorBrush x:Key="BorderSubtleBrush" Color="{StaticResource BorderSubtle}" />
+        <SolidColorBrush x:Key="BorderAccentBrush" Color="{StaticResource BorderAccent}" />
+        <SolidColorBrush x:Key="StatusSuccessBrush" Color="{StaticResource StatusSuccess}" />
+        <SolidColorBrush x:Key="StatusErrorBrush" Color="{StaticResource StatusError}" />
+
+        <!-- Gradient Brushes -->
+        <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="{StaticResource AccentCyan}" Offset="0" />
+            <GradientStop Color="{StaticResource AccentTeal}" Offset="1" />
+        </LinearGradientBrush>
+
+        <!-- Typography -->
+        <FontFamily x:Key="MonospaceFont">JetBrains Mono, Consolas, Menlo, Monaco, Courier New, monospace</FontFamily>
+        <FontFamily x:Key="UIFont">-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif</FontFamily>
+
+        <!-- Spacing -->
+        <Thickness x:Key="SpacingSmall">8</Thickness>
+        <Thickness x:Key="SpacingMedium">16</Thickness>
+        <Thickness x:Key="SpacingLarge">24</Thickness>
+        <CornerRadius x:Key="CornerRadiusSmall">4</CornerRadius>
+        <CornerRadius x:Key="CornerRadiusMedium">8</CornerRadius>
+        <CornerRadius x:Key="CornerRadiusLarge">12</CornerRadius>
+    </Application.Resources>
 </Application>
