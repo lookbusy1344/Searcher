@@ -1,21 +1,14 @@
 namespace SearcherCore;
 
-using System.Diagnostics;
 using System.Linq;
 using DotNet.Globbing;
-using Microsoft.Win32;
 
 /// <summary>
 /// Utility functions for file operations and pattern processing
 /// </summary>
 public static class Utils
 {
-	private const string TextFileOpener = "notepad.exe";
 	private static ReadOnlySpan<byte> MagicNumberZip => [0x50, 0x4B, 0x03, 0x04];
-	private static ReadOnlySpan<string> TextFileTypes => new string[] { ".txt", ".log", ".md", ".cs", ".rs", ".js", ".html" };
-	private static ReadOnlySpan<string> WordFileTypes => new string[] { ".docx", ".doc", ".rtf" };
-	private static readonly Lazy<string> pathToWord = new(GetWordPath);
-	private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acrobat.exe") ?? GetProgramPath("AcroRd32.exe") ?? string.Empty);
 
 	private static readonly string[] ReservedNames = [
 		"CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5",
@@ -61,90 +54,6 @@ public static class Utils
 			// some error in the zip file
 			return false;
 		}
-	}
-
-	/// <summary>
-	/// Open a file using the default program for that file type
-	/// </summary>
-	public static void OpenFile(string path, CliOptions options)
-	{
-		ArgumentNullException.ThrowIfNull(options);
-		var opener = string.IsNullOrEmpty(options.OpenWith) ? TextFileOpener : options.OpenWith;
-		var extension = Path.GetExtension(path).ToLower();
-
-		path = $"\"{path}\""; // the quotes are needed if the path has spaces, in some cases
-
-		if (TextFileTypes.Contains(extension)) {
-			_ = Process.Start(opener, path);
-		} else if (WordFileTypes.Contains(extension)) {
-			_ = Process.Start(pathToWord.Value, path);
-		} else if (extension == ".zip") {
-			_ = Process.Start("explorer.exe", path);
-		} else if (extension == ".pdf") {
-			StartAcrobat(path);
-		} else {
-			// Open file using default program
-			_ = Process.Start(opener, path);
-		}
-	}
-
-	/// <summary>
-	/// On my system Acrobat doesnt start automatically, so I need this
-	/// </summary>
-	private static void StartAcrobat(string path)
-	{
-		if (string.IsNullOrEmpty(AcrobatPath.Value)) {
-			_ = Process.Start(path); // fallback
-		} else {
-			_ = Process.Start(AcrobatPath.Value, path);
-		}
-	}
-
-	/// <summary>
-	/// Use the registry to find the path to MS Word, or a hardcoded path if not found
-	/// Returns empty string on non-Windows platforms
-	/// </summary>
-	private static string GetWordPath()
-	{
-		// Return empty string on non-Windows platforms
-		if (!OperatingSystem.IsWindows()) {
-			return "";
-		}
-
-		const string keyName = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Winword.exe";
-		var winwordPath = (string?)Registry.GetValue(keyName, "Path", null);
-		return winwordPath == null
-			? "C:\\Program Files\\Microsoft Office\\root\\Office16\\winword.exe"
-			: Path.Combine(winwordPath, "Winword.exe");
-	}
-
-	/// <summary>
-	/// Look in the registry to see if we can locate the path to the program
-	/// Returns null on non-Windows platforms
-	/// </summary>
-	public static string? GetProgramPath(string program)
-	{
-		// Return null on non-Windows platforms
-		if (!OperatingSystem.IsWindows()) {
-			return null;
-		}
-
-		var keyName = $"HKEY_CLASSES_ROOT\\Applications\\{program}\\shell\\Open\\command";
-		var appPath = (string?)Registry.GetValue(keyName, null, null);
-
-		if (appPath == null) {
-			return null;
-		}
-
-		// may be something like
-		// "C:\Program Files\Adobe\Acrobat DC\Acrobat\Acrobat.exe" "%1"
-		// so we need to remove the quotes and the "%1"
-
-		appPath = appPath.Replace("\"", "")
-			.Replace("%1", "")
-			.Trim();
-
-		return !File.Exists(appPath) ? null : appPath;
 	}
 
 	/// <summary>
