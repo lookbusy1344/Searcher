@@ -63,10 +63,8 @@ public static class SearchFile
 			}
 		}
 		catch (Exception ex) {
-			// Log exception for debugging - exceptions from StreamReader (IOException, UnauthorizedAccessException, etc.)
-#if DEBUG
-			System.Diagnostics.Debug.WriteLine($"Error reading file {path}: {ex.GetType().Name} - {ex.Message}");
-#endif
+			// Log exception - exceptions from StreamReader (IOException, UnauthorizedAccessException, etc.)
+			Console.Error.WriteLine($"Error reading file {path}: {ex.GetType().Name} - {ex.Message}");
 			return SearchResult.Error;
 		}
 
@@ -99,10 +97,8 @@ public static class SearchFile
 			}
 		}
 		catch (Exception ex) {
-			// Log exception for debugging - exceptions from ZIP/XML libraries
-#if DEBUG
-			System.Diagnostics.Debug.WriteLine($"Error reading DOCX file {path}: {ex.GetType().Name} - {ex.Message}");
-#endif
+			// Log exception - exceptions from ZIP/XML libraries
+			Console.Error.WriteLine($"Error reading DOCX file {path}: {ex.GetType().Name} - {ex.Message}");
 			return SearchResult.Error;
 		}
 
@@ -130,10 +126,8 @@ public static class SearchFile
 			return SearchResult.NotFound;
 		}
 		catch (Exception ex) {
-			// Log exception for debugging - exceptions from ZIP library
-#if DEBUG
-			System.Diagnostics.Debug.WriteLine($"Error reading ZIP file {path}: {ex.GetType().Name} - {ex.Message}");
-#endif
+			// Log exception - exceptions from ZIP library
+			Console.Error.WriteLine($"Error reading ZIP file {path}: {ex.GetType().Name} - {ex.Message}");
 			return SearchResult.Error;
 		}
 	}
@@ -167,9 +161,7 @@ public static class ZipInternals
 
 		// Prevent excessive nesting that could cause stack overflow or memory exhaustion
 		if (currentDepth >= MaxZipNestingDepth) {
-#if DEBUG
-			System.Diagnostics.Debug.WriteLine($"Maximum ZIP nesting depth ({MaxZipNestingDepth}) exceeded");
-#endif
+			Console.Error.WriteLine($"Maximum ZIP nesting depth ({MaxZipNestingDepth}) exceeded");
 			return false;
 		}
 
