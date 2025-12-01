@@ -1,6 +1,6 @@
 # SearcherCore
 
-A .NET 9.0 shared library providing core file searching functionality for Searcher applications.
+A .NET 10.0 shared library providing core file searching functionality for Searcher applications.
 
 ## Overview
 

@@ -2,7 +2,7 @@
 
 [![CodeQL](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lookbusy1344/Searcher/actions/workflows/github-code-scanning/codeql)
 
-Recursively search for files containing text. Built with C#, .NET 9 and Avalonia
+Recursively search for files containing text. Built with C#, .NET 10 and Avalonia
 
 ## Available Versions
 
@@ -86,7 +86,7 @@ For detailed SearcherCli documentation, see `SearcherCli/README.md`.
 
 ## Building SearcherGui (Avalonia GUI)
 
-Requires .NET 9 SDK.
+Requires .NET 10 SDK.
 
 ```
 # Build for current platform
@@ -100,11 +100,11 @@ dotnet publish SearcherGui/SearcherGui.csproj -c Release -r win-x64 --self-conta
 
 ## .NET version support
 
-`Main` branch supports .NET 9. `dotnet8` branch for .NET 8, and .NET 7 work closed out in commit [5daec2245f](https://github.com/lookbusy1344/Searcher/tree/5daec2245f42a0d4146ba2b824bdf894f349c627)
+`Main` branch supports .NET 10. `dotnet8` branch for .NET 8, and .NET 7 work closed out in commit [5daec2245f](https://github.com/lookbusy1344/Searcher/tree/5daec2245f42a0d4146ba2b824bdf894f349c627)
 
 ## Testing
 
-xUnit is used for testing with 109 tests covering core functionality, GUI components, and CLI options. Tests can be run from Test Explorer in Visual Studio, or by running:
+xUnit is used for testing with 117 tests covering core functionality, GUI components, and CLI options. Tests can be run from Test Explorer in Visual Studio, or by running:
 
 ```bash
 # Run all tests (from repository root)

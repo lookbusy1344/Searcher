@@ -4,7 +4,7 @@ Project-specific guidance for the SearcherGui Avalonia cross-platform desktop ap
 
 ## Overview
 
-SearcherGui is a cross-platform desktop search application built with Avalonia, enabling recursive text search within files (including ZIP archives, PDFs, and DOCX documents). It targets .NET 9.0 and supports Windows, Linux, and macOS.
+SearcherGui is a cross-platform desktop search application built with Avalonia, enabling recursive text search within files (including ZIP archives, PDFs, and DOCX documents). It targets .NET 10.0 and supports Windows, Linux, and macOS.
 
 ## Build Commands
 
@@ -159,7 +159,7 @@ SearcherGui/
 
 ## Code Style & Quality
 
-- **Target Framework**: net9.0 (cross-platform)
+- **Target Framework**: net10.0 (cross-platform)
 - **Nullable Reference Types**: Enabled (`<Nullable>enable</Nullable>`)
 - **Code Formatting**: Enforced via `.editorconfig` - always run `dotnet format SearcherGui/SearcherGui.csproj`
 - **Analysis**: Comprehensive static analysis enabled (Design, Security, Performance, Reliability, Usage)

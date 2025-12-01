@@ -8,7 +8,7 @@ A high-performance command-line text search tool that recursively searches for t
 - **Recursive archive handling**: Supports nested ZIP files and archives containing other formats
 - **Parallel processing**: Efficient multi-threaded file searching
 - **Glob pattern matching**: Flexible file filtering with pattern support
-- **Cross-platform**: Built on .NET 9.0, supports Windows, macOS, and Linux
+- **Cross-platform**: Built on .NET 10.0, supports Windows, macOS, and Linux
 
 ## Installation
 
@@ -102,7 +102,7 @@ SearcherCli -f . -p "*.txt" -s "hello"
 
 ## Dependencies
 
-- .NET 9.0 Runtime
+- .NET 10.0 Runtime
 - SearcherCore (project reference - provides all core search functionality)
   - Inherits: iText7 (PDF processing), DotNet.Glob (pattern matching)
 

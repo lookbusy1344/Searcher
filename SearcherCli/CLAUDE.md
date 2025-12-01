@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Searcher is a cross-platform application that recursively searches for text inside files, including archives (ZIP), PDFs, and DOCX files. It uses .NET 9.0 and supports parallel processing for performance.
+Searcher is a cross-platform application that recursively searches for text inside files, including archives (ZIP), PDFs, and DOCX files. It uses .NET 10.0 and supports parallel processing for performance.
 
 **Project Structure:**
 - **SearcherCli/**: Console version of the application (this project)
