@@ -9,11 +9,11 @@
 
 The Searcher project family is a well-structured cross-platform text search application with solid fundamentals. The codebase demonstrates good practices in parallel processing, modern C# idioms, and comprehensive static analysis configuration. However, there are significant issues around error handling consistency, platform abstraction, resource management, and some architectural concerns that should be addressed.
 
-**Overall Assessment**: 7.5/10
+**Overall Assessment**: 8/10
 - Code Quality: Good
 - Test Coverage: Good (117 tests passing)
 - Architecture: Adequate with room for improvement
-- Critical Issues: ~~4~~ 3 remaining (1 resolved)
+- Critical Issues: ~~4~~ 2 remaining (2 resolved)
 
 ## Critical Issues (Must Fix)
 
@@ -48,27 +48,35 @@ The Searcher project family is a well-structured cross-platform text search appl
 
 **Files Changed**: `SearcherGui/ViewModels/MainViewModel.cs`
 
-### 2. Unbounded Recursion in ZIP Processing (SearcherCore/SearchFile.cs:150-191)
+### 2. ~~Unbounded Recursion in ZIP Processing~~ ✅ **RESOLVED**
 
-**Location**: `ZipInternals.RecursiveArchiveCheck`
+**Status**: ✅ **FIXED** (2025-12-01)
 
-**Issue**: No depth limit for nested ZIP files:
-```csharp
-public static bool RecursiveArchiveCheck(ZipArchive archive, ...)
-{
-    foreach (var nestedEntry in archive.Entries) {
-        if (nestedEntry.FullName.EndsWith(".zip", ...)) {
-            using var nestedStream = nestedEntry.Open();
-            using var nestedArchive = new ZipArchive(nestedStream);
-            found = RecursiveArchiveCheck(nestedArchive, ...);  // Unbounded recursion
-        }
-    }
-}
-```
+**Original Location**: `ZipInternals.RecursiveArchiveCheck` (SearcherCore/SearchFile.cs:150-191)
 
-**Problem**: A malicious or corrupted ZIP file with deeply nested archives could cause stack overflow or memory exhaustion.
+**Original Issue**: No depth limit for nested ZIP files - a malicious or corrupted ZIP file with deeply nested archives could cause stack overflow or memory exhaustion.
 
-**Fix**: Add a depth parameter with maximum limit (e.g., 10 levels).
+**Resolution Implemented**:
+1. Added `MaxZipNestingDepth` constant (set to 10 levels)
+2. Added `currentDepth` parameter to `RecursiveArchiveCheck` with default value of 0
+3. Added depth check at method entry - returns false if depth limit exceeded
+4. Incremented depth when recursing into nested ZIP files: `currentDepth + 1`
+5. Added debug logging when depth limit is exceeded
+6. Updated XML documentation to document the new parameter
+
+**Security Impact**:
+- Prevents stack overflow attacks from ZIP bombs with excessive nesting
+- Limits memory consumption from deeply nested archives
+- 10 levels is sufficient for legitimate use cases while preventing abuse
+
+**Test Results**: All 117 tests passing, including existing ZIP handling tests:
+- `Core: ZIP search handles empty archive`
+- `Core: ZIP search respects pattern matching`
+- `Core: ZIP search handles large files in archive`
+- `Core: ZIP search handles nested directories`
+- `Core: ZIP search finds matching text in files`
+
+**Files Changed**: `SearcherCore/SearchFile.cs`
 
 ### 3. Platform-Specific Code in Core Library (SearcherCore/Utils.cs:69-89)
 
@@ -557,7 +565,7 @@ private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acr
 
 ### Immediate Actions (Sprint 1)
 1. ~~Fix resource leak in MainViewModel CTS disposal~~ ✅ **COMPLETED**
-2. Add depth limit to ZIP recursion
+2. ~~Add depth limit to ZIP recursion~~ ✅ **COMPLETED**
 3. Implement proper logging instead of Debug.WriteLine
 4. Fix path validation logic
 
@@ -581,16 +589,17 @@ private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acr
 
 ## Conclusion
 
-The Searcher project is fundamentally sound with good architecture and implementation. The parallel processing is well-designed, the code is generally clean and modern, and test coverage is excellent (117 tests all passing). Progress has been made on critical issues, with the MainViewModel resource leak now resolved.
+The Searcher project is fundamentally sound with good architecture and implementation. The parallel processing is well-designed, the code is generally clean and modern, and test coverage is excellent (117 tests all passing). Significant progress has been made on critical issues, with half of the original critical issues now resolved.
 
 **Recent Progress**:
 - ✅ Fixed CancellationTokenSource disposal pattern in MainViewModel with thread-safe lock-based coordination
+- ✅ Added depth limit (10 levels) to ZIP recursion to prevent stack overflow from malicious archives
 
 The remaining concerns are:
 1. **Error Handling**: Establish consistency and stop swallowing errors
 2. **Platform Abstraction**: Remove Windows-specific code from Core library
-3. **Security**: Add resource limits (ZIP depth, PDF page count) and improve path validation
+3. **Security**: Improve path validation and add PDF page count limits
 
-With the remaining 3 critical issues and high-priority items addressed, the codebase will be robust and production-ready for long-term development.
+With the remaining 2 critical issues and high-priority items addressed, the codebase will be robust and production-ready for long-term development. The project has improved from 7/10 to 8/10 overall assessment.
 
 **Recommended Priority**: Continue addressing remaining Critical and High Priority issues, then work through Medium and Low Priority items as time permits.

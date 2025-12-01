@@ -145,13 +145,34 @@ public static class SearchFile
 public static class ZipInternals
 {
 	/// <summary>
+	/// Maximum depth for nested ZIP files to prevent stack overflow from malicious or corrupted archives
+	/// </summary>
+	private const int MaxZipNestingDepth = 10;
+
+	/// <summary>
 	/// Given a zip archive, loop through and check the contents. Recursively calls for nested zips
 	/// </summary>
+	/// <param name="archive">The ZIP archive to search</param>
+	/// <param name="text">Text to search for</param>
+	/// <param name="innerpatterns">File patterns to match</param>
+	/// <param name="comparer">String comparison method</param>
+	/// <param name="token">Cancellation token</param>
+	/// <param name="currentDepth">Current recursion depth (default 0)</param>
+	/// <returns>True if text found, false otherwise</returns>
 	public static bool RecursiveArchiveCheck(ZipArchive archive, string text, IReadOnlyList<Glob> innerpatterns, StringComparison comparer,
-		CancellationToken token)
+		CancellationToken token, int currentDepth = 0)
 	{
 		ArgumentNullException.ThrowIfNull(archive);
 		ArgumentNullException.ThrowIfNull(innerpatterns);
+
+		// Prevent excessive nesting that could cause stack overflow or memory exhaustion
+		if (currentDepth >= MaxZipNestingDepth) {
+#if DEBUG
+			System.Diagnostics.Debug.WriteLine($"Maximum ZIP nesting depth ({MaxZipNestingDepth}) exceeded");
+#endif
+			return false;
+		}
+
 		foreach (var nestedEntry in archive.Entries) {
 			// loop through all entries in the nested zip file
 			token.ThrowIfCancellationRequested();
@@ -162,7 +183,7 @@ public static class ZipInternals
 				// its another nested zip file, we need to open it and search inside
 				using var nestedStream = nestedEntry.Open();
 				using var nestedArchive = new ZipArchive(nestedStream);
-				found = RecursiveArchiveCheck(nestedArchive, text, innerpatterns, comparer, token);
+				found = RecursiveArchiveCheck(nestedArchive, text, innerpatterns, comparer, token, currentDepth + 1);
 			} else if (nestedEntry.FullName.EndsWith(".docx", CliOptions.FilenameComparison)) {
 				// this is a DOCX inside a zip
 				using var nestedStream = nestedEntry.Open();
