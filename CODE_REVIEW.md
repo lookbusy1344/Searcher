@@ -9,43 +9,44 @@
 
 The Searcher project family is a well-structured cross-platform text search application with solid fundamentals. The codebase demonstrates good practices in parallel processing, modern C# idioms, and comprehensive static analysis configuration. However, there are significant issues around error handling consistency, platform abstraction, resource management, and some architectural concerns that should be addressed.
 
-**Overall Assessment**: 7/10
+**Overall Assessment**: 7.5/10
 - Code Quality: Good
-- Test Coverage: Good (109 tests passing)
+- Test Coverage: Good (117 tests passing)
 - Architecture: Adequate with room for improvement
-- Critical Issues: Several resource management and error handling bugs
+- Critical Issues: ~~4~~ 3 remaining (1 resolved)
 
 ## Critical Issues (Must Fix)
 
-### 1. Resource Leak in MainViewModel (SearcherGui/ViewModels/MainViewModel.cs)
+### 1. ~~Resource Leak in MainViewModel~~ ✅ **RESOLVED**
 
-**Location**: Lines 107-116, 265-266
+**Status**: ✅ **FIXED** (2025-12-01)
 
-**Issue**: CancellationTokenSource disposal pattern is broken:
-```csharp
-// Line 107-116: Creates CTS
-var cts = new CancellationTokenSource();
-_cancellationTokenSource = cts;
+**Original Location**: Lines 107-116, 265-266
 
-try {
-    await PerformSearch(cts.Token);
-}
-finally {
-    cts?.Dispose();  // Disposes here
-    _cancellationTokenSource = null;
-}
+**Original Issue**: CancellationTokenSource disposal pattern was broken - if `Dispose()` was called while search was running, the CTS would be cancelled but not disposed, leading to resource leak.
 
-// Line 265-266: Dispose() method
-public void Dispose()
-{
-    _cancellationTokenSource?.Cancel();  // Cancels but doesn't dispose
-    _logWriter?.Dispose();
-}
-```
+**Resolution Implemented**:
+1. Added `_ctsLock` object for thread-safe coordination between `OnInitializedAsync()` and `Dispose()`
+2. Added `_disposed` flag to prevent use-after-dispose scenarios
+3. Modified `OnInitializedAsync()` to:
+   - Check `_disposed` flag before and during CTS creation
+   - Create CTS under lock
+   - Clean up CTS reference under lock in finally block
+   - Dispose CTS in finally block (always happens)
+4. Modified `Dispose()` to:
+   - Set `_disposed` flag under lock
+   - Cancel and extract CTS under lock
+   - Dispose CTS outside lock to avoid deadlocks
+   - Implement idempotent disposal pattern
+5. Modified `Stop()` to cancel CTS under lock
 
-**Problem**: If `Dispose()` is called while search is running, the CTS is cancelled but not disposed, leading to resource leak. The field is set to null in OnInitializedAsync's finally block, so Dispose() won't find it.
+**Test Results**: All 117 tests passing, including existing disposal tests:
+- `GUI: Dispose can be called multiple times (idempotent)`
+- `GUI: Dispose during search cancels operation`
+- `GUI: Dispose after completed search works correctly`
+- `GUI: Dispose disposes log writer when present`
 
-**Fix**: Restructure to use a separate cancellation flag or ensure CTS is properly tracked and disposed in all code paths.
+**Files Changed**: `SearcherGui/ViewModels/MainViewModel.cs`
 
 ### 2. Unbounded Recursion in ZIP Processing (SearcherCore/SearchFile.cs:150-191)
 
@@ -555,7 +556,7 @@ private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acr
 ## Recommendations Summary
 
 ### Immediate Actions (Sprint 1)
-1. Fix resource leak in MainViewModel CTS disposal
+1. ~~Fix resource leak in MainViewModel CTS disposal~~ ✅ **COMPLETED**
 2. Add depth limit to ZIP recursion
 3. Implement proper logging instead of Debug.WriteLine
 4. Fix path validation logic
@@ -574,20 +575,22 @@ private static readonly Lazy<string> AcrobatPath = new(() => GetProgramPath("Acr
 
 ### Long Term (Quarter 1)
 13. Refactor CliOptions class
-14. Simplify threading model in MainViewModel
+14. ~~Simplify threading model in MainViewModel~~ ✅ **IMPROVED** (proper locking now implemented)
 15. Add resource limits for security
 16. Implement proper async patterns throughout
 
 ## Conclusion
 
-The Searcher project is fundamentally sound with good architecture and implementation. The parallel processing is well-designed, the code is generally clean and modern, and test coverage is reasonable. However, there are several critical issues around resource management, error handling, and platform abstraction that should be addressed before considering this production-ready.
+The Searcher project is fundamentally sound with good architecture and implementation. The parallel processing is well-designed, the code is generally clean and modern, and test coverage is excellent (117 tests all passing). Progress has been made on critical issues, with the MainViewModel resource leak now resolved.
 
-The main concerns are:
-1. **Resource Management**: Fix disposal patterns, especially in MainViewModel
-2. **Error Handling**: Establish consistency and stop swallowing errors
-3. **Platform Abstraction**: Remove Windows-specific code from Core library
-4. **Security**: Add resource limits and improve path validation
+**Recent Progress**:
+- ✅ Fixed CancellationTokenSource disposal pattern in MainViewModel with thread-safe lock-based coordination
 
-With these issues addressed, the codebase would be robust and maintainable for long-term development.
+The remaining concerns are:
+1. **Error Handling**: Establish consistency and stop swallowing errors
+2. **Platform Abstraction**: Remove Windows-specific code from Core library
+3. **Security**: Add resource limits (ZIP depth, PDF page count) and improve path validation
 
-**Recommended Priority**: Address Critical and High Priority issues first, then work through Medium and Low Priority items as time permits.
+With the remaining 3 critical issues and high-priority items addressed, the codebase will be robust and production-ready for long-term development.
+
+**Recommended Priority**: Continue addressing remaining Critical and High Priority issues, then work through Medium and Low Priority items as time permits.

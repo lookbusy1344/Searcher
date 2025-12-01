@@ -16,8 +16,7 @@ public class MainViewModel : ReactiveObject, IDisposable
 {
 	private readonly GuiCliOptions _options;
 	private readonly ObservableCollection<SearchResultDisplay> _results = new();
-	// CA2213: Not disposed in Dispose() to avoid race condition - OnInitializedAsync handles disposal
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Disposed by OnInitializedAsync to avoid race condition")]
+	private readonly object _ctsLock = new();
 	private CancellationTokenSource? _cancellationTokenSource;
 	private StreamWriter? _logWriter;
 	private int _filesScanned;
@@ -25,6 +24,7 @@ public class MainViewModel : ReactiveObject, IDisposable
 	private bool _isSearching;
 	private string _statusMessage = "Ready";
 	private DateTime _startTime;
+	private bool _disposed;
 
 	public MainViewModel(GuiCliOptions options)
 	{
@@ -86,8 +86,8 @@ public class MainViewModel : ReactiveObject, IDisposable
 
 	public async Task OnInitializedAsync()
 	{
-		// Guard against race condition
-		if (IsSearching) {
+		// Guard against concurrent calls and disposal
+		if (IsSearching || _disposed) {
 			return;
 		}
 
@@ -104,15 +104,28 @@ public class MainViewModel : ReactiveObject, IDisposable
 		MatchesFound = 0;
 		Results.Clear();
 
-		var cts = new CancellationTokenSource();
-		_cancellationTokenSource = cts;
-
+		CancellationTokenSource? cts = null;
 		try {
+			// Create CTS under lock to coordinate with Dispose()
+			lock (_ctsLock) {
+				if (_disposed) {
+					IsSearching = false;
+					return;
+				}
+				cts = new CancellationTokenSource();
+				_cancellationTokenSource = cts;
+			}
+
 			await PerformSearch(cts.Token);
 		}
 		finally {
+			// Clean up CTS under lock
+			lock (_ctsLock) {
+				if (_cancellationTokenSource == cts) {
+					_cancellationTokenSource = null;
+				}
+			}
 			cts?.Dispose();
-			_cancellationTokenSource = null;
 		}
 
 		IsSearching = false;
@@ -232,7 +245,9 @@ public class MainViewModel : ReactiveObject, IDisposable
 
 	private void Stop()
 	{
-		_cancellationTokenSource?.Cancel();
+		lock (_ctsLock) {
+			_cancellationTokenSource?.Cancel();
+		}
 		IsSearching = false;
 		StatusMessage = "Search cancelled";
 		CloseLog();
@@ -261,9 +276,22 @@ public class MainViewModel : ReactiveObject, IDisposable
 
 	public void Dispose()
 	{
-		// Only cancel the CTS, don't dispose it - let OnInitializedAsync handle disposal
-		// to avoid race condition if Dispose() is called while search is running
-		_cancellationTokenSource?.Cancel();
+		if (_disposed) {
+			return;
+		}
+
+		CancellationTokenSource? ctsToDispose = null;
+		lock (_ctsLock) {
+			_disposed = true;
+			if (_cancellationTokenSource != null) {
+				_cancellationTokenSource.Cancel();
+				ctsToDispose = _cancellationTokenSource;
+				_cancellationTokenSource = null;
+			}
+		}
+
+		// Dispose outside the lock to avoid potential deadlocks
+		ctsToDispose?.Dispose();
 		_logWriter?.Dispose();
 		GC.SuppressFinalize(this);
 	}
