@@ -6,6 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Searcher is a fully cross-platform (Windows, macOS, Linux) search application for recursively searching text inside files, including archives (ZIP), PDFs, and DOCX files. It targets .NET 10.0 and uses parallel processing for performance optimization. The project uses primarily cross-platform technologies, with some Windows-specific utilities in SearcherCore/Utils.cs (file opening, registry access) that gracefully degrade on other platforms.
 
+- **IMPORTANT** Every `dotnet` Bash call must set `dangerouslyDisableSandbox: true` (build, test, format, run, restore, publish, and any `gtimeout`-wrapped variants). The Claude Code sandbox blocks `dotnet` even when listed in `excludedCommands`: MSBuild's Unix-domain sockets for diagnostic IPC and worker-node communication fail under `network-inbound` deny, and the EPERM surfaces as a silent generic build failure.
+
+
 **Project Structure:**
 - **SearcherGui/**: Cross-platform Avalonia GUI application (primary focus) - runs on Windows, macOS, and Linux
 - **SearcherCore/**: Shared .NET library containing core search functionality
@@ -231,4 +234,3 @@ dotnet build && dotnet test TestSearcher/
 - CliOptions initialization
 - Configuration validation
 - Pattern and folder handling
-
