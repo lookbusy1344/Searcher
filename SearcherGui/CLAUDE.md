@@ -1,4 +1,4 @@
-# SearcherGui - CLAUDE.md
+# SearcherGui
 
 Project-specific guidance for the SearcherGui Avalonia cross-platform desktop application.
 
