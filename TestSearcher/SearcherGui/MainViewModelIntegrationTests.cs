@@ -12,6 +12,8 @@ namespace TestSearcher.SearcherGui;
 
 public class MainViewModelIntegrationTests
 {
+	private static readonly TimeSpan SearchCompletionTimeout = TimeSpan.FromSeconds(2);
+
 	[Fact(DisplayName = "GUI Integration: Search completes with matching files")]
 	[Trait("Category", "GUI-Integration")]
 	public async Task OnInitializedAsync_WithMatchingFiles_ReturnsResults()
@@ -39,6 +41,43 @@ public class MainViewModelIntegrationTests
 			Assert.Equal(2, vm.MatchesFound);
 			Assert.Equal(3, vm.FilesScanned);
 			Assert.Contains("completed", vm.StatusMessage);
+		}
+		finally {
+			if (Directory.Exists(tempDir)) {
+				Directory.Delete(tempDir, true);
+			}
+		}
+	}
+
+	[Fact(DisplayName = "GUI Integration: Search with multiple matches completes without Avalonia app")]
+	[Trait("Category", "GUI-Integration")]
+	public async Task OnInitializedAsync_HeadlessMultiMatchSearch_Completes()
+	{
+		var tempDir = Path.Combine(Path.GetTempPath(), $"searcher_test_{Guid.NewGuid()}");
+		Directory.CreateDirectory(tempDir);
+
+		try {
+			for (int i = 0; i < 10; i++) {
+				await File.WriteAllTextAsync(
+					Path.Combine(tempDir, $"file{i}.txt"),
+					"needle"
+				);
+			}
+
+			var options = new GuiCliOptions {
+				Folder = new DirectoryInfo(tempDir),
+				Search = "needle",
+				Pattern = new[] { "*.txt" }
+			};
+
+			using var vm = new MainViewModel(options);
+
+			await vm.OnInitializedAsync().WaitAsync(SearchCompletionTimeout);
+
+			Assert.False(vm.IsSearching);
+			Assert.Equal(10, vm.Results.Count);
+			Assert.Equal(10, vm.MatchesFound);
+			Assert.Equal(10, vm.FilesScanned);
 		}
 		finally {
 			if (Directory.Exists(tempDir)) {

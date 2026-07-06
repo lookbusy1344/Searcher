@@ -1,9 +1,6 @@
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Avalonia.Input.Platform;
-using Moq;
 using SearcherGui.Services;
 using Xunit;
 
@@ -11,6 +8,19 @@ namespace TestSearcher.SearcherGui;
 
 public class ResultInteractionServiceTests
 {
+	private sealed class RecordingClipboardWriter : IClipboardTextWriter
+	{
+		public string? Text { get; private set; }
+		public int CallCount { get; private set; }
+
+		public Task WriteTextAsync(Avalonia.Input.Platform.IClipboard? clipboard, string text)
+		{
+			Text = text;
+			CallCount++;
+			return Task.CompletedTask;
+		}
+	}
+
 	// Mock process launcher that doesn't actually start processes
 	private sealed class MockProcessLauncher : IProcessLauncher
 	{
@@ -97,29 +107,34 @@ public class ResultInteractionServiceTests
 	[Trait("Category", "GUI")]
 	public async Task CopyToClipboardAsync_CopiesTextCorrectly()
 	{
-		var mockClipboard = new Mock<IClipboard>();
-		mockClipboard
-			.Setup(c => c.SetTextAsync(It.IsAny<string>()))
-			.Returns(Task.CompletedTask);
-
 		var text = "/path/to/file.txt";
+		var writer = new RecordingClipboardWriter();
 
-		await ResultInteractionService.CopyToClipboardAsync(mockClipboard.Object, text);
+		var result = await ResultInteractionService.CopyToClipboardAsync(
+			clipboard: null,
+			text,
+			writer
+		);
 
-		mockClipboard.Verify(c => c.SetTextAsync(text), Times.Once);
+		Assert.True(result);
+		Assert.Equal(text, writer.Text);
+		Assert.Equal(1, writer.CallCount);
 	}
 
 	[Fact(DisplayName = "GUI: CopyToClipboardAsync handles empty strings")]
 	[Trait("Category", "GUI")]
 	public async Task CopyToClipboardAsync_WithEmptyString_CompletesSilently()
 	{
-		var mockClipboard = new Mock<IClipboard>();
-		mockClipboard
-			.Setup(c => c.SetTextAsync(It.IsAny<string>()))
-			.Returns(Task.CompletedTask);
+		var writer = new RecordingClipboardWriter();
 
-		await ResultInteractionService.CopyToClipboardAsync(mockClipboard.Object, "");
+		var result = await ResultInteractionService.CopyToClipboardAsync(
+			clipboard: null,
+			text: "",
+			writer
+		);
 
-		mockClipboard.Verify(c => c.SetTextAsync(""), Times.Once);
+		Assert.True(result);
+		Assert.Equal("", writer.Text);
+		Assert.Equal(1, writer.CallCount);
 	}
 }

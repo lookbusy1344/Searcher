@@ -9,6 +9,8 @@ namespace SearcherGui.Services;
 
 public static class ResultInteractionService
 {
+	private static readonly IClipboardTextWriter DefaultClipboardWriter = new ClipboardTextWriter();
+
 	public static bool OpenFile(string filePath, IProcessLauncher? processLauncher = null)
 	{
 		processLauncher ??= new RealProcessLauncher();
@@ -100,15 +102,16 @@ public static class ResultInteractionService
 		}
 	}
 
-	public static async Task<bool> CopyToClipboardAsync(IClipboard? clipboard, string text)
+	public static async Task<bool> CopyToClipboardAsync(IClipboard? clipboard, string text, IClipboardTextWriter? writer = null)
 	{
 		try {
-			if (clipboard == null) {
+			var resolvedWriter = writer ?? DefaultClipboardWriter;
+			if (clipboard == null && ReferenceEquals(resolvedWriter, DefaultClipboardWriter)) {
 				Console.Error.WriteLine("Clipboard not available");
 				return false;
 			}
 
-			await clipboard.SetTextAsync(text);
+			await resolvedWriter.WriteTextAsync(clipboard, text);
 			return true;
 		}
 		catch (Exception ex) {

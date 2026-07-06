@@ -17,6 +17,7 @@ public class MainViewModel : ReactiveObject, IDisposable
 	private readonly GuiCliOptions _options;
 	private readonly ObservableCollection<SearchResultDisplay> _results = new();
 	private readonly object _ctsLock = new();
+	private static readonly Func<bool> HasUiContext = () => Application.Current is not null;
 	private CancellationTokenSource? _cancellationTokenSource;
 	private StreamWriter? _logWriter;
 	private int _filesScanned;
@@ -156,12 +157,13 @@ public class MainViewModel : ReactiveObject, IDisposable
 			var files = GlobSearch.ParallelFindFiles(_options.Folder.FullName, outerPatterns, _options.DegreeOfParallelism, null, ct);
 
 			// Update file count
-			if (Avalonia.Threading.Dispatcher.UIThread != null) {
-				Avalonia.Threading.Dispatcher.UIThread.Invoke(() => {
+			var dispatcher = TryGetUiDispatcher();
+			if (dispatcher == null) {
+				FilesScanned = files.Length;
+			} else {
+				dispatcher.Invoke(() => {
 					FilesScanned = files.Length;
 				});
-			} else {
-				FilesScanned = files.Length;
 			}
 
 			// Search each file in parallel and collect UI update tasks
@@ -187,10 +189,10 @@ public class MainViewModel : ReactiveObject, IDisposable
 						}
 
 						// Check if we're on UI thread already
-						var dispatcher = Avalonia.Threading.Dispatcher.UIThread;
-						if (dispatcher != null && !dispatcher.CheckAccess()) {
+						var uiDispatcher = TryGetUiDispatcher();
+						if (uiDispatcher != null && !uiDispatcher.CheckAccess()) {
 							// Not on UI thread, need to marshal - collect the task
-							var task = dispatcher.InvokeAsync(() => {
+							var task = uiDispatcher.InvokeAsync(() => {
 								Results.Add(display);
 								LogResult(display, result);
 							}).GetTask();
@@ -218,14 +220,21 @@ public class MainViewModel : ReactiveObject, IDisposable
 		}
 		catch (Exception ex) {
 			var message = $"Error: {ex.Message}";
-			if (Avalonia.Threading.Dispatcher.UIThread != null) {
-				Avalonia.Threading.Dispatcher.UIThread.Invoke(() => {
+			var dispatcher = TryGetUiDispatcher();
+			if (dispatcher == null) {
+				StatusMessage = message;
+			} else {
+				dispatcher.Invoke(() => {
 					StatusMessage = message;
 				});
-			} else {
-				StatusMessage = message;
 			}
 		}
+	}
+
+	private static Avalonia.Threading.Dispatcher? TryGetUiDispatcher()
+	{
+		var dispatcher = Avalonia.Threading.Dispatcher.UIThread;
+		return dispatcher != null && HasUiContext() ? dispatcher : null;
 	}
 
 	private void LogResult(SearchResultDisplay display, SearchResult result)
