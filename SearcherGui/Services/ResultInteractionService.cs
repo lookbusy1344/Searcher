@@ -39,7 +39,7 @@ public static class ResultInteractionService
 			} else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
 				// Linux: use try-catch instead of checking return value
 				try {
-					processLauncher.Start("xdg-open", filePath);
+					_ = processLauncher.Start("xdg-open", filePath);
 				}
 				catch (Exception ex) {
 					Console.Error.WriteLine($"Failed to open file with xdg-open: {ex.Message}");
@@ -81,12 +81,12 @@ public static class ResultInteractionService
 			} else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
 				// Linux: use try-catch instead of checking return value
 				try {
-					processLauncher.Start("nautilus", folder);
+					_ = processLauncher.Start("nautilus", folder);
 				}
 				catch {
 					// Fallback to xdg-open
 					try {
-						processLauncher.Start("xdg-open", folder);
+						_ = processLauncher.Start("xdg-open", folder);
 					}
 					catch (Exception ex) {
 						Console.Error.WriteLine($"Failed to open folder with nautilus or xdg-open: {ex.Message}");

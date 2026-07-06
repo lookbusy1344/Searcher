@@ -117,7 +117,7 @@ public class MainViewModel : ReactiveObject, IDisposable
 				_cancellationTokenSource = cts;
 			}
 
-			await PerformSearch(cts.Token);
+			await PerformSearchAsync(cts.Token);
 		}
 		finally {
 			// Clean up CTS under lock
@@ -146,7 +146,7 @@ public class MainViewModel : ReactiveObject, IDisposable
 		}
 	}
 
-	private async Task PerformSearch(CancellationToken ct)
+	private async Task PerformSearchAsync(CancellationToken ct)
 	{
 		try {
 			// Process patterns for outer and inner searches
@@ -185,7 +185,7 @@ public class MainViewModel : ReactiveObject, IDisposable
 						var display = SearchResultDisplay.FromSingleResult(singleResult);
 
 						if (result == SearchResult.Found) {
-							Interlocked.Increment(ref matchCount);
+							_ = Interlocked.Increment(ref matchCount);
 						}
 
 						// Check if we're on UI thread already

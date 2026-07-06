@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -24,7 +25,7 @@ public partial class MainView : Window
 	{
 		base.OnOpened(e);
 		if (DataContext is MainViewModel vm) {
-			_ = vm.OnInitializedAsync();
+			_ = InitializeViewModelAsync(vm);
 		}
 	}
 
@@ -32,15 +33,15 @@ public partial class MainView : Window
 	{
 		var grid = this.FindControl<DataGrid>("ResultsGrid");
 		if (grid?.SelectedItem is SearchResultDisplay selected) {
-			ResultInteractionService.OpenFile(selected.FilePath);
+			_ = ResultInteractionService.OpenFile(selected.FilePath);
 		}
 	}
 
-	private async void CopyPath_Click(object? sender, RoutedEventArgs e)
+	private void CopyPath_Click(object? sender, RoutedEventArgs e)
 	{
 		var grid = this.FindControl<DataGrid>("ResultsGrid");
 		if (grid?.SelectedItem is SearchResultDisplay selected) {
-			await ResultInteractionService.CopyToClipboardAsync(Clipboard, selected.FilePath);
+			_ = CopyPathToClipboardAsync(selected.FilePath);
 		}
 	}
 
@@ -48,7 +49,7 @@ public partial class MainView : Window
 	{
 		var grid = this.FindControl<DataGrid>("ResultsGrid");
 		if (grid?.SelectedItem is SearchResultDisplay selected) {
-			ResultInteractionService.ShowInFolder(selected.FilePath);
+			_ = ResultInteractionService.ShowInFolder(selected.FilePath);
 		}
 	}
 
@@ -56,7 +57,27 @@ public partial class MainView : Window
 	{
 		var grid = this.FindControl<DataGrid>("ResultsGrid");
 		if (grid?.SelectedItem is SearchResultDisplay selected) {
-			ResultInteractionService.OpenFile(selected.FilePath);
+			_ = ResultInteractionService.OpenFile(selected.FilePath);
+		}
+	}
+
+	private static async Task InitializeViewModelAsync(MainViewModel vm)
+	{
+		try {
+			await vm.OnInitializedAsync();
+		}
+		catch (Exception ex) {
+			Console.Error.WriteLine($"Failed to initialize main view model: {ex.Message}");
+		}
+	}
+
+	private async Task CopyPathToClipboardAsync(string filePath)
+	{
+		try {
+			_ = await ResultInteractionService.CopyToClipboardAsync(Clipboard, filePath);
+		}
+		catch (Exception ex) {
+			Console.Error.WriteLine($"Failed to copy path to clipboard: {ex.Message}");
 		}
 	}
 }

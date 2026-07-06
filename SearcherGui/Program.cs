@@ -23,7 +23,7 @@ public static class Program
 	{
 		try {
 			Options = ParseCommandLine(args);
-			BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+			_ = BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 		}
 		catch (PicoArgsException ex) {
 			ShowErrorDialog($"Command line error: {ex.Message}");
@@ -110,7 +110,7 @@ public static class Program
 		Console.Error.WriteLine();
 		Console.Error.WriteLine("Press any key to exit...");
 		try {
-			Console.ReadKey();
+			_ = Console.ReadKey();
 		}
 		catch {
 			// ReadKey might fail in non-interactive environments
