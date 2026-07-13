@@ -33,9 +33,9 @@
       "Bash(cat:*)",
       "Bash(xargs:*)",
       "Bash(timeout 60 dotnet test:*)",
-      "Bash(git -C /Users/johnsparrow/Documents/dev/Searcher add:*)",
       "Skill(superpowers:test-driven-development)",
       "Bash(gh pr view:*)",
+      "WebFetch(domain:api.github.com)"
     ],
     "deny": [],
     "ask": []
